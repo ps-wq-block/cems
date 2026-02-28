@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Assign Faculty Coordinator</title>
+
+<style>
+
+body{
+font-family: Arial;
+margin:0;
+padding:0;
+
+/* Consistent Light mixed background */
+background: linear-gradient(135deg,#e6f7f5,#f3e8ff);
+}
+
+/* Main container */
+
+.container{
+width:520px;
+margin:40px auto;
+background: linear-gradient(135deg,#f8fffd,#eef7f6);
+padding:25px;
+border-radius:15px;
+box-shadow:0px 0px 15px rgba(0,0,0,0.15);
+}
+
+/* Heading box */
+
+.heading{
+background: linear-gradient(to right,#9ad7cf,#cdb4db);
+padding:14px;
+border-radius:10px;
+text-align:center;
+margin-bottom:20px;
+font-size:24px;
+font-weight:bold;
+color:#2b2b2b;
+}
+
+/* Labels */
+
+label{
+font-weight:bold;
+color:#2f3e46;
+display: block;
+margin-top: 10px;
+}
+
+/* Input fields */
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:16px;
+border-radius:8px;
+border:1px solid #b7d6d2;
+background:#f4fffc;
+font-size:14px;
+box-sizing: border-box; 
+}
+
+textarea{
+height:80px;
+}
+
+/* Buttons layout (Two buttons split the width) */
+
+.buttons{
+display:flex;
+gap:12px;
+margin-top: 10px;
+}
+
+/* Equal size buttons */
+
+.buttons button{
+flex:1;
+}
+
+/* Buttons styling */
+
+button{
+padding:11px;
+border:none;
+border-radius:8px;
+font-size:15px;
+cursor:pointer;
+font-weight:bold;
+color:white;
+transition: 0.2s;
+}
+
+.notify{
+background:#a29bfe; /* Soft purple */
+}
+
+.assign{
+background:#8ec5a4; /* Soft green */
+}
+
+button:hover{
+transform:scale(1.03);
+opacity: 0.9;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="heading">
+Assign Faculty Coordinator
+</div>
+
+<form>
+
+<label>Select Event</label>
+<select>
+<option>Select an event...</option>
+<option>Tech Fest 2026</option>
+<option>Sports Meet</option>
+<option>Annual Cultural Gala</option>
+</select>
+
+<label>Faculty Name</label>
+<input type="text" placeholder="Enter full name (e.g., Dr. Jane Doe)">
+
+<label>Faculty / Employee ID</label>
+<input type="text" placeholder="Enter faculty ID">
+
+<label>Department</label>
+<input type="text" placeholder="e.g. Information Technology">
+
+<label>Contact Number</label>
+<input type="tel" placeholder="Enter mobile number">
+
+<label>Email Address</label>
+<input type="email" placeholder="Enter faculty email address">
+
+<label>Assigned Responsibilities</label>
+<textarea placeholder="Specify the duties for this faculty member..."></textarea>
+
+<div class="buttons">
+
+<button type="button" class="notify">Notify Faculty</button>
+
+<button type="submit" class="assign">Confirm Assignment</button>
+
+</div>
+
+</form>
+
+</div>
+
+</body>
+</html>
