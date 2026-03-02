@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Event Categories</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #4e73df, #1cc88a);
+}
+
+h1{
+    text-align:center;
+    color:white;
+    padding:20px;
+}
+
+.container{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:30px;
+    padding:40px;
+}
+
+.category-box{
+    width:300px;
+    height:150px;
+    background:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    font-weight:bold;
+    border-radius:15px;
+    box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.category-box:hover{
+    transform:scale(1.08);
+    background:#f8f9fc;
+}
+</style>
+</head>
+
+<body>
+
+<h1>College Event Categories</h1>
+
+<div class="container">
+
+    <div class="category-box" onclick="location.href='seminars.html'">Seminars</div>
+
+    <div class="category-box" onclick="location.href='workshops.html'">Workshops</div>
+
+    <div class="category-box" onclick="location.href='technical.html'">Technical Events</div>
+
+    <div class="category-box" onclick="location.href='sports.html'">Sports Events</div>
+
+    <div class="category-box" onclick="location.href='cultural.html'">Cultural Events</div>
+
+    <div class="category-box" onclick="location.href='finearts.html'">Fine Arts</div>
+
+    <div class="category-box" onclick="location.href='literary.html'">Literary Events</div>
+
+    <div class="category-box" onclick="location.href='management.html'">Management Events</div>
+
+    <div class="category-box" onclick="location.href='social.html'">Social & Community Events</div>
+
+    <div class="category-box" onclick="location.href='fest.html'">College Fest</div>
+
+    <div class="category-box" onclick="location.href='competitions.html'">Competitions</div>
+
+    <div class="category-box" onclick="location.href='guestlecture.html'">Guest Lectures</div>
+
+</div>
+
+</body>
+</html>

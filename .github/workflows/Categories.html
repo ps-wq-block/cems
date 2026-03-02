@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Event Categories</title>
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(to right,#4e73df,#1cc88a);
+}
+
+header{
+    text-align:center;
+    color:white;
+    padding:30px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.container{
+    width:95%;
+    margin:auto;
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:30px;
+    padding:50px 0;
+}
+
+.box{
+    background:white;
+    height:170px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:22px;
+    font-weight:bold;
+    border-radius:15px;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 8px 18px rgba(0,0,0,0.25);
+}
+
+.box:hover{
+    transform:scale(1.08);
+}
+</style>
+</head>
+<body>
+
+<header>College Event Categories</header>
+
+<div class="container">
+
+<div class="box" onclick="location.href='seminars.html'">Seminars</div>
+<div class="box" onclick="location.href='workshops.html'">Workshops</div>
+<div class="box" onclick="location.href='technical.html'">Technical Events</div>
+<div class="box" onclick="location.href='sports.html'">Sports Events</div>
+
+<div class="box" onclick="location.href='cultural.html'">Cultural Events</div>
+<div class="box" onclick="location.href='finearts.html'">Fine Arts</div>
+<div class="box" onclick="location.href='literary.html'">Literary Events</div>
+
+<div class="box" onclick="location.href='social.html'">Social & Community</div>
+<div class="box" onclick="location.href='guestlecture.html'">Guest Lectures</div>
+<div class="box" onclick="location.href='health.html'">Health & Wellness Events</div>
+
+</div>
+
+</body>
+</html>

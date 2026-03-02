@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>College Event Management - Login</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .login-container {
+        background: #ffffff;
+        padding: 40px;
+        width: 380px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .login-container h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #444;
+    }
+
+    .input-group {
+        margin-bottom: 18px;
+    }
+
+    .input-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .input-group input,
+    .input-group select {
+        width: 100%;
+        padding: 10px;
+        margin-top: 6px;
+        border-radius: 8px;
+        border: none;
+        background: #f0f4ff;
+        font-size: 14px;
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        background: linear-gradient(to right, #36d1dc, #5b86e5);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .message {
+        margin-top: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .success {
+        color: green;
+    }
+
+    .error-border {
+    border: 2px solid red !important;
+    }
+
+    .error-text {
+    color: red;
+    font-size: 12px;
+    }
+
+    .extra-options {
+        margin-bottom: 15px;
+    }
+
+    .extra-options a {
+        text-decoration: none;
+        font-size: 13px;
+        color: #6a5acd;
+    }
+
+</style>
+</head>
+
+<body>
+
+<div class="login-container">
+    <h2>College Event Management</h2>
+
+    <form onsubmit="return loginFunction()">
+        <div class="input-group">
+          <label>Select Role</label>
+           <select id="role">
+            <option value="">-- Select Role --</option>
+            <option value="student">Student</option>
+            <option value="administrator">Administrator</option>
+            <option value="organizer">Organizer</option>
+          </select>
+         <small class="error-text" id="roleError"></small>
+        </div>
+
+        <div class="input-group">
+            <label>User ID</label>
+            <input type="email" id="email" placeholder="Enter Email Address">
+            <small class="error-text" id="emailError"></small>
+        </div>
+
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Enter Password">
+            <small class="error-text" id="passwordError"></small>
+        </div>
+
+        <div class="extra-options">
+            <a href="ForgotPassword.html">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+
+        <div id="message" class="message"></div>
+    </form>
+</div>
+
+<script>
+function loginFunction() {
+    let role = document.getElementById("role");
+    let email = document.getElementById("email");
+    let password = document.getElementById("password");
+
+    let roleError = document.getElementById("roleError");
+    let emailError = document.getElementById("emailError");
+    let passwordError = document.getElementById("passwordError");
+
+    // Reset all
+    role.classList.remove("error-border");
+    email.classList.remove("error-border");
+    password.classList.remove("error-border");
+
+    roleError.innerHTML = "";
+    emailError.innerHTML = "";
+    passwordError.innerHTML = "";
+
+    let valid = true;
+
+    // Role validation
+    if (role.value === "") {
+        role.classList.add("error-border");
+        roleError.innerHTML = "Please select a role";
+        valid = false;
+    }
+
+    // Email validation
+    if (email.value === "") {
+        email.classList.add("error-border");
+        emailError.innerHTML = "Email is required";
+        valid = false;
+    }
+
+    // Password validation
+     if (password.value === "") {
+        password.classList.add("error-border");
+        passwordError.innerHTML = "Password is required";
+        valid = false;
+    } 
+    // Password strength check
+    else {
+        let passwordPattern =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passwordPattern.test(password.value)) {
+            password.classList.add("error-border");
+            passwordError.innerHTML =
+                "Password must contain minimum 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character (@$!%*?&)";
+            valid = false;
+        } else {
+            password.classList.add("success-border");
+        }
+    }
+
+    if (!valid) {
+        return false;
+    }else {
+        message.innerHTML = "Login Successful ✅"; 
+        message.className = "message success"; 
+        return false;
+    }
+
+    return false;
+}
+</script>
+
+</body>
+</html>
