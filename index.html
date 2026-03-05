@@ -191,18 +191,25 @@ function loginFunction() {
 
     if (!valid) {
         return false;
-    }else {
-        message.innerHTML = "Login Successful ✅"; 
-        message.className = "message success"; 
-        return false;
-    }
+   } else {
+    // 1. Update the UI to show success
+    message.innerHTML = "Login Successful ✅ Redirecting..."; 
+    message.className = "message success"; 
 
-    return false;
+    // 2. The "Redirect" command
+    // This waits 1.5 seconds so the user can actually see the success message
+    setTimeout(function() {
+        window.location.href = "categories.html"; 
+    }, 1500);
+
+    return false; // Keeps the form from doing a traditional page reload
 }
+
 </script>
 
 </body>
 
 </html>
+
 
 
