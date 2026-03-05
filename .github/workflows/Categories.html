@@ -1,70 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Event Categories</title>
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:linear-gradient(to right,#4e73df,#1cc88a);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Event Categories</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #4e73df 0%, #1cc88a 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-header{
-    text-align:center;
-    color:white;
-    padding:30px;
-    font-size:30px;
-    font-weight:bold;
-}
+        header {
+            text-align: center;
+            color: white;
+            padding: 50px 20px;
+            font-size: 38px;
+            font-weight: 800;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
 
-.container{
-    width:95%;
-    margin:auto;
-    display:grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap:30px;
-    padding:50px 0;
-}
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            padding-bottom: 60px;
+        }
 
-.box{
-    background:white;
-    height:170px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-size:22px;
-    font-weight:bold;
-    border-radius:15px;
-    cursor:pointer;
-    transition:0.3s;
-    box-shadow:0 8px 18px rgba(0,0,0,0.25);
-}
+        .event-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
 
-.box:hover{
-    transform:scale(1.08);
-}
-</style>
+        .box {
+            background: white;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            background: #f8f9fc;
+            color: #4e73df;
+        }
+
+        .box:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 <body>
 
-<header>College Event Categories</header>
+    <header>College Event Categories</header>
 
-<div class="container">
+    <div class="container">
+        <a href="seminars.html" class="event-link"><div class="box">Seminars</div></a>
+        <a href="workshops.html" class="event-link"><div class="box">Workshops</div></a>
+        <a href="technical.html" class="event-link"><div class="box">Technical Events</div></a>
+        <a href="sports.html" class="event-link"><div class="box">Sports Events</div></a>
 
-<div class="box" onclick="location.href='seminars.html'">Seminars</div>
-<div class="box" onclick="location.href='workshops.html'">Workshops</div>
-<div class="box" onclick="location.href='technical.html'">Technical Events</div>
-<div class="box" onclick="location.href='sports.html'">Sports Events</div>
+        <a href="cultural.html" class="event-link"><div class="box">Cultural Events</div></a>
+        <a href="finearts.html" class="event-link"><div class="box">Fine Arts</div></a>
+        <a href="literary.html" class="event-link"><div class="box">Literary Events</div></a>
+        <a href="social.html" class="event-link"><div class="box">Social & Community</div></a>
 
-<div class="box" onclick="location.href='cultural.html'">Cultural Events</div>
-<div class="box" onclick="location.href='finearts.html'">Fine Arts</div>
-<div class="box" onclick="location.href='literary.html'">Literary Events</div>
-
-<div class="box" onclick="location.href='social.html'">Social & Community</div>
-<div class="box" onclick="location.href='guestlecture.html'">Guest Lectures</div>
-<div class="box" onclick="location.href='health.html'">Health & Wellness Events</div>
-
-</div>
+        <a href="guestlecture.html" class="event-link"><div class="box">Guest Lectures</div></a>
+        <a href="health.html" class="event-link"><div class="box">Health & Wellness</div></a>
+    </div>
 
 </body>
 </html>
