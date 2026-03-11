@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Organizer Profile</title>
+
+<style>
+
+body{
+margin:0;
+padding:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(135deg,#89f7fe,#fbc2eb);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.container{
+background:white;
+padding:35px;
+width:420px;
+border-radius:15px;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.title{
+background:#8ecae6;
+padding:12px;
+border-radius:10px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+label{
+font-weight:600;
+font-size:14px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:5px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#4CAF50;
+border:none;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+}
+
+button:hover{
+background:#45a049;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">Edit Profile</div>
+
+<form>
+
+<label>Full Name</label>
+<input type="text" value="Rahul Sharma">
+
+<label>Email Address</label>
+<input type="email" value="rahul.sharma@email.com">
+
+<label>Phone Number</label>
+<input type="text" value="+91 9876543210">
+
+<label>Department</label>
+<input type="text" value="Cultural Committee">
+
+<label>Office Address</label>
+<input type="text" value="Admin Block, Room 204, M.M. Engineering College Campus">
+
+<button type="submit">Update Profile</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
