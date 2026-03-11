@@ -4,6 +4,7 @@
 <title>Free Health Checkup Camp</title>
 
 <style>
+/* Keeping your original styles consistent */
 body{
 font-family: Arial;
 margin:0;
@@ -54,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: Changing the button into a functional link */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -63,11 +66,22 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none;
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
+}
+
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
 }
 </style>
 </head>
@@ -75,6 +89,7 @@ transform:scale(1.05);
 <body>
 
 <div class="container">
+<a href="social.html" class="back-link">← Back to Social Events</a>
 
 <div class="heading">
 Free Health Checkup Camp
@@ -90,8 +105,7 @@ Free Health Checkup Camp
 <div class="description">
 <strong>About the Event:</strong><br><br>
 The Free Health Checkup Camp provides basic health screening including blood pressure, 
-blood sugar, BMI check, and general health consultation. Medical professionals will 
-offer guidance on maintaining a healthy lifestyle and preventing common diseases.
+blood sugar, BMI check, and general health consultation.
 </div>
 
 <div class="description">
@@ -103,12 +117,13 @@ offer guidance on maintaining a healthy lifestyle and preventing common diseases
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Social and community&event=Free Health Checkup Camp" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
 
 </body>
 </html>
+
