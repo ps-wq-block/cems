@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Event Approval Dashboard</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 650px;
+    background: #ffffffdd;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    backdrop-filter: blur(8px);
+}
+
+.title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #8fd3f4, #c2e9fb);
+}
+
+.event-card {
+    background: #f4f6f8;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event-card:hover {
+    background: #e3ecf3;
+    transform: scale(1.02);
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.approved {
+    background: linear-gradient(90deg, #56ab2f, #a8e063);
+}
+
+.pending {
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+}
+
+.detail {
+    display: none;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f4f6f8;
+    resize: none;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+button {
+    width: 32%;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.approve {
+    background: linear-gradient(90deg, #28a745, #5dd39e);
+}
+
+.reject {
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+}
+
+.back {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">Event Request Approvals</div>
+
+<div id="eventList">
+
+<!-- Pending Events -->
+
+<div class="event-card" onclick="openEvent('Tech Seminar 2026','Seminar','Pending')">
+<div>
+<strong>Tech Seminar 2026</strong><br>
+Category: Seminar
+</div>
+<span class="badge pending">Pending</span>
+</div>
+
+<div class="event-card" onclick="openEvent('University Cultural Fest – Utsav 2026','Cultural Event','Pending')">
+<div>
+<strong>University Cultural Fest – Utsav 2026</strong><br>
+Category: Cultural Event
+</div>
+<span class="badge pending">Pending</span>
+</div>
+
+<div class="event-card" onclick="openEvent('Inter-Department Sports Championship 2026','Sports','Pending')">
+<div>
+<strong>Inter-Department Sports Championship 2026</strong><br>
+Category: Sports
+</div>
+<span class="badge pending">Pending</span>
+</div>
+
+<!-- NEW Pending Event -->
+
+<div class="event-card" onclick="openEvent('AI Innovation Workshop 2026','Workshop','Pending')">
+<div>
+<strong>AI Innovation Workshop 2026</strong><br>
+Category: Workshop
+</div>
+<span class="badge pending">Pending</span>
+</div>
+
+<!-- Approved Events -->
+
+<div class="event-card" onclick="openEvent('Annual Research Conference','Academic','Approved')">
+<div>
+<strong>Cricket Tournament 2026</strong><br>
+Category: Sports Event
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+<div class="event-card" onclick="openEvent('Management Workshop 2026','Workshop','Approved')">
+<div>
+<strong>Android App Development Workshop 2026</strong><br>
+Category: Technical Workshop
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+<div class="event-card" onclick="openEvent('Alumni Meet 2026','Social','Approved')">
+<div>
+<strong>Blood Donation Campaign 2026</strong><br>
+Category: Health Campaign & Social Service
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+<div class="event-card" onclick="openEvent('Inter-College Debate Competition','Competition','Approved')">
+<div>
+<strong>Hackathon 2026</strong><br>
+Category: Technology Event
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+<!-- NEW Approved Events -->
+
+<div class="event-card" onclick="openEvent('National Coding Hackathon 2026','Technology','Approved')">
+<div>
+<strong>Robotics Challenge</strong><br>
+Category: Technology Event
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+<div class="event-card" onclick="openEvent('International Business Summit','Business','Approved')">
+<div>
+<strong>Mental Health Awareness Campaign 2026</strong><br>
+Category: Health & Social Awareness Event 
+</div>
+<span class="badge approved">Approved</span>
+</div>
+
+</div>
+
+<div id="eventDetail" class="detail">
+
+<p><strong>Event Name:</strong> <span id="eventName"></span></p>
+<p><strong>Category:</strong> <span id="eventCategory"></span></p>
+<p><strong>Status:</strong> <span id="eventStatus"></span></p>
+
+<label><strong>Admin Comments</strong></label>
+
+<textarea id="commentBox" rows="3" placeholder="Enter your comments..."></textarea>
+
+<div class="buttons">
+
+<button class="approve" id="approveBtn">Approve</button>
+<button class="reject" id="rejectBtn">Reject</button>
+<button class="back" onclick="goBack()">Back</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function openEvent(name, category, status) {
+
+document.getElementById("eventList").style.display = "none";
+document.getElementById("eventDetail").style.display = "block";
+
+document.getElementById("eventName").innerText = name;
+document.getElementById("eventCategory").innerText = category;
+document.getElementById("eventStatus").innerText = status;
+
+let approveBtn = document.getElementById("approveBtn");
+let rejectBtn = document.getElementById("rejectBtn");
+let commentBox = document.getElementById("commentBox");
+
+if(status === "Approved"){
+
+approveBtn.innerText = "Approved";
+approveBtn.disabled = true;
+
+rejectBtn.style.display = "none";
+
+commentBox.value = "This event request has been reviewed and approved by the administrator.";
+commentBox.disabled = true;
+
+}
+else{
+
+approveBtn.innerText = "Approve";
+approveBtn.disabled = false;
+
+rejectBtn.style.display = "block";
+
+commentBox.value = "";
+commentBox.disabled = false;
+
+}
+
+}
+
+function goBack(){
+
+document.getElementById("eventList").style.display = "block";
+document.getElementById("eventDetail").style.display = "none";
+
+}
+
+</script>
+
+</body>
+</html>
