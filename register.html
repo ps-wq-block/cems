@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Event Registration - CEMS</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, #6dd5fa, #c89cff, #a1ffce);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column; /* Allows the back button to sit above the container */
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Navigation Link */
+        .back-nav {
+            width: 440px;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .back-nav a {
+            text-decoration: none;
+            color: #4b0082;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-nav a:hover { color: #ffffff; text-shadow: 0 0 5px rgba(0,0,0,0.2); }
+
+        /* Main form card */
+        .container {
+            width: 440px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+        }
+
+        .heading-box {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label { font-weight: bold; display: block; margin-bottom: 6px; color: #333; font-size: 14px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: #f9f9ff;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 8px rgba(102,126,234,0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #ff7eb3, #ff758c);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+        }
+
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,0.2); }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        .success { color: #28a745; }
+    </style>
+</head>
+<body>
+
+    <div class="back-nav">
+        <a href="categories.html">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="heading-box">
+            <h2>Event Registration</h2>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" id="studentName" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="studentEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label>Roll Number</label>
+                <input type="text" id="rollNo" required>
+            </div>
+
+            <div class="form-group">
+                <label>Event Category</label>
+                <select id="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Seminars">Seminars</option>
+                    <option value="Workshops">Workshops</option>
+                    <option value="Technical events">Technical events</option>
+                    <option value="Sports events">Sports events</option>
+                    <option value="Social and community">Social and community</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Specific Event</label>
+                <select id="event" required>
+                    <option value="">Select Event</option>
+                </select>
+            </div>
+
+            <button type="submit">Complete Registration</button>
+        </form>
+
+        <div class="message" id="msg"></div>
+    </div>
+
+<script>
+    const events = {
+        "Seminars": ["AI & Future Technology", "Cyber Security Awareness"],
+        "Workshops": ["Web Development Workshop", "Android App Development"],
+        "Technical events": ["Coding Competition", "Hackathon 2026"],
+        "Sports events": ["Cricket Tournament", "Football Championship"],
+        "Social and community": ["Tree Plantation Drive", "Blood Donation Camp"]
+    };
+
+    // Dynamic Dropdown Logic
+    document.getElementById("category").addEventListener("change", function() {
+        let category = this.value;
+        let eventDropdown = document.getElementById("event");
+        eventDropdown.innerHTML = "<option value=''>Select Event</option>";
+
+        if (category in events) {
+            events[category].forEach(function(e) {
+                let option = document.createElement("option");
+                option.text = e;
+                option.value = e;
+                eventDropdown.add(option);
+            });
+        }
+    });
+
+    // Form Submission & Redirect
+    document.getElementById("registerForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const msgBox = document.getElementById("msg");
+        msgBox.innerHTML = "Registration Successful! ✅ Redirecting...";
+        msgBox.className = "message success";
+
+        // Redirect back to the dashboard after 2 seconds
+        setTimeout(function() {
+            window.location.href = "categories.html"; 
+        }, 2000);
+    });
+</script>
+
+</body>
+</html>
