@@ -72,13 +72,13 @@ const events = {
     "Guest lectures": ["AI & Future Technology", "Entrepreneurship and Startups"],
     "Literary events": ["Debate Competition", "Poetry Recitation"],
     "Social and community": ["Tree Plantation Drive", "Blood Donation Camp"],
-    "Health and wellness": ["Yoga & Meditation Session", "Free Health Check-up"],
+    "Health and wellness": ["Yoga and Meditation Session", "Free Health Check-up"],
 };
 
-// --- LOGIC 1: Manually changing the dropdown ---
 const categoryDropdown = document.getElementById("category");
 const eventDropdown = document.getElementById("event");
 
+// --- LOGIC 1: Manually changing the dropdown ---
 categoryDropdown.addEventListener("change", function() {
     let category = this.value;
     eventDropdown.innerHTML = "<option value=''>Select Event</option>";
@@ -93,20 +93,16 @@ categoryDropdown.addEventListener("change", function() {
     }
 });
 
-// --- LOGIC 2: THE MAGIC AUTO-FILL (Reading the URL) ---
+// --- LOGIC 2: THE MAGIC AUTO-FILL ---
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
-    const catParam = params.get('cat');   // Looks for ?cat=
-    const eventParam = params.get('event'); // Looks for &event=
+    const catParam = params.get('cat');   
+    const eventParam = params.get('event'); 
 
     if (catParam) {
-        // 1. Set the category dropdown
         categoryDropdown.value = catParam;
-        
-        // 2. Trigger the change logic so the Event dropdown fills up
         categoryDropdown.dispatchEvent(new Event('change'));
 
-        // 3. Set the specific event dropdown
         if (eventParam) {
             eventDropdown.value = eventParam;
         }
@@ -116,10 +112,11 @@ window.onload = function() {
 // --- LOGIC 3: Form Submission ---
 document.getElementById("registerForm").addEventListener("submit", function(e) {
     e.preventDefault();
-    document.getElementById("msg").innerHTML = "Registration Successful! Redirecting to Dashboard...";
+    document.getElementById("msg").innerHTML = "Registration Successful! Redirecting...";
     setTimeout(() => { window.location.href = "categories.html"; }, 2000);
 });
 </script>
 
 </body>
 </html>
+
