@@ -4,7 +4,7 @@
 <title>Football Championship - Sports Event</title>
 
 <style>
-
+/* Keeping your original styles */
 body{
 font-family: Arial;
 margin:0;
@@ -55,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: Styling the link to look like your original button */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -64,43 +66,40 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none; /* Removes underline */
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
 }
 
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+<a href="sports.html" class="back-link">← Back to Sports Events</a>
 
 <div class="heading">
 Sports Event: Football Championship
 </div>
 
-<div class="info">
-<strong>Date:</strong> 18 April 2026
-</div>
-
-<div class="info">
-<strong>Time:</strong> 8:30 AM onwards
-</div>
-
-<div class="info">
-<strong>Venue:</strong> College Football Ground
-</div>
-
-<div class="info">
-<strong>Maximum Teams:</strong> 10 Teams
-</div>
-
-<div class="info">
-<strong>Registration Deadline:</strong> 14 April 2026
-</div>
+<div class="info"><strong>Date:</strong> 18 April 2026</div>
+<div class="info"><strong>Time:</strong> 8:30 AM onwards</div>
+<div class="info"><strong>Venue:</strong> College Football Ground</div>
+<div class="info"><strong>Maximum Teams:</strong> 10 Teams</div>
+<div class="info"><strong>Registration Deadline:</strong> 14 April 2026</div>
 
 <div class="description">
 <strong>About the Event:</strong><br><br>
@@ -118,12 +117,15 @@ Exciting prizes await the champions.
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Sports events&event=Football Championship" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
 
 </body>
 </html>
+/body>
+</html>
+
