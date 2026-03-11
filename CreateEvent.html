@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Create Event</title>
+
+<style>
+
+body{
+font-family: Arial;
+margin:0;
+padding:0;
+
+/* Light mixed background */
+background: linear-gradient(135deg,#e6f7f5,#f3e8ff);
+}
+
+/* Main container */
+
+.container{
+width:520px;
+margin:40px auto;
+background: linear-gradient(135deg,#f8fffd,#eef7f6);
+padding:25px;
+border-radius:15px;
+box-shadow:0px 0px 15px rgba(0,0,0,0.15);
+}
+
+/* Heading box */
+
+.heading{
+background: linear-gradient(to right,#9ad7cf,#cdb4db);
+padding:14px;
+border-radius:10px;
+text-align:center;
+margin-bottom:20px;
+font-size:24px;
+font-weight:bold;
+color:#2b2b2b;
+}
+
+/* Labels */
+
+label{
+font-weight:bold;
+color:#2f3e46;
+}
+
+/* Input fields */
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:6px;
+margin-bottom:16px;
+border-radius:8px;
+border:1px solid #b7d6d2;
+background:#f4fffc;
+font-size:14px;
+}
+
+textarea{
+height:80px;
+}
+
+/* Buttons layout (Same Line) */
+
+.buttons{
+display:flex;
+gap:12px;
+}
+
+/* Equal size buttons */
+
+.buttons button{
+flex:1;
+}
+
+/* Buttons */
+
+button{
+padding:11px;
+border:none;
+border-radius:8px;
+font-size:15px;
+cursor:pointer;
+font-weight:bold;
+color:white;
+}
+
+/* Soft button colors */
+
+.edit{
+background:#7fb3d5;
+}
+
+.approval{
+background:#a29bfe;
+}
+
+.publish{
+background:#8ec5a4;
+}
+
+button:hover{
+transform:scale(1.03);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="heading">
+Create New Event
+</div>
+
+<form>
+
+<label>Event Name</label>
+<input type="text" placeholder="Enter event name">
+
+<label>Category</label>
+
+<select>
+<option>Seminar</option>
+<option>Workshop</option>
+<option>Sports</option>
+<option>Cultural</option>
+<option>Technical</option>
+<option>Fine Arts</option>
+<option>Literary Event</option>
+<option>Social and Community</option>
+<option>Guest Lectures</option>
+<option>Health and Wellness Events</option>
+</select>
+
+<label>Event Date</label>
+<input type="date">
+
+<label>Event Time</label>
+<input type="time">
+
+<label>Venue</label>
+<input type="text" placeholder="Enter venue">
+
+<label>Description</label>
+<textarea placeholder="Enter event description"></textarea>
+
+<label>Maximum Participants</label>
+<input type="number" placeholder="Enter number">
+
+<label>Registration Deadline</label>
+<input type="date">
+
+<label>Event Rules</label>
+<textarea placeholder="Enter event rules"></textarea>
+
+<div class="buttons">
+
+<button class="edit">Edit Event</button>
+
+<button class="approval">Request Approval</button>
+
+<button class="publish">Publish Event</button>
+
+</div>
+
+</form>
+
+</div>
+
+</body>
+</html>
