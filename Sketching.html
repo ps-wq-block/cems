@@ -4,7 +4,7 @@
 <title>Sketching Contest - Fine Arts</title>
 
 <style>
-
+/* Keeping your original styles */
 body{
 font-family: Arial;
 margin:0;
@@ -55,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: Styling the link to look like your button */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -64,43 +66,40 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none; /* Removes the underline */
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
 }
 
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+<a href="finearts.html" class="back-link">← Back to Fine Arts</a>
 
 <div class="heading">
 Fine Arts Event: Sketching Contest
 </div>
 
-<div class="info">
-<strong>Date:</strong> 8 June 2026
-</div>
-
-<div class="info">
-<strong>Time:</strong> 11:00 AM – 2:00 PM
-</div>
-
-<div class="info">
-<strong>Venue:</strong> Fine Arts Studio
-</div>
-
-<div class="info">
-<strong>Maximum Participants:</strong> 60
-</div>
-
-<div class="info">
-<strong>Registration Deadline:</strong> 5 June 2026
-</div>
+<div class="info"><strong>Date:</strong> 8 June 2026</div>
+<div class="info"><strong>Time:</strong> 11:00 AM – 2:00 PM</div>
+<div class="info"><strong>Venue:</strong> Fine Arts Studio</div>
+<div class="info"><strong>Maximum Participants:</strong> 60</div>
+<div class="info"><strong>Registration Deadline:</strong> 5 June 2026</div>
 
 <div class="description">
 <strong>About the Event:</strong><br><br>
@@ -119,12 +118,13 @@ sketch within the given time.
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Fine arts&event=Sketching Contest" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
 
 </body>
 </html>
+
