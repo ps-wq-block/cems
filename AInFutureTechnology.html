@@ -4,6 +4,7 @@
 <title>AI & Future Technology - Guest Lecture</title>
 
 <style>
+/* Keeping your beautiful design */
 body{
 font-family: Arial;
 margin:0;
@@ -54,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: The link now looks like your original button */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -63,11 +66,22 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none; /* Removes the underline */
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
+}
+
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
 }
 </style>
 </head>
@@ -75,6 +89,7 @@ transform:scale(1.05);
 <body>
 
 <div class="container">
+<a href="guestlecture.html" class="back-link">← Back to Guest Lectures</a>
 
 <div class="heading">
 Guest Lecture: AI & Future Technology
@@ -120,9 +135,9 @@ Students will learn about career opportunities, research trends, and real-world 
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Guest lectures&event=AI & Future Technology" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
