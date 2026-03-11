@@ -4,7 +4,7 @@
 <title>Cyber Security Awareness Seminar</title>
 
 <style>
-
+/* Keeping your original CSS */
 body{
 font-family: Arial;
 margin:0;
@@ -55,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: Styling the link to look like a button */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -64,19 +66,30 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none; /* Removes underline */
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
 }
 
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
+<a href="seminars.html" class="back-link">← Back to Seminars</a>
 
 <div class="heading">
 Seminar: Cyber Security Awareness
@@ -105,9 +118,7 @@ Seminar: Cyber Security Awareness
 <div class="description">
 <strong>About the Event:</strong><br><br>
 This Cyber Security Awareness Seminar aims to educate students about online safety, 
-data protection, cyber threats, ethical hacking basics, and preventive measures. 
-Experts will demonstrate real-world cyber attack scenarios and discuss career 
-opportunities in cybersecurity.
+data protection, cyber threats, ethical hacking basics, and preventive measures.
 </div>
 
 <div class="description">
@@ -119,12 +130,13 @@ opportunities in cybersecurity.
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Seminars&event=Cyber Security Awareness" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
 
 </body>
 </html>
+
