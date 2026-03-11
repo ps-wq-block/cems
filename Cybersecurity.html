@@ -4,6 +4,7 @@
 <title>Cybersecurity Awareness - Guest Lecture</title>
 
 <style>
+/* Keeping your original design exactly as it is */
 body{
 font-family: Arial;
 margin:0;
@@ -54,8 +55,10 @@ text-align:center;
 margin-top:25px;
 }
 
-button{
-padding:12px 25px;
+/* Updated style: The link now looks like your original button */
+.reg-btn {
+display: inline-block;
+padding: 12px 25px;
 border:none;
 border-radius:8px;
 font-size:16px;
@@ -63,11 +66,22 @@ cursor:pointer;
 font-weight:bold;
 color:white;
 background:#8ec5a4;
+text-decoration: none; /* Removes the underline */
 transition:0.3s;
 }
 
-button:hover{
+.reg-btn:hover{
 transform:scale(1.05);
+background: #76a88b;
+}
+
+.back-link {
+display: inline-block;
+margin-bottom: 15px;
+color: #4e73df;
+text-decoration: none;
+font-size: 14px;
+font-weight: bold;
 }
 </style>
 </head>
@@ -75,41 +89,23 @@ transform:scale(1.05);
 <body>
 
 <div class="container">
+<a href="guestlecture.html" class="back-link">← Back to Guest Lectures</a>
 
 <div class="heading">
 Guest Lecture: Cybersecurity Awareness
 </div>
 
-<div class="info">
-<strong>Date:</strong> 22 May 2026
-</div>
-
-<div class="info">
-<strong>Time:</strong> 10:30 AM – 12:30 PM
-</div>
-
-<div class="info">
-<strong>Venue:</strong> Conference Hall
-</div>
-
-<div class="info">
-<strong>Guest Speaker:</strong> Cybersecurity Specialist
-</div>
-
-<div class="info">
-<strong>Maximum Participants:</strong> 130
-</div>
-
-<div class="info">
-<strong>Registration Deadline:</strong> 20 May 2026
-</div>
+<div class="info"><strong>Date:</strong> 22 May 2026</div>
+<div class="info"><strong>Time:</strong> 10:30 AM – 12:30 PM</div>
+<div class="info"><strong>Venue:</strong> Conference Hall</div>
+<div class="info"><strong>Guest Speaker:</strong> Cybersecurity Specialist</div>
+<div class="info"><strong>Maximum Participants:</strong> 130</div>
+<div class="info"><strong>Registration Deadline:</strong> 20 May 2026</div>
 
 <div class="description">
 <strong>About the Guest Lecture:</strong><br><br>
 This guest lecture focuses on cybersecurity awareness and digital safety practices. 
-The expert will discuss cyber threats, phishing attacks, data protection, ethical hacking, 
-and best practices to stay safe online. Students will gain practical knowledge about 
-protecting personal and organizational data.
+The expert will discuss cyber threats, phishing attacks, data protection, and ethical hacking.
 </div>
 
 <div class="description">
@@ -121,9 +117,9 @@ protecting personal and organizational data.
 </div>
 
 <div class="register-section">
-<button onclick="alert('Registration Successful!')">
+<a href="registration.html?cat=Guest lectures&event=Cyber Security Awareness" class="reg-btn">
 Register Now
-</button>
+</a>
 </div>
 
 </div>
