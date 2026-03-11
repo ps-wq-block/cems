@@ -12,11 +12,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 40px 0;
 }
 
 .container {
-    width: 650px;
+    width: 600px;
+    max-width: 90%;
     background: #ffffffdd;
     padding: 30px;
     border-radius: 15px;
@@ -118,8 +120,6 @@ button {
 
 <div id="eventList">
 
-<!-- Pending Events -->
-
 <div class="event-card" onclick="openEvent('Tech Seminar 2026','Seminar','Pending')">
 <div>
 <strong>Tech Seminar 2026</strong><br>
@@ -144,8 +144,6 @@ Category: Sports
 <span class="badge pending">Pending</span>
 </div>
 
-<!-- NEW Pending Event -->
-
 <div class="event-card" onclick="openEvent('AI Innovation Workshop 2026','Workshop','Pending')">
 <div>
 <strong>AI Innovation Workshop 2026</strong><br>
@@ -153,8 +151,6 @@ Category: Workshop
 </div>
 <span class="badge pending">Pending</span>
 </div>
-
-<!-- Approved Events -->
 
 <div class="event-card" onclick="openEvent('Annual Research Conference','Academic','Approved')">
 <div>
@@ -187,8 +183,6 @@ Category: Technology Event
 </div>
 <span class="badge approved">Approved</span>
 </div>
-
-<!-- NEW Approved Events -->
 
 <div class="event-card" onclick="openEvent('National Coding Hackathon 2026','Technology','Approved')">
 <div>
