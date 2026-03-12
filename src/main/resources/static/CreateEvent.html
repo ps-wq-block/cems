@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Create Event</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+
+            /* Light mixed background */
+            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            color: #444;
+            font-size: 22px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .navbar a:hover {
+            color: #a29bfe;
+        }
+
+        /* Main container */
+
+        .container {
+            width: 520px;
+            margin: 40px auto;
+            background: linear-gradient(135deg, #f8fffd, #eef7f6);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Heading box */
+
+        .heading {
+            background: linear-gradient(to right, #9ad7cf, #cdb4db);
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2b2b2b;
+        }
+
+        /* Labels */
+
+        label {
+            font-weight: bold;
+            color: #2f3e46;
+        }
+
+        /* Input fields */
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #b7d6d2;
+            background: #f4fffc;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        /* Buttons layout (Same Line) */
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* Equal size buttons */
+
+        .buttons button {
+            flex: 1;
+        }
+
+        /* Buttons */
+
+        button {
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Soft button colors */
+
+        .edit {
+            background: #7fb3d5;
+        }
+
+        .approval {
+            background: #a29bfe;
+        }
+
+        .publish {
+            background: #8ec5a4;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Event Organizer Dashboard</h2>
+        <div class="nav-links">
+            <a href="CreateEvent.html">Create Event</a>
+            <a href="Approval.html">Approvals</a>
+            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="heading">
+            Create New Event
+        </div>
+
+        <form id="createEventForm">
+
+            <label>Event Name</label>
+            <input type="text" id="name" placeholder="Enter event name" required>
+
+            <label>Category</label>
+
+            <select id="category" required>
+                <option value="Seminar">Seminar</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Sports">Sports</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Technical">Technical</option>
+                <option value="Fine Arts">Fine Arts</option>
+                <option value="Literary Event">Literary Event</option>
+                <option value="Social and Community">Social and Community</option>
+                <option value="Guest Lectures">Guest Lectures</option>
+                <option value="Health and Wellness Events">Health and Wellness Events</option>
+            </select>
+
+            <label>Event Date</label>
+            <input type="date" id="eventDate" required>
+
+            <label>Event Time</label>
+            <input type="time" id="eventTime" required>
+
+            <label>Venue</label>
+            <input type="text" id="venue" placeholder="Enter venue" required>
+
+            <label>Description</label>
+            <textarea id="description" placeholder="Enter event description" required></textarea>
+
+            <label>Maximum Participants</label>
+            <input type="number" id="maxParticipants" placeholder="Enter number" required>
+
+            <label>Registration Deadline</label>
+            <input type="date" id="registrationDeadline" required>
+
+            <label>Event Rules</label>
+            <textarea id="rules" placeholder="Enter event rules" required></textarea>
+
+            <div class="buttons">
+
+                <button type="button" class="edit" onclick="alert('Edit mode not fully supported yet.')">Edit
+                    Event</button>
+
+                <button type="submit" class="approval">Request Approval</button>
+
+                <button type="button" class="publish"
+                    onclick="alert('Only admins can publish directly. Please Request Approval first.')">Publish
+                    Event</button>
+
+            </div>
+
+        </form>
+        <div id="statusMessage" style="text-align:center; font-weight:bold; margin-top:15px; display:none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('createEventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {
+                name: document.getElementById('name').value,
+                category: document.getElementById('category').value,
+                eventDate: document.getElementById('eventDate').value,
+                eventTime: document.getElementById('eventTime').value,
+                venue: document.getElementById('venue').value,
+                description: document.getElementById('description').value,
+                maxParticipants: parseInt(document.getElementById('maxParticipants').value),
+                registrationDeadline: document.getElementById('registrationDeadline').value,
+                rules: document.getElementById('rules').value
+            };
+
+            const statusMessage = document.getElementById('statusMessage');
+
+            try {
+                const response = await fetch('http://localhost:8080/api/events', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = 'green';
+                    statusMessage.textContent = 'Event request submitted successfully! Pending admin approval.';
+                    this.reset();
+                } else {
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = 'red';
+                    statusMessage.textContent = 'Failed to submit event request.';
+                }
+            } catch (error) {
+                statusMessage.style.display = 'block';
+                statusMessage.style.color = 'red';
+                statusMessage.textContent = 'Error connecting to the CEMS backend Server.';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+
+</body>
+
+</html>

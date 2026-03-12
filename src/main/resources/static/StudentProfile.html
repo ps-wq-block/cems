@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile | College Event Management</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h2 {
+            margin: 0;
+            color: #444;
+            font-size: 22px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .navbar a:hover {
+            color: #6a5acd;
+        }
+
+        /* Container */
+        .container {
+            width: 90%;
+            margin: auto;
+            margin-top: 40px;
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Profile Section */
+        .profile-left {
+            text-align: center;
+        }
+
+        /* Animated Profile Circle */
+        .profile-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #6a5acd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            color: white;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Name under icon */
+        .student-name {
+            margin-top: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Info columns */
+        .info-section {
+            display: flex;
+            gap: 60px;
+        }
+
+        .info-col p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        /* Edit Button */
+        .edit-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            background: #6a5acd;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .edit-btn:hover {
+            background: #5746c5;
+        }
+
+        /* Events */
+        .section-title {
+            margin-top: 45px;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: center;
+        }
+
+        th {
+            background: #6a5acd;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        tr:hover {
+            background: #e9e9ff;
+        }
+
+        /* Cancel button */
+        .cancel-btn {
+            padding: 7px 14px;
+            border: none;
+            border-radius: 6px;
+            background: #ff4d4d;
+            color: white;
+            cursor: pointer;
+        }
+
+        .cancel-btn:hover {
+            background: #e60000;
+        }
+    </style>
+    <script>
+        function cancelEvent(button) {
+            var row = button.parentNode.parentNode; row.remove();
+        }
+
+        async function loadProfile() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                document.getElementById("profileName").innerText = "Guest User (Not Logged In)";
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/auth/users/${userId}`);
+                if (response.ok) {
+                    const user = await response.json();
+
+                    // This assumes the name exists, fallback to localStorage name if DB is empty
+                    document.getElementById("profileName").innerText = user.name || localStorage.getItem("userName") || "Student";
+
+                    // Populate fields if they exist in DB
+                    if (user.rollNumber) document.getElementById("profileRoll").innerText = user.rollNumber;
+                    if (user.email) document.getElementById("profileEmail").innerText = user.email;
+                    if (user.phoneNumber) document.getElementById("profilePhone").innerText = user.phoneNumber;
+                    if (user.department) document.getElementById("profileDept").innerText = user.department;
+                    if (user.course) document.getElementById("profileCourse").innerText = user.course;
+                    if (user.universityYear) document.getElementById("profileYear").innerText = user.universityYear;
+                    if (user.dateOfBirth) document.getElementById("profileDob").innerText = user.dateOfBirth;
+                    if (user.gender) document.getElementById("profileGender").innerText = user.gender;
+                    if (user.universityYear) document.getElementById("profileYear").innerText = user.universityYear;
+
+                } else {
+                    console.error("Failed to load user data from API");
+                }
+            } catch (error) {
+                console.error("Error connecting to backend API", error);
+            }
+        }
+
+        window.onload = loadProfile;
+
+    </script>
+</head>
+
+<body>
+    <div class="navbar">
+        <h2>College Event Management System</h2>
+        <div class="nav-links">
+            <a href="categories.html">Events</a>
+            <a href="StudentProfile.html">Profile</a>
+            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="profile-card"> <!-- LEFT SIDE -->
+            <div class="profile-left">
+                <div class="profile-circle">👤</div>
+                <div class="student-name" id="profileName">Loading...</div>
+
+                <button class="edit-btn">Edit Profile</button>
+
+            </div> <!-- RIGHT SIDE -->
+            <div class="info-section">
+                <div class="info-col">
+                    <p><b>Roll No:</b> <span id="profileRoll">Updating...</span></p>
+                    <p><b>Email:</b> <span id="profileEmail">Updating...</span></p>
+                    <p><b>Phone:</b> <span id="profilePhone">Updating...</span></p>
+                    <p><b>Department:</b> <span id="profileDept">Updating...</span></p>
+                    <p><b>Course:</b> <span id="profileCourse">Updating...</span></p>
+                </div>
+                <div class="info-col">
+                    <p><b>Year:</b> <span id="profileYear">Updating...</span></p>
+                    <p><b>Date of Birth:</b> <span id="profileDob">Updating...</span></p>
+                    <p><b>Gender:</b> <span id="profileGender">Updating...</span></p>
+                    <p><b>Address:</b> <span id="profileAddress">Updating...</span></p>
+                    <p><b>College:</b> M.M. Engineering College</p>
+                </div>
+            </div>
+        </div>
+        <h3 class="section-title">Registered Events</h3>
+        <table>
+            <tr>
+                <th>Event Name</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Coordinator</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            <tr>
+                <td>Hackathon 2026</td>
+                <td>Technical</td>
+                <td>20 April 2026</td>
+                <td>Priya Verma</td>
+                <td>Registered</td>
+                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
+            </tr>
+            <tr>
+                <td>Robotics Challenge</td>
+                <td>Technical</td>
+                <td>22 April 2026</td>
+                <td>Rohit Kumar</td>
+                <td>Registered</td>
+                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
+            </tr>
+            <tr>
+                <td>Football Championship</td>
+                <td>Sports</td>
+                <td>25 April 2026</td>
+                <td>Manoj Verma</td>
+                <td>Registered</td>
+                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
+            </tr>
+            <tr>
+                <td>Debate Competition</td>
+                <td>Literary</td>
+                <td>27 April 2026</td>
+                <td>Ankit Mehta</td>
+                <td>Registered</td>
+                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

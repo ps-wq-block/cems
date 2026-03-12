@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Organizer Profile | College Event Management</title>
+
+<style>
+
+body{
+margin:0;
+padding:0;
+font-family:'Segoe UI', sans-serif;
+background: linear-gradient(135deg,#89f7fe,#fbc2eb);
+}
+
+.navbar{
+background:white;
+padding:15px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.navbar h2{
+margin:0;
+color:#444;
+}
+
+.navbar a{
+text-decoration:none;
+color:#444;
+font-weight:600;
+}
+
+.container{
+width:90%;
+margin:auto;
+margin-top:40px;
+}
+
+.profile-card{
+background:white;
+border-radius:15px;
+padding:35px;
+display:flex;
+align-items:center;
+gap:40px;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+
+.profile-left{
+text-align:center;
+}
+
+.profile-circle{
+width:140px;
+height:140px;
+border-radius:50%;
+background:#6a5acd;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:70px;
+color:white;
+animation: float 3s ease-in-out infinite;
+box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+
+@keyframes float{
+0%{ transform:translateY(0px); }
+50%{ transform:translateY(-10px); }
+100%{ transform:translateY(0px); }
+}
+
+.organizer-name{
+margin-top:12px;
+font-size:22px;
+font-weight:bold;
+color:#333;
+}
+
+.edit-btn{
+margin-top:10px;
+padding:8px 16px;
+border:none;
+background:#6a5acd;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.edit-btn:hover{
+background:#5746c5;
+}
+
+.info-section{
+display:flex;
+gap:60px;
+}
+
+.info-col p{
+margin:8px 0;
+color:#555;
+}
+
+.section-title{
+margin-top:45px;
+margin-bottom:12px;
+color:#333;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+th,td{
+padding:14px;
+text-align:center;
+}
+
+th{
+background:#6a5acd;
+color:white;
+}
+
+tr:nth-child(even){
+background:#f2f2f2;
+}
+
+tr:hover{
+background:#e9e9ff;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+<h2>College Event Management System</h2>
+<a href="#">Logout</a>
+</div>
+
+<div class="container">
+
+<div class="profile-card">
+
+<div class="profile-left">
+
+<div class="profile-circle">👨‍💼</div>
+
+<div class="organizer-name">Rahul Sharma</div>
+
+<a href="OrganizerProfile.html">
+<button class="edit-btn">Edit Profile</button>
+</a>
+
+</div>
+
+<div class="info-section">
+
+<div class="info-col">
+
+<p><b>Organizer ID:</b> ORG102</p>
+<p><b>Email:</b> rahul.sharma@gmail.com</p>
+<p><b>Phone:</b> 9876543210</p>
+<p><b>Department:</b> Cultural Committee</p>
+<p><b>Role:</b> Event Organizer</p>
+
+</div>
+
+<div class="info-col">
+
+<p><b>Experience:</b> 3 Years</p>
+<p><b>Joined:</b> March 2023</p>
+<p><b>College:</b> M.M. Engineering College</p>
+<p><b>Office Address:</b> Admin Block, Room 204, M.M. Engineering College Campus</p>
+
+</div>
+
+</div>
+
+</div>
+
+<h3 class="section-title">Events Organized</h3>
+
+<table>
+
+<tr>
+<th>Event Name</th>
+<th>Category</th>
+<th>Date</th>
+<th>Participants</th>
+<th>Status</th>
+</tr>
+
+<tr>
+<td>Hackathon 2026</td>
+<td>Technical</td>
+<td>20 April 2026</td>
+<td>120</td>
+<td>Active</td>
+</tr>
+
+<tr>
+<td>Robotics Challenge</td>
+<td>Technical</td>
+<td>22 April 2026</td>
+<td>95</td>
+<td>Upcoming</td>
+</tr>
+
+<tr>
+<td>Football Championship</td>
+<td>Sports</td>
+<td>25 April 2026</td>
+<td>60</td>
+<td>Upcoming</td>
+</tr>
+
+<tr>
+<td>Debate Competition</td>
+<td>Literary</td>
+<td>27 April 2026</td>
+<td>45</td>
+<td>Upcoming</td>
+</tr>
+
+</table>
+
+</div>
+
+</body>
+</html>
