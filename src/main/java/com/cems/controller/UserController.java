@@ -1,9 +1,15 @@
 package com.cems.controller;
 
+import com.cems.dto.AuthResponse;
+import com.cems.dto.LoginRequest;
 import com.cems.model.User;
+import com.cems.security.JwtService;
 import com.cems.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -14,9 +20,13 @@ import java.util.Map;
 public class UserController {
 
     private final UserService service;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, AuthenticationManager authenticationManager, JwtService jwtService) {
         this.service = service;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -30,17 +40,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody Map<String, String> credentials) {
-        String email = credentials.get("email");
-        String password = credentials.get("password");
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-        User authenticatedUser = service.authenticateUser(email, password);
+            User user = service.findByEmail(request.getEmail());
+            String token = jwtService.generateToken(user);
 
-        if (authenticatedUser != null) {
-            // Do not send password back to the client
-            authenticatedUser.setPassword(null);
-            return ResponseEntity.ok(authenticatedUser);
-        } else {
+            return ResponseEntity.ok(new AuthResponse(token, user.getRole(), user.getId()));
+        } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         }
     }

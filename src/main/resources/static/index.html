@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +22,7 @@
             padding: 40px;
             width: 380px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
         .login-container h2 {
@@ -49,7 +50,8 @@
             border: none;
             background: #f0f4ff;
             font-size: 14px;
-            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            box-sizing: border-box;
+            /* Ensures padding doesn't affect width */
         }
 
         .login-btn {
@@ -77,9 +79,20 @@
             min-height: 20px;
         }
 
-        .success { color: green; }
-        .error-text { color: red; font-size: 12px; display: block; margin-top: 4px; }
-        .error-border { border: 2px solid red !important; }
+        .success {
+            color: green;
+        }
+
+        .error-text {
+            color: red;
+            font-size: 12px;
+            display: block;
+            margin-top: 4px;
+        }
+
+        .error-border {
+            border: 2px solid red !important;
+        }
 
         .extra-options {
             margin-bottom: 15px;
@@ -93,113 +106,156 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="login-container">
-    <h2>College Event Management</h2>
+    <div class="login-container">
+        <h2>College Event Management</h2>
 
-    <form onsubmit="return loginFunction()">
-        <div class="input-group">
-            <label>Select Role</label>
-            <select id="role">
-                <option value="">-- Select Role --</option>
-                <option value="student">Student</option>
-                <option value="administrator">Administrator</option>
-                <option value="organizer">Organizer</option>
-            </select>
-            <small class="error-text" id="roleError"></small>
-        </div>
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Select Role</label>
+                <select id="role">
+                    <option value="">-- Select Role --</option>
+                    <option value="student">Student</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="organizer">Organizer</option>
+                </select>
+                <small class="error-text" id="roleError"></small>
+            </div>
 
-        <div class="input-group">
-            <label>User ID</label>
-            <input type="email" id="email" placeholder="Enter Email Address">
-            <small class="error-text" id="emailError"></small>
-        </div>
+            <div class="input-group">
+                <label>User ID</label>
+                <input type="email" id="email" placeholder="Enter Email Address">
+                <small class="error-text" id="emailError"></small>
+            </div>
 
-        <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="password" placeholder="Enter Password">
-            <small class="error-text" id="passwordError"></small>
-        </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter Password">
+                <small class="error-text" id="passwordError"></small>
+            </div>
 
-        <div class="extra-options">
-            <a href="ForgotPassword.html">Forgot Password?</a>
-        </div>
+            <div class="extra-options">
+                <a href="ForgotPassword.html">Forgot Password?</a>
+            </div>
 
-        <button type="submit" class="login-btn">Login</button>
+            <button type="submit" class="login-btn">Login</button>
 
-        <div id="message" class="message"></div>
-    </form>
-</div>
+            <div id="message" class="message"></div>
+        </form>
+    </div>
 
-<script>
-function loginFunction() {
-    // 1. Get Elements
-    const role = document.getElementById("role");
-    const email = document.getElementById("email");
-    const password = document.getElementById("password");
-    const message = document.getElementById("message");
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-    const roleError = document.getElementById("roleError");
-    const emailError = document.getElementById("emailError");
-    const passwordError = document.getElementById("passwordError");
+            // 1. Get Elements
+            const role = document.getElementById("role");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const message = document.getElementById("message");
 
-    // 2. Reset Styles & Errors
-    role.classList.remove("error-border");
-    email.classList.remove("error-border");
-    password.classList.remove("error-border");
+            const roleError = document.getElementById("roleError");
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
 
-    roleError.innerHTML = "";
-    emailError.innerHTML = "";
-    passwordError.innerHTML = "";
-    message.innerHTML = "";
+            // 2. Reset Styles & Errors
+            role.classList.remove("error-border");
+            email.classList.remove("error-border");
+            password.classList.remove("error-border");
 
-    let valid = true;
+            roleError.innerHTML = "";
+            emailError.innerHTML = "";
+            passwordError.innerHTML = "";
+            message.innerHTML = "";
 
-    // 3. Validation Logic
-    if (role.value === "") {
-        role.classList.add("error-border");
-        roleError.innerHTML = "Please select a role";
-        valid = false;
-    }
+            let valid = true;
 
-    if (email.value.trim() === "") {
-        email.classList.add("error-border");
-        emailError.innerHTML = "Email is required";
-        valid = false;
-    }
+            // 3. Validation Logic
+            if (role.value === "") {
+                role.classList.add("error-border");
+                roleError.innerHTML = "Please select a role";
+                valid = false;
+            }
 
-    if (password.value === "") {
-        password.classList.add("error-border");
-        passwordError.innerHTML = "Password is required";
-        valid = false;
-    } else {
-        // Password Pattern: 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-        if (!passwordPattern.test(password.value)) {
-            password.classList.add("error-border");
-            passwordError.innerHTML = "Password must be at least 8 characters with uppercase, lowercase, number, and special character.";
-            valid = false;
-        }
-    }
+            if (email.value.trim() === "") {
+                email.classList.add("error-border");
+                emailError.innerHTML = "Email is required";
+                valid = false;
+            }
 
-    // 4. Final Result
-    if (!valid) {
-        return false;
-    } else {
-        // Success: Show message and then redirect
-        message.innerHTML = "Login Successful ✅ Redirecting..."; 
-        message.className = "message success"; 
+            if (password.value === "") {
+                password.classList.add("error-border");
+                passwordError.innerHTML = "Password is required";
+                valid = false;
+            } else {
+                // Password Pattern: 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!passwordPattern.test(password.value)) {
+                    password.classList.add("error-border");
+                    passwordError.innerHTML = "Password must be at least 8 characters with uppercase, lowercase, number, and special character.";
+                    valid = false;
+                }
+            }
 
-        // Redirect to your categories page
-        setTimeout(function() {
-            window.location.href = "categories.html"; 
-        }, 1500);
+            // 4. Final Result
+            if (!valid) {
+                return;
+            }
 
-        return false; // Prevent form from refreshing the page
-    }
-}
-</script>
+            // Authenticate via Backend
+            message.innerHTML = "Authenticating...";
+            message.className = "message";
+
+            const requestBody = {
+                email: email.value.trim(),
+                password: password.value
+            };
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+
+                    // Store JWT and Role locally
+                    localStorage.setItem("jwt", result.token);
+                    localStorage.setItem("role", result.role);
+                    localStorage.setItem("userId", result.userId);
+
+                    message.innerHTML = "Login Successful ✅ Redirecting...";
+                    message.className = "message success";
+
+                    setTimeout(function () {
+                        const userRole = result.role;
+                        if (userRole === 'ORGANIZER') {
+                            window.location.href = "OrganizerDashboard.html";
+                        } else if (userRole === 'ADMIN') {
+                            window.location.href = "AdminDashboard.html";
+                        } else {
+                            window.location.href = "categories.html";
+                        }
+                    }, 1000);
+
+                } else {
+                    message.innerHTML = "❌ Invalid email or password.";
+                    message.className = "message error";
+                }
+            } catch (error) {
+                message.innerHTML = "❌ Could not connect to the server.";
+                message.className = "message error";
+                console.error(error);
+            }
+        });
+    </script>
 
 </body>
+
 </html>

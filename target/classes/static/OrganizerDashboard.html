@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #8ec5a4;
+        }
+
+        .logout {
+            color: #ff6b6b !important;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            width: 300px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #8ec5a4;
+            margin-top: 0;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">CEMS Organizer</div>
+        <div class="nav-links">
+            <a href="OrganizerDashboard.html">Dashboard</a>
+            <a href="CreateEvent.html">Create Event</a>
+            <a href="#" class="logout" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Welcome, Organizer</h1>
+        <div class="card-container">
+            <a href="CreateEvent.html" class="card">
+                <h2>Create New Event</h2>
+                <p>Draft and submit a new campus event for Administrator approval.</p>
+            </a>
+            <a href="#" class="card" style="opacity: 0.6; cursor: not-allowed;">
+                <h2>My Events</h2>
+                <p>View attendee lists and manage active events (Coming Soon).</p>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+
+        // Basic Security Check
+        const role = localStorage.getItem("role");
+        if (role !== "ORGANIZER" && role !== "ADMIN") {
+            alert("Unauthorized Access! Organizer privileges required.");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+
+</html>

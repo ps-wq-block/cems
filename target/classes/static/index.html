@@ -1,243 +1,257 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <title>Assign Faculty Coordinator</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Event Management - Login</title>
     <style>
         body {
-            font-family: Arial;
             margin: 0;
             padding: 0;
-
-            /* Consistent Light mixed background */
-            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        /* Main container */
-
-        .container {
-            width: 520px;
-            margin: 40px auto;
-            background: linear-gradient(135deg, #f8fffd, #eef7f6);
-            padding: 25px;
+        .login-container {
+            background: #ffffff;
+            padding: 40px;
+            width: 380px;
             border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
         }
 
-        /* Heading box */
-
-        .heading {
-            background: linear-gradient(to right, #9ad7cf, #cdb4db);
-            padding: 14px;
-            border-radius: 10px;
+        .login-container h2 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #2b2b2b;
+            margin-bottom: 25px;
+            color: #444;
         }
 
-        /* Labels */
-
-        label {
-            font-weight: bold;
-            color: #2f3e46;
-            display: block;
-            margin-top: 10px;
+        .input-group {
+            margin-bottom: 18px;
         }
 
-        /* Input fields */
+        .input-group label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
 
-        input,
-        select,
-        textarea {
+        .input-group input,
+        .input-group select {
             width: 100%;
             padding: 10px;
             margin-top: 6px;
-            margin-bottom: 16px;
             border-radius: 8px;
-            border: 1px solid #b7d6d2;
-            background: #f4fffc;
+            border: none;
+            background: #f0f4ff;
             font-size: 14px;
             box-sizing: border-box;
+            /* Ensures padding doesn't affect width */
         }
 
-        textarea {
-            height: 80px;
-        }
-
-        /* Buttons layout (Two buttons split the width) */
-
-        .buttons {
-            display: flex;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        /* Equal size buttons */
-
-        .buttons button {
-            flex: 1;
-        }
-
-        /* Buttons styling */
-
-        button {
-            padding: 11px;
+        .login-btn {
+            width: 100%;
+            padding: 12px;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            border-radius: 25px;
+            background: linear-gradient(to right, #36d1dc, #5b86e5);
+            color: white;
+            font-size: 16px;
             cursor: pointer;
             font-weight: bold;
-            color: white;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
-        .notify {
-            background: #a29bfe;
-            /* Soft purple */
-        }
-
-        .assign {
-            background: #8ec5a4;
-            /* Soft green */
-        }
-
-        button:hover {
-            transform: scale(1.03);
+        .login-btn:hover {
             opacity: 0.9;
+            transform: scale(1.02);
         }
 
         .message {
             margin-top: 15px;
-            padding: 10px;
-            border-radius: 5px;
             text-align: center;
             font-weight: bold;
-            display: none;
+            min-height: 20px;
         }
 
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
+        .success {
+            color: green;
         }
 
-        .message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .error-text {
+            color: red;
+            font-size: 12px;
             display: block;
+            margin-top: 4px;
+        }
+
+        .error-border {
+            border: 2px solid red !important;
+        }
+
+        .extra-options {
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .extra-options a {
+            text-decoration: none;
+            font-size: 13px;
+            color: #6a5acd;
         }
     </style>
-
 </head>
 
 <body>
 
-    <div class="container">
+    <div class="login-container">
+        <h2>College Event Management</h2>
 
-        <div class="heading">
-            Assign Faculty Coordinator
-        </div>
-
-        <!-- Added ID to form -->
-        <form id="assignmentForm">
-
-            <label>Select Event</label>
-            <!-- Added ID and Name to inputs -->
-            <select id="event" required>
-                <option value="">Select an event...</option>
-                <option value="Tech Fest 2026">Tech Fest 2026</option>
-                <option value="Sports Meet">Sports Meet</option>
-                <option value="Annual Cultural Gala">Annual Cultural Gala</option>
-            </select>
-
-            <label>Faculty Name</label>
-            <input type="text" id="facultyName" placeholder="Enter full name (e.g., Dr. Jane Doe)" required>
-
-            <label>Faculty / Employee ID</label>
-            <input type="text" id="facultyId" placeholder="Enter faculty ID" required>
-
-            <label>Department</label>
-            <input type="text" id="department" placeholder="e.g. Information Technology" required>
-
-            <label>Contact Number</label>
-            <input type="tel" id="contactNumber" placeholder="Enter mobile number" required>
-
-            <label>Email Address</label>
-            <input type="email" id="emailAddress" placeholder="Enter faculty email address" required>
-
-            <label>Assigned Responsibilities</label>
-            <textarea id="responsibilities" placeholder="Specify the duties for this faculty member..."
-                required></textarea>
-
-            <div class="buttons">
-
-                <button type="button" class="notify" onclick="alert('Notification simulated!')">Notify Faculty</button>
-
-                <button type="submit" class="assign">Confirm Assignment</button>
-
+        <form id="loginForm">
+            <div class="input-group">
+                <label>Select Role</label>
+                <select id="role">
+                    <option value="">-- Select Role --</option>
+                    <option value="student">Student</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="organizer">Organizer</option>
+                </select>
+                <small class="error-text" id="roleError"></small>
             </div>
 
-            <div id="statusMessage" class="message"></div>
+            <div class="input-group">
+                <label>User ID</label>
+                <input type="email" id="email" placeholder="Enter Email Address">
+                <small class="error-text" id="emailError"></small>
+            </div>
 
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="Enter Password">
+                <small class="error-text" id="passwordError"></small>
+            </div>
+
+            <div class="extra-options">
+                <a href="ForgotPassword.html">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Login</button>
+
+            <div id="message" class="message"></div>
         </form>
-
     </div>
 
     <script>
-        document.getElementById('assignmentForm').addEventListener('submit', async function (e) {
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            // In this repo, index.html is acting as a demo Faculty Assignment form
-            // Let's repurpose this specific script section to handle a "Login Simulation" 
-            // or just let the user know we would normally login here in a real app,
-            // but right now index.html is just an Assignment Form in this codebase.
+            // 1. Get Elements
+            const role = document.getElementById("role");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const message = document.getElementById("message");
 
-            // Gather form data
-            const data = {
-                event: document.getElementById('event').value,
-                facultyName: document.getElementById('facultyName').value,
-                facultyId: document.getElementById('facultyId').value,
-                department: document.getElementById('department').value,
-                contactNumber: document.getElementById('contactNumber').value,
-                emailAddress: document.getElementById('emailAddress').value,
-                responsibilities: document.getElementById('responsibilities').value
+            const roleError = document.getElementById("roleError");
+            const emailError = document.getElementById("emailError");
+            const passwordError = document.getElementById("passwordError");
+
+            // 2. Reset Styles & Errors
+            role.classList.remove("error-border");
+            email.classList.remove("error-border");
+            password.classList.remove("error-border");
+
+            roleError.innerHTML = "";
+            emailError.innerHTML = "";
+            passwordError.innerHTML = "";
+            message.innerHTML = "";
+
+            let valid = true;
+
+            // 3. Validation Logic
+            if (role.value === "") {
+                role.classList.add("error-border");
+                roleError.innerHTML = "Please select a role";
+                valid = false;
+            }
+
+            if (email.value.trim() === "") {
+                email.classList.add("error-border");
+                emailError.innerHTML = "Email is required";
+                valid = false;
+            }
+
+            if (password.value === "") {
+                password.classList.add("error-border");
+                passwordError.innerHTML = "Password is required";
+                valid = false;
+            } else {
+                // Password Pattern: 8 chars, 1 Upper, 1 Lower, 1 Number, 1 Special
+                const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!passwordPattern.test(password.value)) {
+                    password.classList.add("error-border");
+                    passwordError.innerHTML = "Password must be at least 8 characters with uppercase, lowercase, number, and special character.";
+                    valid = false;
+                }
+            }
+
+            // 4. Final Result
+            if (!valid) {
+                return;
+            }
+
+            // Authenticate via Backend
+            message.innerHTML = "Authenticating...";
+            message.className = "message";
+
+            const requestBody = {
+                email: email.value.trim(),
+                password: password.value
             };
 
-            const statusMessage = document.getElementById('statusMessage');
-
             try {
-                const response = await fetch('http://localhost:8080/api/assignments', { // Reaching our Spring Boot backend
+                const response = await fetch('http://localhost:8080/api/auth/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(requestBody)
                 });
 
                 if (response.ok) {
                     const result = await response.json();
-                    statusMessage.className = 'message success';
-                    statusMessage.textContent = 'Assignment successfully saved with ID: ' + result.id;
 
-                    // SIMULATED LOGIN FOR PROFILES:
-                    // Pretend this faculty is now a logged in "Student" for demo purposes of Phase 3
-                    localStorage.setItem("userId", "1");
-                    localStorage.setItem("userName", result.facultyName);
+                    // Store JWT and Role locally
+                    localStorage.setItem("jwt", result.token);
+                    localStorage.setItem("role", result.role);
+                    localStorage.setItem("userId", result.userId);
 
-                    this.reset(); // clear form
+                    message.innerHTML = "Login Successful ✅ Redirecting...";
+                    message.className = "message success";
+
+                    setTimeout(function () {
+                        const userRole = result.role;
+                        if (userRole === 'ORGANIZER') {
+                            window.location.href = "OrganizerDashboard.html";
+                        } else if (userRole === 'ADMIN') {
+                            window.location.href = "AdminDashboard.html";
+                        } else {
+                            window.location.href = "categories.html";
+                        }
+                    }, 1000);
+
                 } else {
-                    statusMessage.className = 'message error';
-                    statusMessage.textContent = 'Failed to save assignment. Status: ' + response.status;
+                    message.innerHTML = "❌ Invalid email or password.";
+                    message.className = "message error";
                 }
             } catch (error) {
-                statusMessage.className = 'message error';
-                statusMessage.textContent = 'Error connecting to the backend.';
-                console.error('Error:', error);
+                message.innerHTML = "❌ Could not connect to the server.";
+                message.className = "message error";
+                console.error(error);
             }
         });
     </script>
