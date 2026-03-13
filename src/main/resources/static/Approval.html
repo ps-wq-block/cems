@@ -217,7 +217,7 @@
                             event.status === "Rejected" ? "reject" : "pending";
 
                         let cardHTML = `
-                <div class="event-card" onclick="openEvent(${event.id}, '${event.name}', '${event.category}', '${event.status}', '${event.adminComments || ''}')">
+                <div class="event-card" onclick="openEvent('${event.id}', '${event.name}', '${event.category}', '${event.status}', '${event.adminComments || ''}')">
                     <div>
                         <strong>${event.name}</strong><br>
                         Category: ${event.category}
