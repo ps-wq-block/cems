@@ -160,17 +160,7 @@
             <div class="form-group">
                 <label>Event Category</label>
                 <select id="category" required>
-                    <option value="">Select Event Category</option>
-                    <option value="Seminars">Seminars</option>
-                    <option value="Workshops">Workshops</option>
-                    <option value="Technical events">Technical events</option>
-                    <option value="Sports events">Sports events</option>
-                    <option value="Cultural events">Cultural events</option>
-                    <option value="Fine arts">Fine arts</option>
-                    <option value="Guest lectures">Guest lectures</option>
-                    <option value="Literary events">Literary events</option>
-                    <option value="Social and community">Social and community</option>
-                    <option value="Health and wellness">Health and wellness</option>
+                    <option value="">Loading categories...</option>
                 </select>
             </div>
 
@@ -194,54 +184,84 @@
     </div>
 
     <script>
-        const events = {
-            "Seminars": ["AI & Future Technology", "Cyber Security Awareness"],
-            "Workshops": ["Web Development Workshop", "Android App Development"],
-            "Technical events": ["Coding Competition", "Hackathon 2026"],
-            "Sports events": ["Cricket Tournament", "Football Championship"],
-            "Cultural events": ["Annual Dance Competition", "Music Night"],
-            "Fine arts": ["Painting Competition", "Sketching Contest"],
-            "Guest lectures": ["AI & Future Technology", "Entrepreneurship and Startups"],
-            "Literary events": ["Debate Competition", "Poetry Recitation"],
-            "Social and community": ["Tree Plantation Drive", "Blood Donation Camp"],
-            "Health and wellness": ["Yoga and Meditation Session", "Free Health Check-up"],
-        };
+        let approvedEvents = [];
+        let eventsByCategory = {};
 
         const categoryDropdown = document.getElementById("category");
         const eventDropdown = document.getElementById("event");
 
-        // --- LOGIC 1: Manually changing the dropdown ---
+        // Fetch approved events from backend and build dropdowns
+        async function loadEventsForRegistration() {
+            try {
+                const response = await fetch('/api/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const allEvents = await response.json();
+                    // Only show approved events
+                    approvedEvents = allEvents.filter(e => e.status === "Approved");
+
+                    // Group events by category
+                    eventsByCategory = {};
+                    approvedEvents.forEach(event => {
+                        const cat = event.category || "Uncategorized";
+                        if (!eventsByCategory[cat]) {
+                            eventsByCategory[cat] = [];
+                        }
+                        eventsByCategory[cat].push(event.name);
+                    });
+
+                    // Build the category dropdown
+                    categoryDropdown.innerHTML = '<option value="">Select Event Category</option>';
+                    Object.keys(eventsByCategory).sort().forEach(cat => {
+                        let option = document.createElement("option");
+                        option.value = cat;
+                        option.text = cat;
+                        categoryDropdown.add(option);
+                    });
+
+                    // Auto-fill from URL params (when coming from categories.html)
+                    const params = new URLSearchParams(window.location.search);
+                    const catParam = params.get('cat');
+                    const eventParam = params.get('event');
+
+                    if (catParam) {
+                        categoryDropdown.value = catParam;
+                        categoryDropdown.dispatchEvent(new Event('change'));
+
+                        if (eventParam) {
+                            setTimeout(() => { eventDropdown.value = eventParam; }, 100);
+                        }
+                    }
+                } else {
+                    categoryDropdown.innerHTML = '<option value="">Failed to load categories</option>';
+                }
+            } catch (error) {
+                console.error("Error loading events:", error);
+                categoryDropdown.innerHTML = '<option value="">Error loading categories</option>';
+            }
+        }
+
+        // When category changes, populate event dropdown
         categoryDropdown.addEventListener("change", function () {
             let category = this.value;
-            eventDropdown.innerHTML = "<option value=''>Select Event</option>";
+            eventDropdown.innerHTML = '<option value="">Select Event</option>';
 
-            if (category in events) {
-                events[category].forEach(function (e) {
+            if (category && eventsByCategory[category]) {
+                eventsByCategory[category].forEach(function (eventName) {
                     let option = document.createElement("option");
-                    option.value = e;
-                    option.text = e;
+                    option.value = eventName;
+                    option.text = eventName;
                     eventDropdown.add(option);
                 });
             }
         });
 
-        // --- LOGIC 2: THE MAGIC AUTO-FILL ---
-        window.onload = function () {
-            const params = new URLSearchParams(window.location.search);
-            const catParam = params.get('cat');
-            const eventParam = params.get('event');
+        // Load events on page load
+        window.onload = loadEventsForRegistration;
 
-            if (catParam) {
-                categoryDropdown.value = catParam;
-                categoryDropdown.dispatchEvent(new Event('change'));
-
-                if (eventParam) {
-                    eventDropdown.value = eventParam;
-                }
-            }
-        };
-
-        // --- LOGIC 3: Form Submission ---
+        // --- Form Submission ---
         document.getElementById("registerForm").addEventListener("submit", async function (e) {
             e.preventDefault();
 
