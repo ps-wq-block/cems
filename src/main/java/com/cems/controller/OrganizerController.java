@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -53,5 +54,15 @@ public class OrganizerController {
         }
 
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<List<com.cems.model.Event>> getMyEvents() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            return ResponseEntity.ok(eventRepository.findByOrganizerEmail(userDetails.getUsername()));
+        }
+        return ResponseEntity.status(403).build();
     }
 }

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Events - Organizer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #8ec5a4;
+        }
+
+        .logout {
+            color: #ff6b6b !important;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+
+        .event-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .event-info h3 {
+            margin: 0 0 8px 0;
+            color: #8ec5a4;
+            font-size: 22px;
+        }
+
+        .event-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .approved {
+            background: linear-gradient(90deg, #56ab2f, #a8e063);
+        }
+
+        .pending {
+            background: linear-gradient(90deg, #f6b73c, #fcd34d);
+            color: #854d0e;
+            text-shadow: none;
+        }
+
+        .rejected {
+            background: linear-gradient(90deg, #ff416c, #ff4b2b);
+        }
+
+        .loader {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            margin-top: 50px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #666;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="logo">CEMS Organizer</div>
+        <div class="nav-links">
+            <a href="OrganizerDashboard.html">Dashboard</a>
+            <a href="MyEvents.html">My Events</a>
+            <a href="CreateEvent.html">Create Event</a>
+            <a href="#" class="logout" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1 class="heading">Events Submitted By You</h1>
+        <div id="eventsList" class="loader">Loading your events...</div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+
+        async function fetchMyEvents() {
+            const container = document.getElementById("eventsList");
+
+            try {
+                const response = await fetch('/api/organizer/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const events = await response.json();
+
+                    if (events.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty">
+                                <h2>No Events Found</h2>
+                                <p>You haven't submitted any event requests yet.</p>
+                                <br>
+                                <a href="CreateEvent.html" style="background:#8ec5a4; color:white; padding:10px 20px; border-radius:20px; text-decoration:none; font-weight:bold;">Create Your First Event</a>
+                            </div>`;
+                        return;
+                    }
+
+                    container.innerHTML = "";
+                    events.forEach(event => {
+                        let badgeClass = "pending";
+                        if (event.status === "Approved") badgeClass = "approved";
+                        else if (event.status === "Rejected") badgeClass = "rejected";
+
+                        let feedbackHtml = event.adminComments ? `<p><strong>Admin Note:</strong> <span style="color:#d97706">${event.adminComments}</span></p>` : '';
+
+                        let html = `
+                            <div class="event-card">
+                                <div class="event-info">
+                                    <h3>${event.name}</h3>
+                                    <p><strong>Category:</strong> ${event.category} &nbsp;|&nbsp; <strong>Date:</strong> ${event.eventDate || 'TBD'} &nbsp;|&nbsp; <strong>Time:</strong> ${event.eventTime || 'TBD'}</p>
+                                    <p><strong>Venue:</strong> ${event.venue || 'TBD'} &nbsp;|&nbsp; <strong>Capacity:</strong> ${event.maxParticipants || 'Unlimited'}</p>
+                                    ${feedbackHtml}
+                                </div>
+                                <div class="status-badge ${badgeClass}">${event.status || 'Pending'}</div>
+                            </div>
+                        `;
+                        container.innerHTML += html;
+                    });
+                } else {
+                    container.innerHTML = "<p style='color:red; text-align:center;'>Authorization Failed. Try logging in again.</p>";
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                container.innerHTML = "<p style='color:red; text-align:center;'>Cannot connect to the backend server.</p>";
+            }
+        }
+
+        window.onload = fetchMyEvents;
+    </script>
+</body>
+
+</html>

@@ -10,5 +10,7 @@ import java.util.List;
 public interface EventRepository extends MongoRepository<Event, String> {
     List<Event> findByStatus(String status);
 
+    List<Event> findByOrganizerEmail(String organizerEmail);
+
     long countByOrganizerEmail(String organizerEmail);
 }

@@ -32,6 +32,10 @@ public class EventService {
         return repository.findByStatus(status);
     }
 
+    public List<Event> getEventsByOrganizerEmail(String email) {
+        return repository.findByOrganizerEmail(email);
+    }
+
     public Event updateEventStatus(String id, String status, String adminComments) {
         return repository.findById(id).map(event -> {
             event.setStatus(status);
