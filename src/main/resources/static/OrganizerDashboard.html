@@ -135,7 +135,7 @@
 
         async function fetchOrganizerStats() {
             try {
-                const response = await fetch('http://localhost:8080/api/organizer/stats', {
+                const response = await fetch('/api/organizer/stats', {
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });
                 if (response.ok) {

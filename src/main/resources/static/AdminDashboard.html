@@ -135,7 +135,7 @@
 
         async function fetchAdminStats() {
             try {
-                const response = await fetch('http://localhost:8080/api/admin/stats', {
+                const response = await fetch('/api/admin/stats', {
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });
                 if (response.ok) {

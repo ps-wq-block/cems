@@ -243,7 +243,7 @@
             try {
                 // 2. Fetch the specific event from our Spring Boot Backend API
                 // Assuming you'll create a GET /api/events/{id} endpoint shortly if it doesn't exist
-                const response = await fetch(`http://localhost:8080/api/events/${eventId}`);
+                const response = await fetch(`/api/events/${eventId}`);
 
                 if (response.ok) {
                     const event = await response.json();

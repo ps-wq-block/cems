@@ -340,7 +340,7 @@
 
         async function fetchAllEvents() {
             try {
-                const response = await fetch('http://localhost:8080/api/events', {
+                const response = await fetch('/api/events', {
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('jwt')
                     }

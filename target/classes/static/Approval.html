@@ -153,9 +153,8 @@
     <div class="navbar">
         <h2>Event Admin Dashboard</h2>
         <div class="nav-links">
+            <a href="AdminDashboard.html">Dashboard</a>
             <a href="Approval.html">Approvals</a>
-            <a href="CreateEvent.html">Create Event</a>
-            <a href="categories.html">View Events</a>
             <a href="index.html" onclick="localStorage.clear()">Logout</a>
         </div>
     </div>
@@ -200,7 +199,9 @@
             eventListDiv.innerHTML = "<p>Loading events...</p>";
 
             try {
-                const response = await fetch('http://localhost:8080/api/events');
+                const response = await fetch('/api/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
                 if (response.ok) {
                     const events = await response.json();
 
@@ -280,7 +281,7 @@
             const comments = document.getElementById("commentBox").value;
 
             try {
-                const response = await fetch(`http://localhost:8080/api/events/${currentEventId}/status`, {
+                const response = await fetch(`/api/events/${currentEventId}/status`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',

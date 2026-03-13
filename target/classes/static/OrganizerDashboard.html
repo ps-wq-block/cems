@@ -109,10 +109,14 @@
                 <h2>Create New Event</h2>
                 <p>Draft and submit a new campus event for Administrator approval.</p>
             </a>
-            <a href="#" class="card" style="opacity: 0.6; cursor: not-allowed;">
-                <h2>My Events</h2>
-                <p>View attendee lists and manage active events (Coming Soon).</p>
-            </a>
+            <div class="card">
+                <h2>My Events (<span id="myEventsCount">...</span>)</h2>
+                <p>Total events submitted by you.</p>
+            </div>
+            <div class="card">
+                <h2>Total Registrations (<span id="registrationsCount">...</span>)</h2>
+                <p>Total student registrations globally.</p>
+            </div>
         </div>
     </div>
 
@@ -128,6 +132,23 @@
             alert("Unauthorized Access! Organizer privileges required.");
             window.location.href = "index.html";
         }
+
+        async function fetchOrganizerStats() {
+            try {
+                const response = await fetch('/api/organizer/stats', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('myEventsCount').innerText = stats.myEvents;
+                    document.getElementById('registrationsCount').innerText = stats.totalRegistrations;
+                }
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        }
+
+        fetchOrganizerStats();
     </script>
 </body>
 
