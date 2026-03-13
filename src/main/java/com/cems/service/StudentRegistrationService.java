@@ -27,4 +27,8 @@ public class StudentRegistrationService {
     public List<StudentRegistration> getRegistrationsByEvent(String eventName) {
         return repository.findByEventName(eventName);
     }
+
+    public List<StudentRegistration> getRegistrationsByEmail(String email) {
+        return repository.findByEmail(email);
+    }
 }

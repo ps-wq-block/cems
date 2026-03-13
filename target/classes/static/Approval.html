@@ -171,6 +171,14 @@
 
             <p><strong>Event Name:</strong> <span id="eventName"></span></p>
             <p><strong>Category:</strong> <span id="eventCategory"></span></p>
+            <p><strong>Organizer:</strong> <span id="eventOrganizer"></span></p>
+            <p><strong>Date:</strong> <span id="eventDate"></span></p>
+            <p><strong>Time:</strong> <span id="eventTime"></span></p>
+            <p><strong>Venue:</strong> <span id="eventVenue"></span></p>
+            <p><strong>Description:</strong> <span id="eventDescription"></span></p>
+            <p><strong>Max Participants:</strong> <span id="eventMaxParticipants"></span></p>
+            <p><strong>Registration Deadline:</strong> <span id="eventDeadline"></span></p>
+            <p><strong>Rules:</strong> <span id="eventRules"></span></p>
             <p><strong>Status:</strong> <span id="eventStatus"></span></p>
 
             <label><strong>Admin Comments</strong></label>
@@ -192,6 +200,7 @@
     <script>
 
         let currentEventId = null;
+        let eventsData = []; // Store full event objects
 
         // --- LOAD EVENTS DYNAMICALLY ---
         async function loadEvents() {
@@ -204,6 +213,7 @@
                 });
                 if (response.ok) {
                     const events = await response.json();
+                    eventsData = events; // Store full event data
 
                     if (events.length === 0) {
                         eventListDiv.innerHTML = "<p>No events found.</p>";
@@ -217,7 +227,7 @@
                             event.status === "Rejected" ? "reject" : "pending";
 
                         let cardHTML = `
-                <div class="event-card" onclick="openEvent('${event.id}', '${event.name}', '${event.category}', '${event.status}', '${event.adminComments || ''}')">
+                <div class="event-card" onclick="openEvent('${event.id}')">
                     <div>
                         <strong>${event.name}</strong><br>
                         Category: ${event.category}
@@ -239,23 +249,34 @@
         // Ensure events load when page opens
         window.onload = loadEvents;
 
-        function openEvent(id, name, category, status, comments) {
+        function openEvent(id) {
+            const event = eventsData.find(e => e.id === id);
+            if (!event) return;
+
             currentEventId = id;
             document.getElementById("eventList").style.display = "none";
             document.getElementById("eventDetail").style.display = "block";
 
-            document.getElementById("eventName").innerText = name;
-            document.getElementById("eventCategory").innerText = category;
-            document.getElementById("eventStatus").innerText = status;
+            document.getElementById("eventName").innerText = event.name || '-';
+            document.getElementById("eventCategory").innerText = event.category || '-';
+            document.getElementById("eventOrganizer").innerText = event.organizerEmail || '-';
+            document.getElementById("eventDate").innerText = event.eventDate || '-';
+            document.getElementById("eventTime").innerText = event.eventTime || '-';
+            document.getElementById("eventVenue").innerText = event.venue || '-';
+            document.getElementById("eventDescription").innerText = event.description || '-';
+            document.getElementById("eventMaxParticipants").innerText = event.maxParticipants || '-';
+            document.getElementById("eventDeadline").innerText = event.registrationDeadline || '-';
+            document.getElementById("eventRules").innerText = event.rules || '-';
+            document.getElementById("eventStatus").innerText = event.status || '-';
 
             let approveBtn = document.getElementById("approveBtn");
             let rejectBtn = document.getElementById("rejectBtn");
             let commentBox = document.getElementById("commentBox");
 
-            commentBox.value = comments === 'null' ? '' : comments;
+            commentBox.value = event.adminComments || '';
 
-            if (status === "Approved" || status === "Rejected") {
-                approveBtn.innerText = status;
+            if (event.status === "Approved" || event.status === "Rejected") {
+                approveBtn.innerText = event.status;
                 approveBtn.disabled = true;
                 rejectBtn.style.display = "none";
                 commentBox.disabled = true;

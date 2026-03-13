@@ -32,4 +32,9 @@ public class StudentRegistrationController {
     public ResponseEntity<List<StudentRegistration>> getRegistrationsByEvent(@PathVariable String eventName) {
         return ResponseEntity.ok(service.getRegistrationsByEvent(eventName));
     }
+
+    @GetMapping("/student/{email}")
+    public ResponseEntity<List<StudentRegistration>> getRegistrationsByStudent(@PathVariable String email) {
+        return ResponseEntity.ok(service.getRegistrationsByEmail(email));
+    }
 }

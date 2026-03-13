@@ -180,10 +180,6 @@
         }
     </style>
     <script>
-        function cancelEvent(button) {
-            var row = button.parentNode.parentNode; row.remove();
-        }
-
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
             if (!userId) {
@@ -214,11 +210,52 @@
                     if (user.address) document.getElementById("profileAddress").innerText = user.address;
                     if (user.college) document.getElementById("profileCollege").innerText = user.college;
 
+                    // Load registered events using the student's email
+                    if (user.email) {
+                        loadRegisteredEvents(user.email);
+                    }
+
                 } else {
                     console.error("Failed to load user data from API");
                 }
             } catch (error) {
                 console.error("Error connecting to backend API", error);
+            }
+        }
+
+        async function loadRegisteredEvents(email) {
+            const tbody = document.getElementById("registeredEventsBody");
+            try {
+                const response = await fetch(`/api/registrations/student/${encodeURIComponent(email)}`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const registrations = await response.json();
+
+                    if (registrations.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+                    registrations.forEach(reg => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${reg.eventName || '-'}</td>
+                            <td>${reg.category || '-'}</td>
+                            <td>${reg.rollNumber || '-'}</td>
+                            <td>${reg.course || '-'}</td>
+                            <td style="color: green; font-weight: 600;">Registered</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error loading registrations:", error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
             }
         }
 
@@ -264,46 +301,20 @@
         </div>
         <h3 class="section-title">Registered Events</h3>
         <table>
-            <tr>
-                <th>Event Name</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Coordinator</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td>Hackathon 2026</td>
-                <td>Technical</td>
-                <td>20 April 2026</td>
-                <td>Priya Verma</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Robotics Challenge</td>
-                <td>Technical</td>
-                <td>22 April 2026</td>
-                <td>Rohit Kumar</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Football Championship</td>
-                <td>Sports</td>
-                <td>25 April 2026</td>
-                <td>Manoj Verma</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Debate Competition</td>
-                <td>Literary</td>
-                <td>27 April 2026</td>
-                <td>Ankit Mehta</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Roll Number</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="registeredEventsBody">
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#888;">Loading registrations...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 

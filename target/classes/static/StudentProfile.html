@@ -180,10 +180,6 @@
         }
     </style>
     <script>
-        function cancelEvent(button) {
-            var row = button.parentNode.parentNode; row.remove();
-        }
-
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
             if (!userId) {
@@ -197,6 +193,7 @@
                 });
                 if (response.ok) {
                     const user = await response.json();
+                    currentUser = user; // Store for edit modal
 
                     // This assumes the name exists, fallback to localStorage name if DB is empty
                     document.getElementById("profileName").innerText = user.name || localStorage.getItem("userName") || "Student";
@@ -210,13 +207,55 @@
                     if (user.universityYear) document.getElementById("profileYear").innerText = user.universityYear;
                     if (user.dateOfBirth) document.getElementById("profileDob").innerText = user.dateOfBirth;
                     if (user.gender) document.getElementById("profileGender").innerText = user.gender;
-                    if (user.universityYear) document.getElementById("profileYear").innerText = user.universityYear;
+                    if (user.address) document.getElementById("profileAddress").innerText = user.address;
+                    if (user.college) document.getElementById("profileCollege").innerText = user.college;
+
+                    // Load registered events using the student's email
+                    if (user.email) {
+                        loadRegisteredEvents(user.email);
+                    }
 
                 } else {
                     console.error("Failed to load user data from API");
                 }
             } catch (error) {
                 console.error("Error connecting to backend API", error);
+            }
+        }
+
+        async function loadRegisteredEvents(email) {
+            const tbody = document.getElementById("registeredEventsBody");
+            try {
+                const response = await fetch(`/api/registrations/student/${encodeURIComponent(email)}`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const registrations = await response.json();
+
+                    if (registrations.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+                    registrations.forEach(reg => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${reg.eventName || '-'}</td>
+                            <td>${reg.category || '-'}</td>
+                            <td>${reg.rollNumber || '-'}</td>
+                            <td>${reg.course || '-'}</td>
+                            <td style="color: green; font-weight: 600;">Registered</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error loading registrations:", error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
             }
         }
 
@@ -240,7 +279,7 @@
                 <div class="profile-circle">👤</div>
                 <div class="student-name" id="profileName">Loading...</div>
 
-                <button class="edit-btn">Edit Profile</button>
+                <button class="edit-btn" onclick="openEditModal()">Edit Profile</button>
 
             </div> <!-- RIGHT SIDE -->
             <div class="info-section">
@@ -256,54 +295,160 @@
                     <p><b>Date of Birth:</b> <span id="profileDob">Updating...</span></p>
                     <p><b>Gender:</b> <span id="profileGender">Updating...</span></p>
                     <p><b>Address:</b> <span id="profileAddress">Updating...</span></p>
-                    <p><b>College:</b> M.M. Engineering College</p>
+                    <p><b>College:</b> <span id="profileCollege">Updating...</span></p>
                 </div>
             </div>
         </div>
         <h3 class="section-title">Registered Events</h3>
         <table>
-            <tr>
-                <th>Event Name</th>
-                <th>Category</th>
-                <th>Date</th>
-                <th>Coordinator</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-            <tr>
-                <td>Hackathon 2026</td>
-                <td>Technical</td>
-                <td>20 April 2026</td>
-                <td>Priya Verma</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Robotics Challenge</td>
-                <td>Technical</td>
-                <td>22 April 2026</td>
-                <td>Rohit Kumar</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Football Championship</td>
-                <td>Sports</td>
-                <td>25 April 2026</td>
-                <td>Manoj Verma</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
-            <tr>
-                <td>Debate Competition</td>
-                <td>Literary</td>
-                <td>27 April 2026</td>
-                <td>Ankit Mehta</td>
-                <td>Registered</td>
-                <td><button class="cancel-btn" onclick="cancelEvent(this)">Cancel</button></td>
-            </tr>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Roll Number</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="registeredEventsBody">
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#888;">Loading registrations...</td>
+                </tr>
+            </tbody>
         </table>
     </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div
+            style="background:white; padding:35px; width:450px; max-width:90%; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;">
+            <div
+                style="background:#6a5acd; padding:12px; border-radius:10px; text-align:center; font-size:20px; font-weight:bold; margin-bottom:20px; color:white;">
+                Edit Profile</div>
+            <form id="editForm">
+                <label style="font-weight:600; font-size:14px;">Full Name</label>
+                <input type="text" id="editName"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Phone Number</label>
+                <input type="text" id="editPhone"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Roll Number</label>
+                <input type="text" id="editRoll"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Department</label>
+                <input type="text" id="editDept"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Course</label>
+                <input type="text" id="editCourse"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Year</label>
+                <input type="text" id="editYear"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Date of Birth</label>
+                <input type="date" id="editDob"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">Gender</label>
+                <select id="editGender"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+                    <option value="">-- Select --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label style="font-weight:600; font-size:14px;">Address</label>
+                <input type="text" id="editAddress"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <label style="font-weight:600; font-size:14px;">College</label>
+                <input type="text" id="editCollege"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+
+                <div style="display:flex; gap:12px; margin-top:10px;">
+                    <button type="submit"
+                        style="flex:1; padding:12px; background:#4CAF50; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Save
+                        Changes</button>
+                    <button type="button" onclick="closeEditModal()"
+                        style="flex:1; padding:12px; background:#ff4d4d; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function openEditModal() {
+            if (!currentUser) { alert("Profile not loaded yet."); return; }
+            document.getElementById("editName").value = currentUser.name || '';
+            document.getElementById("editPhone").value = currentUser.phoneNumber || '';
+            document.getElementById("editRoll").value = currentUser.rollNumber || '';
+            document.getElementById("editDept").value = currentUser.department || '';
+            document.getElementById("editCourse").value = currentUser.course || '';
+            document.getElementById("editYear").value = currentUser.universityYear || '';
+            document.getElementById("editDob").value = currentUser.dateOfBirth || '';
+            document.getElementById("editGender").value = currentUser.gender || '';
+            document.getElementById("editAddress").value = currentUser.address || '';
+            document.getElementById("editCollege").value = currentUser.college || '';
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        document.getElementById("editForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const userId = localStorage.getItem("userId");
+            const updatedData = {
+                name: document.getElementById("editName").value,
+                phoneNumber: document.getElementById("editPhone").value,
+                rollNumber: document.getElementById("editRoll").value,
+                department: document.getElementById("editDept").value,
+                course: document.getElementById("editCourse").value,
+                universityYear: document.getElementById("editYear").value,
+                dateOfBirth: document.getElementById("editDob").value,
+                gender: document.getElementById("editGender").value,
+                address: document.getElementById("editAddress").value,
+                college: document.getElementById("editCollege").value
+            };
+
+            try {
+                const response = await fetch(`/api/auth/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (response.ok) {
+                    alert("Profile updated successfully!");
+                    closeEditModal();
+                    loadProfile(); // Refresh profile data
+                } else {
+                    alert("Failed to update profile.");
+                }
+            } catch (error) {
+                alert("Error connecting to the server.");
+                console.error(error);
+            }
+        });
+
+        // Close modal if clicking outside
+        document.getElementById("editModal").addEventListener("click", function (e) {
+            if (e.target === this) closeEditModal();
+        });
+    </script>
 </body>
 
 </html>
