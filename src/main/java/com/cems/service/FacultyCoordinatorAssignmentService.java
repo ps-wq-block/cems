@@ -24,11 +24,11 @@ public class FacultyCoordinatorAssignmentService {
         return repository.findAll();
     }
 
-    public FacultyCoordinatorAssignment getAssignmentById(Long id) {
+    public FacultyCoordinatorAssignment getAssignmentById(String id) {
         return repository.findById(id).orElse(null);
     }
 
-    public FacultyCoordinatorAssignment updateAssignment(Long id, FacultyCoordinatorAssignment updatedAssignment) {
+    public FacultyCoordinatorAssignment updateAssignment(String id, FacultyCoordinatorAssignment updatedAssignment) {
         return repository.findById(id).map(assignment -> {
             assignment.setEvent(updatedAssignment.getEvent());
             assignment.setFacultyName(updatedAssignment.getFacultyName());
@@ -41,7 +41,7 @@ public class FacultyCoordinatorAssignmentService {
         }).orElse(null);
     }
 
-    public boolean deleteAssignment(Long id) {
+    public boolean deleteAssignment(String id) {
         return repository.findById(id).map(assignment -> {
             repository.delete(assignment);
             return true;

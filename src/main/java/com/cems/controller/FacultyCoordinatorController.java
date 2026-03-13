@@ -31,7 +31,7 @@ public class FacultyCoordinatorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<FacultyCoordinatorAssignment> getAssignmentById(@PathVariable Long id) {
+    public ResponseEntity<FacultyCoordinatorAssignment> getAssignmentById(@PathVariable String id) {
         FacultyCoordinatorAssignment assignment = service.getAssignmentById(id);
         if (assignment != null) {
             return ResponseEntity.ok(assignment);
@@ -42,7 +42,7 @@ public class FacultyCoordinatorController {
 
     @PutMapping("/{id}")
     public ResponseEntity<FacultyCoordinatorAssignment> updateAssignment(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody FacultyCoordinatorAssignment assignment) {
         FacultyCoordinatorAssignment updatedAssignment = service.updateAssignment(id, assignment);
         if (updatedAssignment != null) {
@@ -53,7 +53,7 @@ public class FacultyCoordinatorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAssignment(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAssignment(@PathVariable String id) {
         if (service.deleteAssignment(id)) {
             return ResponseEntity.noContent().build();
         } else {

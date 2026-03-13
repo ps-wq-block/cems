@@ -1,23 +1,23 @@
 package com.cems.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
-@Table(name = "users")
+@Document(collection = "users")
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Indexed(unique = true)
     private String email;
 
     private String password; // In a real app, this should be hashed
@@ -39,11 +39,11 @@ public class User implements UserDetails {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

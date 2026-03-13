@@ -1,14 +1,13 @@
 package com.cems.model;
 
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "faculty_coordinator_assignments")
+@Document(collection = "faculty_coordinator_assignments")
 public class FacultyCoordinatorAssignment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String event;
     private String facultyName;
@@ -17,7 +16,6 @@ public class FacultyCoordinatorAssignment {
     private String contactNumber;
     private String emailAddress;
 
-    @Column(length = 2000)
     private String responsibilities;
 
     // Constructors
@@ -25,11 +23,11 @@ public class FacultyCoordinatorAssignment {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

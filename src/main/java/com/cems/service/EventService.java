@@ -24,7 +24,7 @@ public class EventService {
         return repository.findAll();
     }
 
-    public Event getEventById(Long id) {
+    public Event getEventById(String id) {
         return repository.findById(id).orElse(null);
     }
 
@@ -32,7 +32,7 @@ public class EventService {
         return repository.findByStatus(status);
     }
 
-    public Event updateEventStatus(Long id, String status, String adminComments) {
+    public Event updateEventStatus(String id, String status, String adminComments) {
         return repository.findById(id).map(event -> {
             event.setStatus(status);
             event.setAdminComments(adminComments);

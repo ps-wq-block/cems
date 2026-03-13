@@ -62,10 +62,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll() // Login & register
                         .requestMatchers(
                                 "/*.html",
-                                "/**/*.css",
-                                "/**/*.js",
-                                "/**/*.png",
-                                "/**/*.jpg",
+                                "/*.css",
+                                "/*.js",
+                                "/*.png",
+                                "/*.jpg",
                                 "/images/**",
                                 "/favicon.ico")
                         .permitAll() // HTML client

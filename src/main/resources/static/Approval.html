@@ -200,7 +200,9 @@
             eventListDiv.innerHTML = "<p>Loading events...</p>";
 
             try {
-                const response = await fetch('http://localhost:8080/api/events');
+                const response = await fetch('http://localhost:8080/api/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
                 if (response.ok) {
                     const events = await response.json();
 

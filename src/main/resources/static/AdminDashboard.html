@@ -106,13 +106,17 @@
         <h1>Welcome, Administrator</h1>
         <div class="card-container">
             <a href="Approval.html" class="card">
-                <h2>Event Approvals</h2>
+                <h2>Event Approvals (<span id="pendingCount">...</span>)</h2>
                 <p>Review, approve, or reject new events submitted by faculty organizers.</p>
             </a>
-            <a href="#" class="card" style="opacity: 0.6; cursor: not-allowed;">
-                <h2>User Management</h2>
-                <p>Manage student and organizer accounts (Coming Soon).</p>
-            </a>
+            <div class="card">
+                <h2>Total Users (<span id="userCount">...</span>)</h2>
+                <p>Total registered students, organizers, and admins.</p>
+            </div>
+            <div class="card">
+                <h2>Total Events (<span id="eventCount">...</span>)</h2>
+                <p>Total events recorded in the system.</p>
+            </div>
         </div>
     </div>
 
@@ -128,6 +132,24 @@
             alert("Unauthorized Access! Administrator privileges required.");
             window.location.href = "index.html";
         }
+
+        async function fetchAdminStats() {
+            try {
+                const response = await fetch('http://localhost:8080/api/admin/stats', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('pendingCount').innerText = stats.pendingApprovals;
+                    document.getElementById('userCount').innerText = stats.totalUsers;
+                    document.getElementById('eventCount').innerText = stats.totalEvents;
+                }
+            } catch (error) {
+                console.error("Error fetching stats:", error);
+            }
+        }
+
+        fetchAdminStats();
     </script>
 </body>
 

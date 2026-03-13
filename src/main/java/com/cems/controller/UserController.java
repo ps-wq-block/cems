@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
+    public ResponseEntity<User> getUserProfile(@PathVariable String id) {
         User user = service.getUserById(id);
         if (user != null) {
             user.setPassword(null); // Hide password
@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<User> updateUserProfile(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUserProfile(@PathVariable String id, @RequestBody User user) {
         User updatedUser = service.updateUserProfile(id, user);
         if (updatedUser != null) {
             updatedUser.setPassword(null);

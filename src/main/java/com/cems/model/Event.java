@@ -1,37 +1,31 @@
 package com.cems.model;
 
-import jakarta.persistence.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "events")
+@Document(collection = "events")
 public class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String name;
     private String category;
+    private String organizerEmail;
 
-    private LocalDate eventDate;
-    private LocalTime eventTime;
+    // Using String to ensure clean JSON serialization with Jackson & MongoDB
+    private String eventDate;
+    private String eventTime;
 
     private String venue;
-
-    @Column(length = 2000)
     private String description;
 
     private Integer maxParticipants;
-    private LocalDate registrationDeadline;
+    private String registrationDeadline;
 
-    @Column(length = 2000)
     private String rules;
 
     private String status = "Pending"; // Pending, Approved, Rejected
-
-    @Column(length = 1000)
     private String adminComments;
 
     // Constructors
@@ -39,11 +33,11 @@ public class Event {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -63,19 +57,27 @@ public class Event {
         this.category = category;
     }
 
-    public LocalDate getEventDate() {
+    public String getOrganizerEmail() {
+        return organizerEmail;
+    }
+
+    public void setOrganizerEmail(String organizerEmail) {
+        this.organizerEmail = organizerEmail;
+    }
+
+    public String getEventDate() {
         return eventDate;
     }
 
-    public void setEventDate(LocalDate eventDate) {
+    public void setEventDate(String eventDate) {
         this.eventDate = eventDate;
     }
 
-    public LocalTime getEventTime() {
+    public String getEventTime() {
         return eventTime;
     }
 
-    public void setEventTime(LocalTime eventTime) {
+    public void setEventTime(String eventTime) {
         this.eventTime = eventTime;
     }
 
@@ -103,11 +105,11 @@ public class Event {
         this.maxParticipants = maxParticipants;
     }
 
-    public LocalDate getRegistrationDeadline() {
+    public String getRegistrationDeadline() {
         return registrationDeadline;
     }
 
-    public void setRegistrationDeadline(LocalDate registrationDeadline) {
+    public void setRegistrationDeadline(String registrationDeadline) {
         this.registrationDeadline = registrationDeadline;
     }
 

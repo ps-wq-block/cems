@@ -3,6 +3,9 @@ package com.cems.controller;
 import com.cems.model.Event;
 import com.cems.service.EventService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +24,11 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<Event> createEvent(@RequestBody Event event) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            event.setOrganizerEmail(userDetails.getUsername());
+        }
         return ResponseEntity.ok(service.createEvent(event));
     }
 
@@ -30,7 +38,7 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<Event> getEventById(@PathVariable String id) {
         Event event = service.getEventById(id);
         if (event != null) {
             return ResponseEntity.ok(event);
@@ -46,7 +54,7 @@ public class EventController {
     // Required by Approval.html
     @PutMapping("/{id}/status")
     public ResponseEntity<Event> updateEventStatus(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestBody Map<String, String> body) {
 
         String status = body.get("status");

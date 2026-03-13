@@ -45,11 +45,11 @@ public class UserService {
         return repository.findByEmail(email).orElse(null);
     }
 
-    public User getUserById(Long id) {
+    public User getUserById(String id) {
         return repository.findById(id).orElse(null);
     }
 
-    public User updateUserProfile(Long id, User updatedDetails) {
+    public User updateUserProfile(String id, User updatedDetails) {
         return repository.findById(id).map(user -> {
             user.setName(updatedDetails.getName());
             user.setPhoneNumber(updatedDetails.getPhoneNumber());
