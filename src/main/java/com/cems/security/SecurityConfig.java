@@ -61,6 +61,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Login & register
                         .requestMatchers(
+                                "/",
                                 "/*.html",
                                 "/*.css",
                                 "/*.js",
