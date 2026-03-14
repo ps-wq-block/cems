@@ -10,5 +10,7 @@ import java.util.List;
 public interface StudentRegistrationRepository extends MongoRepository<StudentRegistration, String> {
     List<StudentRegistration> findByEventName(String eventName);
 
+    List<StudentRegistration> findByEventNameIn(List<String> eventNames);
+
     List<StudentRegistration> findByEmail(String email);
 }

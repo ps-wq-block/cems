@@ -65,4 +65,18 @@ public class OrganizerController {
         }
         return ResponseEntity.status(403).build();
     }
+
+    @GetMapping("/registrations")
+    public ResponseEntity<List<com.cems.model.StudentRegistration>> getMyRegistrations() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String email = userDetails.getUsername();
+            List<com.cems.model.Event> myEvents = eventRepository.findByOrganizerEmail(email);
+            List<String> eventNames = myEvents.stream().map(com.cems.model.Event::getName)
+                    .collect(java.util.stream.Collectors.toList());
+            return ResponseEntity.ok(studentRegistrationRepository.findByEventNameIn(eventNames));
+        }
+        return ResponseEntity.status(403).build();
+    }
 }

@@ -31,4 +31,14 @@ public class AdminController {
 
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        return ResponseEntity.ok(userRepository.findAll());
+    }
+
+    @GetMapping("/events")
+    public ResponseEntity<?> getAllEvents() {
+        return ResponseEntity.ok(eventRepository.findAll());
+    }
 }

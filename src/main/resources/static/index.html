@@ -184,6 +184,14 @@
                 email.classList.add("error-border");
                 emailError.innerHTML = "Email is required";
                 valid = false;
+            } else {
+                // Email must follow standard format: user@domain.tld (word after dot required)
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+                if (!emailPattern.test(email.value.trim())) {
+                    email.classList.add("error-border");
+                    emailError.innerHTML = "Enter a valid email (e.g. name@gmail.com)";
+                    valid = false;
+                }
             }
 
             if (password.value === "") {
