@@ -180,6 +180,14 @@
         }
     </style>
     <script>
+        // --- Role Guard: Only students can access this page ---
+        const userRole = localStorage.getItem("role");
+        if (userRole === "ORGANIZER") {
+            window.location.href = "OrganizerProfile.html";
+        } else if (userRole === "ADMIN") {
+            window.location.href = "AdminDashboard.html";
+        }
+
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
             if (!userId) {

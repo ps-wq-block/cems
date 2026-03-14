@@ -1,243 +1,395 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-<meta charset="UTF-8">
-<title>Organizer Profile | College Event Management</title>
+    <meta charset="UTF-8">
+    <title>Organizer Profile | College Event Management</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+        }
 
-<style>
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-body{
-margin:0;
-padding:0;
-font-family:'Segoe UI', sans-serif;
-background: linear-gradient(135deg,#89f7fe,#fbc2eb);
-}
+        .navbar h2 {
+            margin: 0;
+            color: #444;
+        }
 
-.navbar{
-background:white;
-padding:15px 40px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
 
-.navbar h2{
-margin:0;
-color:#444;
-}
+        .navbar a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+        }
 
-.navbar a{
-text-decoration:none;
-color:#444;
-font-weight:600;
-}
+        .navbar a:hover {
+            color: #8ec5a4;
+        }
 
-.container{
-width:90%;
-margin:auto;
-margin-top:40px;
-}
+        .logout {
+            color: #ff6b6b !important;
+        }
 
-.profile-card{
-background:white;
-border-radius:15px;
-padding:35px;
-display:flex;
-align-items:center;
-gap:40px;
-box-shadow:0 8px 25px rgba(0,0,0,0.15);
-}
+        .container {
+            width: 90%;
+            margin: auto;
+            margin-top: 40px;
+        }
 
-.profile-left{
-text-align:center;
-}
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
 
-.profile-circle{
-width:140px;
-height:140px;
-border-radius:50%;
-background:#6a5acd;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:70px;
-color:white;
-animation: float 3s ease-in-out infinite;
-box-shadow:0 8px 20px rgba(0,0,0,0.25);
-}
+        .profile-left {
+            text-align: center;
+        }
 
-@keyframes float{
-0%{ transform:translateY(0px); }
-50%{ transform:translateY(-10px); }
-100%{ transform:translateY(0px); }
-}
+        .profile-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #6a5acd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 70px;
+            color: white;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
 
-.organizer-name{
-margin-top:12px;
-font-size:22px;
-font-weight:bold;
-color:#333;
-}
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
 
-.edit-btn{
-margin-top:10px;
-padding:8px 16px;
-border:none;
-background:#6a5acd;
-color:white;
-border-radius:6px;
-cursor:pointer;
-}
+            50% {
+                transform: translateY(-10px);
+            }
 
-.edit-btn:hover{
-background:#5746c5;
-}
+            100% {
+                transform: translateY(0px);
+            }
+        }
 
-.info-section{
-display:flex;
-gap:60px;
-}
+        .organizer-name {
+            margin-top: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
 
-.info-col p{
-margin:8px 0;
-color:#555;
-}
+        .edit-btn {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border: none;
+            background: #6a5acd;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.section-title{
-margin-top:45px;
-margin-bottom:12px;
-color:#333;
-}
+        .edit-btn:hover {
+            background: #5746c5;
+        }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-border-radius:12px;
-overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.15);
-}
+        .info-section {
+            display: flex;
+            gap: 60px;
+        }
 
-th,td{
-padding:14px;
-text-align:center;
-}
+        .info-col p {
+            margin: 8px 0;
+            color: #555;
+        }
 
-th{
-background:#6a5acd;
-color:white;
-}
+        .section-title {
+            margin-top: 45px;
+            margin-bottom: 12px;
+            color: #333;
+        }
 
-tr:nth-child(even){
-background:#f2f2f2;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
 
-tr:hover{
-background:#e9e9ff;
-}
+        th,
+        td {
+            padding: 14px;
+            text-align: center;
+        }
 
-</style>
+        th {
+            background: #6a5acd;
+            color: white;
+        }
 
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        tr:hover {
+            background: #e9e9ff;
+        }
+    </style>
+
+    <script>
+        // --- Role Guard: Only organizers can access this page ---
+        const role = localStorage.getItem("role");
+        if (role !== "ORGANIZER") {
+            alert("Unauthorized Access! Organizer privileges required.");
+            if (role === "ADMIN") {
+                window.location.href = "AdminDashboard.html";
+            } else {
+                window.location.href = "categories.html";
+            }
+        }
+
+        let currentUser = null;
+
+        async function loadProfile() {
+            const userId = localStorage.getItem("userId");
+            if (!userId) {
+                document.getElementById("profileName").innerText = "Guest User (Not Logged In)";
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/auth/users/${userId}`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    currentUser = user;
+
+                    document.getElementById("profileName").innerText = user.name || "Organizer";
+                    if (user.email) document.getElementById("profileEmail").innerText = user.email;
+                    if (user.phoneNumber) document.getElementById("profilePhone").innerText = user.phoneNumber;
+                    if (user.department) document.getElementById("profileDept").innerText = user.department;
+                    if (user.college) document.getElementById("profileCollege").innerText = user.college;
+                    if (user.address) document.getElementById("profileAddress").innerText = user.address;
+
+                    // Load events organized by this organizer
+                    loadOrganizerEvents();
+                } else {
+                    console.error("Failed to load user data from API");
+                }
+            } catch (error) {
+                console.error("Error connecting to backend API", error);
+            }
+        }
+
+        async function loadOrganizerEvents() {
+            const tbody = document.getElementById("organizedEventsBody");
+            try {
+                const response = await fetch('/api/organizer/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const events = await response.json();
+
+                    if (events.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No events organized yet.</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = '';
+                    events.forEach(event => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${event.name || '-'}</td>
+                            <td>${event.category || '-'}</td>
+                            <td>${event.date || '-'}</td>
+                            <td>${event.venue || '-'}</td>
+                            <td style="color: ${event.status === 'APPROVED' ? 'green' : event.status === 'REJECTED' ? 'red' : 'orange'}; font-weight: 600;">${event.status || 'Pending'}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load events.</td></tr>';
+                }
+            } catch (error) {
+                console.error("Error loading events:", error);
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
+            }
+        }
+
+        window.onload = loadProfile;
+    </script>
 </head>
 
 <body>
+    <div class="navbar">
+        <h2>CEMS Organizer</h2>
+        <div class="nav-links">
+            <a href="OrganizerDashboard.html">Dashboard</a>
+            <a href="MyEvents.html">My Events</a>
+            <a href="CreateEvent.html">Create Event</a>
+            <a href="OrganizerProfile.html">Profile</a>
+            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
+        </div>
+    </div>
 
-<div class="navbar">
-<h2>College Event Management System</h2>
-<a href="#">Logout</a>
-</div>
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-left">
+                <div class="profile-circle">👨‍💼</div>
+                <div class="organizer-name" id="profileName">Loading...</div>
+                <button class="edit-btn" onclick="openEditModal()">Edit Profile</button>
+            </div>
 
-<div class="container">
+            <div class="info-section">
+                <div class="info-col">
+                    <p><b>Email:</b> <span id="profileEmail">Updating...</span></p>
+                    <p><b>Phone:</b> <span id="profilePhone">Updating...</span></p>
+                    <p><b>Department:</b> <span id="profileDept">Updating...</span></p>
+                </div>
+                <div class="info-col">
+                    <p><b>College:</b> <span id="profileCollege">Updating...</span></p>
+                    <p><b>Address:</b> <span id="profileAddress">Updating...</span></p>
+                </div>
+            </div>
+        </div>
 
-<div class="profile-card">
+        <h3 class="section-title">Events Organized</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Category</th>
+                    <th>Date</th>
+                    <th>Venue</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="organizedEventsBody">
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#888;">Loading events...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<div class="profile-left">
+    <!-- Edit Profile Modal -->
+    <div id="editModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div
+            style="background:white; padding:35px; width:450px; max-width:90%; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;">
+            <div
+                style="background:#6a5acd; padding:12px; border-radius:10px; text-align:center; font-size:20px; font-weight:bold; margin-bottom:20px; color:white;">
+                Edit Profile</div>
+            <form id="editForm">
+                <label style="font-weight:600; font-size:14px;">Full Name</label>
+                <input type="text" id="editName"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
-<div class="profile-circle">👨‍💼</div>
+                <label style="font-weight:600; font-size:14px;">Phone Number</label>
+                <input type="text" id="editPhone"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
-<div class="organizer-name">Rahul Sharma</div>
+                <label style="font-weight:600; font-size:14px;">Department</label>
+                <input type="text" id="editDept"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
-<a href="OrganizerProfile.html">
-<button class="edit-btn">Edit Profile</button>
-</a>
+                <label style="font-weight:600; font-size:14px;">College</label>
+                <input type="text" id="editCollege"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
-</div>
+                <label style="font-weight:600; font-size:14px;">Address</label>
+                <input type="text" id="editAddress"
+                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
-<div class="info-section">
+                <div style="display:flex; gap:12px; margin-top:10px;">
+                    <button type="submit"
+                        style="flex:1; padding:12px; background:#4CAF50; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Save
+                        Changes</button>
+                    <button type="button" onclick="closeEditModal()"
+                        style="flex:1; padding:12px; background:#ff4d4d; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<div class="info-col">
+    <script>
+        function openEditModal() {
+            if (!currentUser) { alert("Profile not loaded yet."); return; }
+            document.getElementById("editName").value = currentUser.name || '';
+            document.getElementById("editPhone").value = currentUser.phoneNumber || '';
+            document.getElementById("editDept").value = currentUser.department || '';
+            document.getElementById("editCollege").value = currentUser.college || '';
+            document.getElementById("editAddress").value = currentUser.address || '';
+            document.getElementById("editModal").style.display = "flex";
+        }
 
-<p><b>Organizer ID:</b> ORG102</p>
-<p><b>Email:</b> rahul.sharma@gmail.com</p>
-<p><b>Phone:</b> 9876543210</p>
-<p><b>Department:</b> Cultural Committee</p>
-<p><b>Role:</b> Event Organizer</p>
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+        }
 
-</div>
+        document.getElementById("editForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const userId = localStorage.getItem("userId");
+            const updatedData = {
+                name: document.getElementById("editName").value,
+                phoneNumber: document.getElementById("editPhone").value,
+                department: document.getElementById("editDept").value,
+                college: document.getElementById("editCollege").value,
+                address: document.getElementById("editAddress").value
+            };
 
-<div class="info-col">
+            try {
+                const response = await fetch(`/api/auth/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    },
+                    body: JSON.stringify(updatedData)
+                });
 
-<p><b>Experience:</b> 3 Years</p>
-<p><b>Joined:</b> March 2023</p>
-<p><b>College:</b> M.M. Engineering College</p>
-<p><b>Office Address:</b> Admin Block, Room 204, M.M. Engineering College Campus</p>
+                if (response.ok) {
+                    alert("Profile updated successfully!");
+                    closeEditModal();
+                    loadProfile();
+                } else {
+                    alert("Failed to update profile.");
+                }
+            } catch (error) {
+                alert("Error connecting to the server.");
+                console.error(error);
+            }
+        });
 
-</div>
-
-</div>
-
-</div>
-
-<h3 class="section-title">Events Organized</h3>
-
-<table>
-
-<tr>
-<th>Event Name</th>
-<th>Category</th>
-<th>Date</th>
-<th>Participants</th>
-<th>Status</th>
-</tr>
-
-<tr>
-<td>Hackathon 2026</td>
-<td>Technical</td>
-<td>20 April 2026</td>
-<td>120</td>
-<td>Active</td>
-</tr>
-
-<tr>
-<td>Robotics Challenge</td>
-<td>Technical</td>
-<td>22 April 2026</td>
-<td>95</td>
-<td>Upcoming</td>
-</tr>
-
-<tr>
-<td>Football Championship</td>
-<td>Sports</td>
-<td>25 April 2026</td>
-<td>60</td>
-<td>Upcoming</td>
-</tr>
-
-<tr>
-<td>Debate Competition</td>
-<td>Literary</td>
-<td>27 April 2026</td>
-<td>45</td>
-<td>Upcoming</td>
-</tr>
-
-</table>
-
-</div>
-
+        document.getElementById("editModal").addEventListener("click", function (e) {
+            if (e.target === this) closeEditModal();
+        });
+    </script>
 </body>
+
 </html>
