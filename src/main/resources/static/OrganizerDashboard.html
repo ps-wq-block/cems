@@ -127,7 +127,7 @@
         }
 
         // Basic Security Check
-        const role = localStorage.getItem("role");
+        const role = (localStorage.getItem("role") || "").toUpperCase();
         if (role !== "ORGANIZER" && role !== "ADMIN") {
             alert("Unauthorized Access! Organizer privileges required.");
             window.location.href = "index.html";

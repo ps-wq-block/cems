@@ -161,13 +161,14 @@
 
     <script>
         // --- Role Guard: Only organizers can access this page ---
-        const role = localStorage.getItem("role");
+        const role = (localStorage.getItem("role") || "").toUpperCase();
         if (role !== "ORGANIZER") {
-            alert("Unauthorized Access! Organizer privileges required.");
             if (role === "ADMIN") {
                 window.location.href = "AdminDashboard.html";
-            } else {
+            } else if (role === "STUDENT") {
                 window.location.href = "categories.html";
+            } else {
+                window.location.href = "index.html";
             }
         }
 
