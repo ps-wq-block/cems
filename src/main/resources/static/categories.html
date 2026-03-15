@@ -335,15 +335,7 @@
     </div>
 
     <script>
-        // --- Role Guard: Admins/Organizers redirected to their dashboards ---
-        const role = (localStorage.getItem("role") || "").toUpperCase();
-        if (role === "ADMIN") {
-            window.location.href = "AdminDashboard.html";
-        } else if (role === "ORGANIZER") {
-            window.location.href = "OrganizerDashboard.html";
-        } else if (role !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+
 
         let allEvents = [];
         let currentFilter = 'All';
@@ -358,8 +350,10 @@
 
                 if (response.ok) {
                     const events = await response.json();
-                    // Only show Approved events
-                    allEvents = events.filter(e => e.status === "Approved");
+                    // Only show Approved events & Sort by latest (ID descending)
+                    allEvents = events
+                        .filter(e => e.status === "Approved")
+                        .sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 
                     // Generate category filters dynamically based on available events
                     generateFilters();

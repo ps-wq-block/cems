@@ -97,7 +97,6 @@
         <div class="logo">CEMS Admin</div>
         <div class="nav-links">
             <a href="AdminDashboard.html">Dashboard</a>
-            <a href="Approval.html">Approvals</a>
             <a href="#" class="logout" onclick="logout()">Logout</a>
         </div>
     </div>
@@ -109,14 +108,14 @@
                 <h2>Event Approvals (<span id="pendingCount">...</span>)</h2>
                 <p>Review, approve, or reject new events submitted by faculty organizers.</p>
             </a>
-            <div class="card">
-                <h2>Total Users (<span id="userCount">...</span>)</h2>
+            <a href="AdminUsers.html" class="card">
+                <h2>View Entries (<span id="userCount">...</span>)</h2>
                 <p>Total registered students, organizers, and admins.</p>
-            </div>
-            <div class="card">
-                <h2>Total Events (<span id="eventCount">...</span>)</h2>
+            </a>
+            <a href="AdminEvents.html" class="card">
+                <h2>View Events (<span id="eventCount">...</span>)</h2>
                 <p>Total events recorded in the system.</p>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -126,12 +125,7 @@
             window.location.href = "index.html";
         }
 
-        // Basic Security Check
-        const role = localStorage.getItem("role");
-        if (role !== "ADMIN") {
-            alert("Unauthorized Access! Administrator privileges required.");
-            window.location.href = "index.html";
-        }
+
 
         async function fetchAdminStats() {
             try {

@@ -160,7 +160,7 @@
                 });
 
                 if (response.ok) {
-                    const events = await response.json();
+                    const events = (await response.json()).sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 
                     if (events.length === 0) {
                         container.innerHTML = `

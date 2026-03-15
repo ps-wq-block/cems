@@ -97,8 +97,7 @@
         <div class="logo">CEMS Organizer</div>
         <div class="nav-links">
             <a href="OrganizerDashboard.html">Dashboard</a>
-            <a href="MyEvents.html">My Events</a>
-            <a href="CreateEvent.html">Create Event</a>
+            <a href="OrganizerProfile.html">Profile</a>
             <a href="#" class="logout" onclick="logout()">Logout</a>
         </div>
     </div>
@@ -111,13 +110,13 @@
                 <p>Draft and submit a new campus event for Administrator approval.</p>
             </a>
             <a href="MyEvents.html" class="card">
-                <h2>My Events (<span id="myEventsCount">...</span>)</h2>
+                <h2>View Events (<span id="myEventsCount">...</span>)</h2>
                 <p>Total events submitted by you.</p>
             </a>
-            <div class="card">
-                <h2>Total Registrations (<span id="registrationsCount">...</span>)</h2>
+            <a href="Entries.html" class="card">
+                <h2>View Entries (<span id="registrationsCount">...</span>)</h2>
                 <p>Total student registrations globally.</p>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -127,12 +126,7 @@
             window.location.href = "index.html";
         }
 
-        // Basic Security Check
-        const role = localStorage.getItem("role");
-        if (role !== "ORGANIZER" && role !== "ADMIN") {
-            alert("Unauthorized Access! Organizer privileges required.");
-            window.location.href = "index.html";
-        }
+
 
         async function fetchOrganizerStats() {
             try {
