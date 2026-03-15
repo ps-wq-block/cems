@@ -2,19 +2,15 @@
 <html>
 
 <head>
-    <title>Create Event</title>
-
+    <title>Edit Event</title>
     <style>
         body {
             font-family: Arial;
             margin: 0;
             padding: 0;
-
-            /* Light mixed background */
             background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
         }
 
-        /* Navbar */
         .navbar {
             background: white;
             padding: 15px 40px;
@@ -47,8 +43,6 @@
             color: #a29bfe;
         }
 
-        /* Main container */
-
         .container {
             width: 520px;
             margin: 40px auto;
@@ -57,8 +51,6 @@
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
         }
-
-        /* Heading box */
 
         .heading {
             background: linear-gradient(to right, #9ad7cf, #cdb4db);
@@ -71,14 +63,10 @@
             color: #2b2b2b;
         }
 
-        /* Labels */
-
         label {
             font-weight: bold;
             color: #2f3e46;
         }
-
-        /* Input fields */
 
         input,
         select,
@@ -97,20 +85,14 @@
             height: 80px;
         }
 
-        /* Buttons layout (Same Line) */
-
         .buttons {
             display: flex;
             gap: 12px;
         }
 
-        /* Equal size buttons */
-
         .buttons button {
             flex: 1;
         }
-
-        /* Buttons */
 
         button {
             padding: 11px;
@@ -122,17 +104,11 @@
             color: white;
         }
 
-        /* Soft button colors */
-
-        .edit {
-            background: #7fb3d5;
+        .cancel {
+            background: #ff6b6b;
         }
 
-        .approval {
-            background: #a29bfe;
-        }
-
-        .publish {
+        .update {
             background: #8ec5a4;
         }
 
@@ -140,35 +116,26 @@
             transform: scale(1.03);
         }
     </style>
-
 </head>
 
 <body>
-
     <div class="navbar">
-        <h2>Event Organizer Dashboard</h2>
+        <h2>Edit Event</h2>
         <div class="nav-links">
             <a href="OrganizerDashboard.html">Dashboard</a>
             <a href="MyEvents.html">My Events</a>
             <a href="CreateEvent.html">Create Event</a>
-            <a href="Approval.html">Approvals</a>
             <a href="index.html" onclick="localStorage.clear()">Logout</a>
         </div>
     </div>
 
     <div class="container">
-
-        <div class="heading">
-            Create New Event
-        </div>
-
-        <form id="createEventForm">
-
+        <div class="heading">Modify Event Details</div>
+        <form id="editEventForm">
             <label>Event Name</label>
             <input type="text" id="name" placeholder="Enter event name" required>
 
             <label>Category</label>
-
             <select id="category" required>
                 <option value="Seminar">Seminar</option>
                 <option value="Workshop">Workshop</option>
@@ -204,19 +171,48 @@
             <textarea id="rules" placeholder="Enter event rules" required></textarea>
 
             <div class="buttons">
-
-
-
-                <button type="submit" class="approval">Request Approval</button>
-
+                <button type="button" class="cancel" onclick="window.location.href='MyEvents.html'">Cancel</button>
+                <button type="submit" class="update">Update Event</button>
             </div>
-
         </form>
         <div id="statusMessage" style="text-align:center; font-weight:bold; margin-top:15px; display:none;"></div>
     </div>
 
     <script>
-        document.getElementById('createEventForm').addEventListener('submit', async function (e) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('id');
+
+        if (!eventId) {
+            alert('No event ID provided.');
+            window.location.href = 'MyEvents.html';
+        }
+
+        async function loadEventDetails() {
+            try {
+                const response = await fetch(`/api/events/${eventId}`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const event = await response.json();
+                    document.getElementById('name').value = event.name;
+                    document.getElementById('category').value = event.category;
+                    document.getElementById('eventDate').value = event.eventDate;
+                    document.getElementById('eventTime').value = event.eventTime;
+                    document.getElementById('venue').value = event.venue;
+                    document.getElementById('description').value = event.description;
+                    document.getElementById('maxParticipants').value = event.maxParticipants;
+                    document.getElementById('registrationDeadline').value = event.registrationDeadline;
+                    document.getElementById('rules').value = event.rules;
+                } else {
+                    alert('Failed to load event details.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('editEventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const data = {
@@ -234,8 +230,8 @@
             const statusMessage = document.getElementById('statusMessage');
 
             try {
-                const response = await fetch('/api/events', {
-                    method: 'POST',
+                const response = await fetch(`/api/events/${eventId}`, {
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('jwt')
@@ -246,22 +242,23 @@
                 if (response.ok) {
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'green';
-                    statusMessage.textContent = 'Event request submitted successfully! Pending admin approval.';
-                    this.reset();
+                    statusMessage.textContent = 'Event updated successfully!';
+                    setTimeout(() => { window.location.href = 'MyEvents.html'; }, 1500);
                 } else {
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'red';
-                    statusMessage.textContent = 'Failed to submit event request.';
+                    statusMessage.textContent = 'Failed to update event.';
                 }
             } catch (error) {
+                console.error('Error:', error);
                 statusMessage.style.display = 'block';
                 statusMessage.style.color = 'red';
-                statusMessage.textContent = 'Error connecting to the CEMS backend Server.';
-                console.error('Error:', error);
+                statusMessage.textContent = 'Connection error.';
             }
         });
-    </script>
 
+        window.onload = loadEventDetails;
+    </script>
 </body>
 
 </html>

@@ -43,4 +43,20 @@ public class EventService {
             return repository.save(event);
         }).orElse(null);
     }
+
+    public Event updateEvent(String id, Event eventDetails) {
+        return repository.findById(id).map(event -> {
+            event.setName(eventDetails.getName());
+            event.setCategory(eventDetails.getCategory());
+            event.setEventDate(eventDetails.getEventDate());
+            event.setEventTime(eventDetails.getEventTime());
+            event.setVenue(eventDetails.getVenue());
+            event.setDescription(eventDetails.getDescription());
+            event.setMaxParticipants(eventDetails.getMaxParticipants());
+            event.setRegistrationDeadline(eventDetails.getRegistrationDeadline());
+            event.setRules(eventDetails.getRules());
+            // We keep the original organizer and status (or reset if needed)
+            return repository.save(event);
+        }).orElse(null);
+    }
 }

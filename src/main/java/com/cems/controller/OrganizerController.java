@@ -41,13 +41,14 @@ public class OrganizerController {
         }
 
         if (organizerEmail != null) {
-            long myEventsCount = eventRepository.countByOrganizerEmail(organizerEmail);
+            List<com.cems.model.Event> myEvents = eventRepository.findByOrganizerEmail(organizerEmail);
+            long myEventsCount = myEvents.size();
             stats.put("myEvents", myEventsCount);
 
-            // Note: In a fully relationships-mapped system, we'd query registrations linked
-            // to specific events.
-            // For now, we return a simple total registration count for demonstration.
-            stats.put("totalRegistrations", studentRegistrationRepository.count());
+            List<String> eventNames = myEvents.stream().map(com.cems.model.Event::getName)
+                    .collect(java.util.stream.Collectors.toList());
+            long myRegistrationsCount = studentRegistrationRepository.findByEventNameIn(eventNames).size();
+            stats.put("totalRegistrations", myRegistrationsCount);
         } else {
             stats.put("myEvents", 0);
             stats.put("totalRegistrations", 0);
@@ -75,7 +76,13 @@ public class OrganizerController {
             List<com.cems.model.Event> myEvents = eventRepository.findByOrganizerEmail(email);
             List<String> eventNames = myEvents.stream().map(com.cems.model.Event::getName)
                     .collect(java.util.stream.Collectors.toList());
-            return ResponseEntity.ok(studentRegistrationRepository.findByEventNameIn(eventNames));
+
+            System.out.println("DEBUG: Organizer " + email + " has events: " + eventNames);
+
+            List<com.cems.model.StudentRegistration> regs = studentRegistrationRepository.findByEventNameIn(eventNames);
+            System.out.println("DEBUG: Found " + regs.size() + " registrations for these events.");
+
+            return ResponseEntity.ok(regs);
         }
         return ResponseEntity.status(403).build();
     }

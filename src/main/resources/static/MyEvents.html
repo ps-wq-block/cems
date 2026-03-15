@@ -189,7 +189,13 @@
                                     <p><strong>Venue:</strong> ${event.venue || 'TBD'} &nbsp;|&nbsp; <strong>Capacity:</strong> ${event.maxParticipants || 'Unlimited'}</p>
                                     ${feedbackHtml}
                                 </div>
-                                <div class="status-badge ${badgeClass}">${event.status || 'Pending'}</div>
+                                <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                                    <div class="status-badge ${badgeClass}">${event.status || 'Pending'}</div>
+                                    <button onclick="window.location.href='EditEvent.html?id=${event.id}'" 
+                                            style="background: #7fb3d5; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                        Edit Event
+                                    </button>
+                                </div>
                             </div>
                         `;
                         container.innerHTML += html;

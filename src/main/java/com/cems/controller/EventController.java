@@ -67,4 +67,15 @@ public class EventController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Event> updateEvent(
+            @PathVariable String id,
+            @RequestBody Event eventDetails) {
+        Event updatedEvent = service.updateEvent(id, eventDetails);
+        if (updatedEvent != null) {
+            return ResponseEntity.ok(updatedEvent);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }
