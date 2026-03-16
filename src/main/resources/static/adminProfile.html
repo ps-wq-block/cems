@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizer Profile | CEMS</title>
+    <title>Admin Profile | CEMS</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -14,43 +14,51 @@
         }
 
         .navbar {
+            background: white;
+            padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
-            padding: 15px 40px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar h2 {
-            margin: 0;
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
             color: #444;
-            font-size: 20px;
         }
 
-        .nav-links a {
-            margin-left: 20px;
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
             text-decoration: none;
             color: #444;
-            font-weight: bold;
+            font-weight: 600;
             transition: color 0.3s;
         }
 
-        .nav-links a:hover {
+        .navbar a:hover {
             color: #6c63ff;
         }
 
+        .logout {
+            color: #ff6b6b !important;
+        }
+
         .profile-card {
-            width: 85%;
+            width: 80%;
             max-width: 1000px;
             margin: 40px auto;
             background: #f2f2f2;
-            padding: 30px;
+            padding: 35px;
             border-radius: 15px;
             display: flex;
             gap: 40px;
-            align-items: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            align-items: center;
         }
 
         .profile-left {
@@ -59,21 +67,22 @@
         }
 
         .profile-img {
-            width: 130px;
-            height: 130px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: #6c63ff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 45px;
             color: white;
+            font-size: 50px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             margin-bottom: 10px;
         }
 
         #name {
             margin: 10px 0;
+            font-size: 24px;
             color: #333;
         }
 
@@ -96,33 +105,34 @@
         .profile-right {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px 60px;
-            font-size: 16px;
+            gap: 20px 60px;
             flex-grow: 1;
         }
 
         .info-item {
+            font-size: 16px;
             color: #555;
         }
 
         .info-item b {
             color: #333;
             display: inline-block;
-            width: 100px;
+            width: 110px;
         }
 
-        .events {
-            width: 85%;
+        /* Recent System Actions */
+        .actions {
+            width: 80%;
             max-width: 1000px;
             margin: 20px auto 40px;
         }
 
-        .events h2 {
+        .actions h2 {
             color: #333;
             margin-bottom: 15px;
         }
 
-        .events table {
+        .actions table {
             width: 100%;
             border-collapse: collapse;
             background: white;
@@ -131,25 +141,27 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .events th {
+        .actions th {
             background: #6c63ff;
             color: white;
             padding: 15px;
             text-align: center;
         }
 
-        .events td {
+        .actions td {
             padding: 15px;
             text-align: center;
             border-bottom: 1px solid #eee;
             color: #444;
         }
 
-        .status-badge {
+        .actions tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-completed {
+            color: #28a745;
             font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 14px;
         }
     </style>
 </head>
@@ -157,11 +169,11 @@
 <body>
 
     <div class="navbar">
-        <h2>College Event Management System</h2>
+        <div class="logo">CEMS Admin</div>
         <div class="nav-links">
-            <a href="OrganizerDashboard.html">Dashboard</a>
-            <a href="OrganizerProfile.html">Profile</a>
-            <a href="#" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
+            <a href="AdminDashboard.html">Dashboard</a>
+            <a href="adminProfile.html">Profile</a>
+            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
         </div>
     </div>
 
@@ -169,7 +181,7 @@
         <div class="profile-left">
             <div class="profile-img">👤</div>
             <h2 id="name">Loading...</h2>
-            <button class="edit-btn" onclick="window.location.href='EditOrganizerProfile.html'">
+            <button class="edit-btn" onclick="window.location.href='adminEditProfile.html'">
                 Edit Profile
             </button>
         </div>
@@ -185,34 +197,47 @@
         </div>
     </div>
 
-    <div class="events">
-        <h2>Events Organized</h2>
+    <!-- Recent System Actions -->
+    <div class="actions">
+        <h2>Recent System Actions</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Event Name</th>
+                    <th>Action</th>
                     <th>Date</th>
-                    <th>Location</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody id="eventsBody">
+            <tbody id="actionsBody">
                 <tr>
-                    <td colspan="4">Loading events...</td>
+                    <td>Approved Event Request</td>
+                    <td>12 May 2026</td>
+                    <td class="status-completed">Completed</td>
+                </tr>
+                <tr>
+                    <td>Rejected Event Request</td>
+                    <td>10 May 2026</td>
+                    <td class="status-completed">Completed</td>
+                </tr>
+                <tr>
+                    <td>Added New Organizer</td>
+                    <td>8 May 2026</td>
+                    <td class="status-completed">Completed</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <script>
-        const userId = localStorage.getItem("userId");
-        const jwt = localStorage.getItem("jwt");
-
-        if (!userId || !jwt) {
-            window.location.href = "index.html";
-        }
-
         async function loadProfile() {
+            const userId = localStorage.getItem("userId");
+            const jwt = localStorage.getItem("jwt");
+
+            if (!userId || !jwt) {
+                window.location.href = "index.html";
+                return;
+            }
+
             try {
                 const response = await fetch(`/api/auth/users/${userId}`, {
                     headers: { 'Authorization': 'Bearer ' + jwt }
@@ -220,7 +245,7 @@
                 
                 if (response.ok) {
                     const user = await response.json();
-                    document.getElementById("name").innerText = user.name || "Organizer";
+                    document.getElementById("name").innerText = user.name || "Administrator";
                     document.getElementById("email").innerText = user.email || "-";
                     document.getElementById("phone").innerText = user.phoneNumber || "-";
                     document.getElementById("dob").innerText = user.dateOfBirth || "-";
@@ -228,47 +253,14 @@
                     document.getElementById("dept").innerText = user.department || "-";
                     document.getElementById("college").innerText = user.college || "-";
                     document.getElementById("address").innerText = user.address || "-";
-                    
-                    loadOrganizerEvents();
                 } else {
+                    console.error("Failed to load user data");
+                    alert("Session expired or unauthorized. Please login again.");
                     window.location.href = "index.html";
                 }
             } catch (error) {
                 console.error("Error loading profile:", error);
-            }
-        }
-
-        async function loadOrganizerEvents() {
-            const tbody = document.getElementById("eventsBody");
-            try {
-                const response = await fetch('/api/organizer/events', {
-                    headers: { 'Authorization': 'Bearer ' + jwt }
-                });
-
-                if (response.ok) {
-                    const events = await response.json();
-                    if (events.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="4">No events organized yet.</td></tr>';
-                        return;
-                    }
-                    tbody.innerHTML = '';
-                    events.forEach(event => {
-                        const row = document.createElement('tr');
-                        const statusColor = event.status === 'APPROVED' ? '#28a745' : (event.status === 'REJECTED' ? '#dc3545' : '#ffc107');
-                        row.innerHTML = `
-                            <td>${event.name || '-'}</td>
-                            <td>${event.date || '-'}</td>
-                            <td>${event.venue || '-'}</td>
-                            <td><span class="status-badge" style="color: ${statusColor}; border: 1px solid ${statusColor};">${event.status || 'PENDING'}</span></td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4">Failed to load events.</td></tr>';
-                }
-            } catch (error) {
-                console.error("Error loading events:", error);
-                tbody.innerHTML = '<tr><td colspan="4">Error connecting to server.</td></tr>';
+                alert("Error connecting to server.");
             }
         }
 
