@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Admin Profile | CEMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f3e8ff, #e6f7f5);
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 60%;
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            background: #6c63ff;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 26px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6c63ff;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.2);
+        }
+
+        .buttons {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .save {
+            background: #28a745;
+            color: white;
+        }
+
+        .cancel {
+            background: #dc3545;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Loading Spinner */
+        #loader {
+            display: none;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #6c63ff;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="title">Edit Admin Profile</div>
+    
+    <div id="loader">Loading profile data...</div>
+
+    <form id="editAdminForm" onsubmit="saveAdmin(event)">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email (Read-only)</label>
+            <input type="email" id="email" readonly style="background-color: #f9f9f9; color: #888;">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="text" id="phone" maxlength="10">
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob">
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <input type="text" id="gender">
+        </div>
+
+        <div class="form-group">
+            <label for="dept">Department</label>
+            <input type="text" id="dept">
+        </div>
+
+        <div class="form-group">
+            <label for="college">College</label>
+            <input type="text" id="college">
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" id="address">
+        </div>
+
+        <div class="buttons">
+            <button type="submit" class="save">Save Changes</button>
+            <a href="adminProfile.html" class="cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    const userId = localStorage.getItem("userId");
+    const jwt = localStorage.getItem("jwt");
+
+    if (!userId || !jwt) {
+        alert("Not logged in. Redirecting to login page.");
+        window.location.href = 'index.html';
+    }
+
+    async function loadAdminData() {
+        document.getElementById('loader').style.display = 'block';
+        try {
+            const response = await fetch(`/api/auth/users/${userId}`, {
+                headers: { 'Authorization': 'Bearer ' + jwt }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("name").value = data.name || "";
+                document.getElementById("email").value = data.email || "";
+                document.getElementById("phone").value = data.phoneNumber || "";
+                document.getElementById("dob").value = data.dateOfBirth || "";
+                document.getElementById("gender").value = data.gender || "";
+                document.getElementById("dept").value = data.department || "";
+                document.getElementById("college").value = data.college || "";
+                document.getElementById("address").value = data.address || "";
+            } else {
+                alert("Failed to fetch profile data.");
+            }
+        } catch (error) {
+            console.error("Error fetching admin data:", error);
+            alert("Error connecting to server.");
+        } finally {
+            document.getElementById('loader').style.display = 'none';
+        }
+    }
+
+    async function saveAdmin(e) {
+        e.preventDefault();
+
+        const phone = document.getElementById("phone").value;
+        if (phone && phone.length !== 10) {
+            alert("Phone number must be exactly 10 digits");
+            return;
+        }
+
+        const updatedData = {
+            name: document.getElementById("name").value,
+            phoneNumber: phone,
+            dateOfBirth: document.getElementById("dob").value,
+            gender: document.getElementById("gender").value,
+            department: document.getElementById("dept").value,
+            college: document.getElementById("college").value,
+            address: document.getElementById("address").value
+        };
+
+        try {
+            const response = await fetch(`/api/auth/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + jwt
+                },
+                body: JSON.stringify(updatedData)
+            });
+
+            if (response.ok) {
+                alert("Profile updated successfully!");
+                // Also update localStorage name if it exists to keep UI consistent
+                localStorage.setItem("userName", updatedData.name);
+                window.location.href = "adminProfile.html";
+            } else {
+                const errorData = await response.json();
+                alert("Update failed: " + (errorData.message || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Error saving admin data:", error);
+            alert("Error connecting to server.");
+        }
+    }
+
+    window.onload = loadAdminData;
+</script>
+
+</body>
+</html>

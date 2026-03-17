@@ -37,4 +37,10 @@ public class StudentRegistrationController {
     public ResponseEntity<List<StudentRegistration>> getRegistrationsByStudent(@PathVariable String email) {
         return ResponseEntity.ok(service.getRegistrationsByEmail(email));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRegistration(@PathVariable String id) {
+        service.deleteRegistration(id);
+        return ResponseEntity.noContent().build();
+    }
 }

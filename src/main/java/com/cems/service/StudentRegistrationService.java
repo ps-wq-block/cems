@@ -31,4 +31,8 @@ public class StudentRegistrationService {
     public List<StudentRegistration> getRegistrationsByEmail(String email) {
         return repository.findByEmail(email);
     }
+
+    public void deleteRegistration(String id) {
+        repository.deleteById(id);
+    }
 }

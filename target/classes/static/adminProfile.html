@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile | CEMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #7dd3d8, #e5a2c6);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #6c63ff;
+        }
+
+        .logout {
+            color: #ff6b6b !important;
+        }
+
+        .profile-card {
+            width: 80%;
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #f2f2f2;
+            padding: 35px;
+            border-radius: 15px;
+            display: flex;
+            gap: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            align-items: center;
+        }
+
+        .profile-left {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #6c63ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 50px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+        }
+
+        #name {
+            margin: 10px 0;
+            font-size: 24px;
+            color: #333;
+        }
+
+        .edit-btn {
+            background: #6c63ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: #5746c5;
+            transform: translateY(-2px);
+        }
+
+        .profile-right {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 60px;
+            flex-grow: 1;
+        }
+
+        .info-item {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .info-item b {
+            color: #333;
+            display: inline-block;
+            width: 110px;
+        }
+
+        /* Recent System Actions */
+        .actions {
+            width: 80%;
+            max-width: 1000px;
+            margin: 20px auto 40px;
+        }
+
+        .actions h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .actions table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .actions th {
+            background: #6c63ff;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .actions td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #444;
+        }
+
+        .actions tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-completed {
+            color: #28a745;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">CEMS Admin</div>
+        <div class="nav-links">
+            <a href="AdminDashboard.html">Dashboard</a>
+            <a href="adminProfile.html">Profile</a>
+            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-left">
+            <div class="profile-img">👤</div>
+            <h2 id="name">Loading...</h2>
+            <button class="edit-btn" onclick="window.location.href='adminEditProfile.html'">
+                Edit Profile
+            </button>
+        </div>
+
+        <div class="profile-right">
+            <div class="info-item"><b>Email:</b> <span id="email">-</span></div>
+            <div class="info-item"><b>DOB:</b> <span id="dob">-</span></div>
+            <div class="info-item"><b>Phone:</b> <span id="phone">-</span></div>
+            <div class="info-item"><b>Gender:</b> <span id="gender">-</span></div>
+            <div class="info-item"><b>Department:</b> <span id="dept">-</span></div>
+            <div class="info-item"><b>College:</b> <span id="college">-</span></div>
+            <div class="info-item"><b>Address:</b> <span id="address">-</span></div>
+        </div>
+    </div>
+
+    <!-- Recent System Actions -->
+    <div class="actions">
+        <h2>Recent System Actions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="actionsBody">
+                <tr>
+                    <td>Approved Event Request</td>
+                    <td>12 May 2026</td>
+                    <td class="status-completed">Completed</td>
+                </tr>
+                <tr>
+                    <td>Rejected Event Request</td>
+                    <td>10 May 2026</td>
+                    <td class="status-completed">Completed</td>
+                </tr>
+                <tr>
+                    <td>Added New Organizer</td>
+                    <td>8 May 2026</td>
+                    <td class="status-completed">Completed</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadProfile() {
+            const userId = localStorage.getItem("userId");
+            const jwt = localStorage.getItem("jwt");
+
+            if (!userId || !jwt) {
+                window.location.href = "index.html";
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/auth/users/${userId}`, {
+                    headers: { 'Authorization': 'Bearer ' + jwt }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById("name").innerText = user.name || "Administrator";
+                    document.getElementById("email").innerText = user.email || "-";
+                    document.getElementById("phone").innerText = user.phoneNumber || "-";
+                    document.getElementById("dob").innerText = user.dateOfBirth || "-";
+                    document.getElementById("gender").innerText = user.gender || "-";
+                    document.getElementById("dept").innerText = user.department || "-";
+                    document.getElementById("college").innerText = user.college || "-";
+                    document.getElementById("address").innerText = user.address || "-";
+                } else {
+                    console.error("Failed to load user data");
+                    alert("Session expired or unauthorized. Please login again.");
+                    window.location.href = "index.html";
+                }
+            } catch (error) {
+                console.error("Error loading profile:", error);
+                alert("Error connecting to server.");
+            }
+        }
+
+        window.onload = loadProfile;
+    </script>
+
+</body>
+</html>
