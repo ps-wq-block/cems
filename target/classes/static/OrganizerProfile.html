@@ -1,386 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Organizer Profile | College Event Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Profile | CEMS</title>
     <style>
         body {
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #89f7fe, #fbc2eb);
+            background: linear-gradient(135deg, #7dd3d8, #e5a2c6);
+            min-height: 100vh;
         }
 
         .navbar {
-            background: white;
-            padding: 15px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: white;
+            padding: 15px 40px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .navbar h2 {
             margin: 0;
             color: #444;
+            font-size: 20px;
         }
 
-        .navbar .nav-links {
-            display: flex;
-            gap: 20px;
-        }
-
-        .navbar a {
+        .nav-links a {
+            margin-left: 20px;
             text-decoration: none;
             color: #444;
-            font-weight: 600;
+            font-weight: bold;
+            transition: color 0.3s;
         }
 
-        .navbar a:hover {
-            color: #8ec5a4;
-        }
-
-        .logout {
-            color: #ff6b6b !important;
-        }
-
-        .container {
-            width: 90%;
-            margin: auto;
-            margin-top: 40px;
+        .nav-links a:hover {
+            color: #6c63ff;
         }
 
         .profile-card {
-            background: white;
+            width: 85%;
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #f2f2f2;
+            padding: 30px;
             border-radius: 15px;
-            padding: 35px;
             display: flex;
-            align-items: center;
             gap: 40px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .profile-left {
             text-align: center;
+            flex-shrink: 0;
         }
 
-        .profile-circle {
-            width: 140px;
-            height: 140px;
+        .profile-img {
+            width: 130px;
+            height: 130px;
             border-radius: 50%;
-            background: #6a5acd;
+            background: #6c63ff;
             display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 70px;
+            align-items: center;
+            font-size: 45px;
             color: white;
-            animation: float 3s ease-in-out infinite;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
         }
 
-        @keyframes float {
-            0% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-
-            100% {
-                transform: translateY(0px);
-            }
-        }
-
-        .organizer-name {
-            margin-top: 12px;
-            font-size: 22px;
-            font-weight: bold;
+        #name {
+            margin: 10px 0;
             color: #333;
         }
 
         .edit-btn {
-            margin-top: 10px;
-            padding: 8px 16px;
-            border: none;
-            background: #6a5acd;
+            background: #6c63ff;
             color: white;
-            border-radius: 6px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.2s;
         }
 
         .edit-btn:hover {
             background: #5746c5;
+            transform: translateY(-2px);
         }
 
-        .info-section {
-            display: flex;
-            gap: 60px;
+        .profile-right {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 60px;
+            font-size: 16px;
+            flex-grow: 1;
         }
 
-        .info-col p {
-            margin: 8px 0;
+        .info-item {
             color: #555;
         }
 
-        .section-title {
-            margin-top: 45px;
-            margin-bottom: 12px;
+        .info-item b {
             color: #333;
+            display: inline-block;
+            width: 100px;
         }
 
-        table {
+        .events {
+            width: 85%;
+            max-width: 1000px;
+            margin: 20px auto 40px;
+        }
+
+        .events h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .events table {
             width: 100%;
             border-collapse: collapse;
             background: white;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        th,
-        td {
-            padding: 14px;
+        .events th {
+            background: #6c63ff;
+            color: white;
+            padding: 15px;
             text-align: center;
         }
 
-        th {
-            background: #6a5acd;
-            color: white;
+        .events td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            color: #444;
         }
 
-        tr:nth-child(even) {
-            background: #f2f2f2;
-        }
-
-        tr:hover {
-            background: #e9e9ff;
+        .status-badge {
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
         }
     </style>
-
-    <script>
-
-
-        let currentUser = null;
-
-        async function loadProfile() {
-            const userId = localStorage.getItem("userId");
-            if (!userId) {
-                document.getElementById("profileName").innerText = "Guest User (Not Logged In)";
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/auth/users/${userId}`, {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
-                });
-                if (response.ok) {
-                    const user = await response.json();
-                    currentUser = user;
-
-                    document.getElementById("profileName").innerText = user.name || "Organizer";
-                    if (user.email) document.getElementById("profileEmail").innerText = user.email;
-                    if (user.phoneNumber) document.getElementById("profilePhone").innerText = user.phoneNumber;
-                    if (user.department) document.getElementById("profileDept").innerText = user.department;
-                    if (user.college) document.getElementById("profileCollege").innerText = user.college;
-                    if (user.address) document.getElementById("profileAddress").innerText = user.address;
-
-                    // Load events organized by this organizer
-                    loadOrganizerEvents();
-                } else {
-                    console.error("Failed to load user data from API");
-                }
-            } catch (error) {
-                console.error("Error connecting to backend API", error);
-            }
-        }
-
-        async function loadOrganizerEvents() {
-            const tbody = document.getElementById("organizedEventsBody");
-            try {
-                const response = await fetch('/api/organizer/events', {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
-                });
-
-                if (response.ok) {
-                    const events = await response.json();
-
-                    if (events.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No events organized yet.</td></tr>';
-                        return;
-                    }
-
-                    tbody.innerHTML = '';
-                    events.forEach(event => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${event.name || '-'}</td>
-                            <td>${event.category || '-'}</td>
-                            <td>${event.date || '-'}</td>
-                            <td>${event.venue || '-'}</td>
-                            <td style="color: ${event.status === 'APPROVED' ? 'green' : event.status === 'REJECTED' ? 'red' : 'orange'}; font-weight: 600;">${event.status || 'Pending'}</td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load events.</td></tr>';
-                }
-            } catch (error) {
-                console.error("Error loading events:", error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
-            }
-        }
-
-        window.onload = loadProfile;
-    </script>
 </head>
 
 <body>
+
     <div class="navbar">
-        <h2>CEMS Organizer</h2>
+        <h2>College Event Management System</h2>
         <div class="nav-links">
             <a href="OrganizerDashboard.html">Dashboard</a>
-            <a href="MyEvents.html">My Events</a>
-            <a href="CreateEvent.html">Create Event</a>
             <a href="OrganizerProfile.html">Profile</a>
-            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
+            <a href="#" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
         </div>
     </div>
 
-    <div class="container">
-        <div class="profile-card">
-            <div class="profile-left">
-                <div class="profile-circle">👨‍💼</div>
-                <div class="organizer-name" id="profileName">Loading...</div>
-                <button class="edit-btn" onclick="openEditModal()">Edit Profile</button>
-            </div>
-
-            <div class="info-section">
-                <div class="info-col">
-                    <p><b>Email:</b> <span id="profileEmail">Updating...</span></p>
-                    <p><b>Phone:</b> <span id="profilePhone">Updating...</span></p>
-                    <p><b>Department:</b> <span id="profileDept">Updating...</span></p>
-                </div>
-                <div class="info-col">
-                    <p><b>College:</b> <span id="profileCollege">Updating...</span></p>
-                    <p><b>Address:</b> <span id="profileAddress">Updating...</span></p>
-                </div>
-            </div>
+    <div class="profile-card">
+        <div class="profile-left">
+            <div class="profile-img">👤</div>
+            <h2 id="name">Loading...</h2>
+            <button class="edit-btn" onclick="window.location.href='EditOrganizerProfile.html'">
+                Edit Profile
+            </button>
         </div>
 
-        <h3 class="section-title">Events Organized</h3>
+        <div class="profile-right">
+            <div class="info-item"><b>Email:</b> <span id="email">-</span></div>
+            <div class="info-item"><b>DOB:</b> <span id="dob">-</span></div>
+            <div class="info-item"><b>Phone:</b> <span id="phone">-</span></div>
+            <div class="info-item"><b>Gender:</b> <span id="gender">-</span></div>
+            <div class="info-item"><b>Department:</b> <span id="dept">-</span></div>
+            <div class="info-item"><b>College:</b> <span id="college">-</span></div>
+            <div class="info-item"><b>Address:</b> <span id="address">-</span></div>
+        </div>
+    </div>
+
+    <div class="events">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0;">Events Organized</h2>
+            <input type="text" id="searchInput" placeholder="Search events..." 
+                   style="padding: 10px; border-radius: 20px; border: 1px solid #ccc; width: 250px; outline: none;"
+                   onkeyup="filterEvents()">
+        </div>
         <table>
             <thead>
                 <tr>
                     <th>Event Name</th>
-                    <th>Category</th>
                     <th>Date</th>
-                    <th>Venue</th>
+                    <th>Location</th>
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody id="organizedEventsBody">
+            <tbody id="eventsBody">
                 <tr>
-                    <td colspan="5" style="text-align:center; color:#888;">Loading events...</td>
+                    <td colspan="4">Loading events...</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- Edit Profile Modal -->
-    <div id="editModal"
-        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
-        <div
-            style="background:white; padding:35px; width:450px; max-width:90%; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.3); max-height:85vh; overflow-y:auto;">
-            <div
-                style="background:#6a5acd; padding:12px; border-radius:10px; text-align:center; font-size:20px; font-weight:bold; margin-bottom:20px; color:white;">
-                Edit Profile</div>
-            <form id="editForm">
-                <label style="font-weight:600; font-size:14px;">Full Name</label>
-                <input type="text" id="editName"
-                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
-                <label style="font-weight:600; font-size:14px;">Phone Number</label>
-                <input type="text" id="editPhone"
-                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
-                <label style="font-weight:600; font-size:14px;">Department</label>
-                <input type="text" id="editDept"
-                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
-                <label style="font-weight:600; font-size:14px;">College</label>
-                <input type="text" id="editCollege"
-                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
-                <label style="font-weight:600; font-size:14px;">Address</label>
-                <input type="text" id="editAddress"
-                    style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
-                <div style="display:flex; gap:12px; margin-top:10px;">
-                    <button type="submit"
-                        style="flex:1; padding:12px; background:#4CAF50; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Save
-                        Changes</button>
-                    <button type="button" onclick="closeEditModal()"
-                        style="flex:1; padding:12px; background:#ff4d4d; border:none; color:white; font-size:16px; border-radius:8px; cursor:pointer;">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
-        function openEditModal() {
-            if (!currentUser) { alert("Profile not loaded yet."); return; }
-            document.getElementById("editName").value = currentUser.name || '';
-            document.getElementById("editPhone").value = currentUser.phoneNumber || '';
-            document.getElementById("editDept").value = currentUser.department || '';
-            document.getElementById("editCollege").value = currentUser.college || '';
-            document.getElementById("editAddress").value = currentUser.address || '';
-            document.getElementById("editModal").style.display = "flex";
+        const userId = localStorage.getItem("userId");
+        const jwt = localStorage.getItem("jwt");
+
+        if (!userId || !jwt) {
+            window.location.href = "index.html";
         }
 
-        function closeEditModal() {
-            document.getElementById("editModal").style.display = "none";
-        }
-
-        document.getElementById("editForm").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const userId = localStorage.getItem("userId");
-            const updatedData = {
-                name: document.getElementById("editName").value,
-                phoneNumber: document.getElementById("editPhone").value,
-                department: document.getElementById("editDept").value,
-                college: document.getElementById("editCollege").value,
-                address: document.getElementById("editAddress").value
-            };
-
+        async function loadProfile() {
             try {
                 const response = await fetch(`/api/auth/users/${userId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
-                    },
-                    body: JSON.stringify(updatedData)
+                    headers: { 'Authorization': 'Bearer ' + jwt }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById("name").innerText = user.name || "Organizer";
+                    document.getElementById("email").innerText = user.email || "-";
+                    document.getElementById("phone").innerText = user.phoneNumber || "-";
+                    document.getElementById("dob").innerText = user.dateOfBirth || "-";
+                    document.getElementById("gender").innerText = user.gender || "-";
+                    document.getElementById("dept").innerText = user.department || "-";
+                    document.getElementById("college").innerText = user.college || "-";
+                    document.getElementById("address").innerText = user.address || "-";
+                    
+                    loadOrganizerEvents();
+                } else {
+                    window.location.href = "index.html";
+                }
+            } catch (error) {
+                console.error("Error loading profile:", error);
+            }
+        }
+
+        let allEvents = [];
+
+        async function loadOrganizerEvents() {
+            const tbody = document.getElementById("eventsBody");
+            try {
+                const response = await fetch('/api/organizer/events', {
+                    headers: { 'Authorization': 'Bearer ' + jwt }
                 });
 
                 if (response.ok) {
-                    alert("Profile updated successfully!");
-                    closeEditModal();
-                    loadProfile();
+                    allEvents = await response.json();
+                    renderEvents(allEvents);
                 } else {
-                    alert("Failed to update profile.");
+                    tbody.innerHTML = '<tr><td colspan="4">Failed to load events.</td></tr>';
                 }
             } catch (error) {
-                alert("Error connecting to the server.");
-                console.error(error);
+                console.error("Error loading events:", error);
+                tbody.innerHTML = '<tr><td colspan="4">Error connecting to server.</td></tr>';
             }
-        });
+        }
 
-        document.getElementById("editModal").addEventListener("click", function (e) {
-            if (e.target === this) closeEditModal();
-        });
+        function renderEvents(events) {
+            const tbody = document.getElementById("eventsBody");
+            if (events.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No events found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = '';
+            events.forEach(event => {
+                const row = document.createElement('tr');
+                const statusColor = event.status === 'APPROVED' ? '#28a745' : (event.status === 'REJECTED' ? '#dc3545' : '#ffc107');
+                row.innerHTML = `
+                    <td>${event.name || '-'}</td>
+                    <td>${event.date || '-'}</td>
+                    <td>${event.venue || '-'}</td>
+                    <td><span class="status-badge" style="color: ${statusColor}; border: 1px solid ${statusColor};">${event.status || 'PENDING'}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterEvents() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = allEvents.filter(event => 
+                (event.name && event.name.toLowerCase().includes(query)) ||
+                (event.venue && event.venue.toLowerCase().includes(query))
+            );
+            renderEvents(filtered);
+        }
+
+        window.onload = loadProfile;
     </script>
-</body>
 
+</body>
 </html>

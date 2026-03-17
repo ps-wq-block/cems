@@ -142,6 +142,13 @@
 
     <div class="container">
         <h1 class="heading">Events Submitted By You</h1>
+        
+        <div style="margin-bottom: 25px;">
+            <input type="text" id="searchInput" placeholder="Search events by name, category or venue..." 
+                   style="width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; outline: none;"
+                   onkeyup="filterEvents()">
+        </div>
+
         <div id="eventsList" class="loader">Loading your events...</div>
     </div>
 
@@ -150,6 +157,8 @@
             localStorage.clear();
             window.location.href = "index.html";
         }
+
+        let allEvents = [];
 
         async function fetchMyEvents() {
             const container = document.getElementById("eventsList");
@@ -160,40 +169,8 @@
                 });
 
                 if (response.ok) {
-                    const events = (await response.json()).sort((a, b) => (b.id || "").localeCompare(a.id || ""));
-
-                    if (events.length === 0) {
-                        container.innerHTML = `
-                            <div class="empty">
-                                <h2>No Events Found</h2>
-                                <p>You haven't submitted any event requests yet.</p>
-                                <br>
-                                <a href="CreateEvent.html" style="background:#8ec5a4; color:white; padding:10px 20px; border-radius:20px; text-decoration:none; font-weight:bold;">Create Your First Event</a>
-                            </div>`;
-                        return;
-                    }
-
-                    container.innerHTML = "";
-                    events.forEach(event => {
-                        let badgeClass = "pending";
-                        if (event.status === "Approved") badgeClass = "approved";
-                        else if (event.status === "Rejected") badgeClass = "rejected";
-
-                        let feedbackHtml = event.adminComments ? `<p><strong>Admin Note:</strong> <span style="color:#d97706">${event.adminComments}</span></p>` : '';
-
-                        let html = `
-                            <div class="event-card">
-                                <div class="event-info">
-                                    <h3>${event.name}</h3>
-                                    <p><strong>Category:</strong> ${event.category} &nbsp;|&nbsp; <strong>Date:</strong> ${event.eventDate || 'TBD'} &nbsp;|&nbsp; <strong>Time:</strong> ${event.eventTime || 'TBD'}</p>
-                                    <p><strong>Venue:</strong> ${event.venue || 'TBD'} &nbsp;|&nbsp; <strong>Capacity:</strong> ${event.maxParticipants || 'Unlimited'}</p>
-                                    ${feedbackHtml}
-                                </div>
-                                <div class="status-badge ${badgeClass}">${event.status || 'Pending'}</div>
-                            </div>
-                        `;
-                        container.innerHTML += html;
-                    });
+                    allEvents = (await response.json()).sort((a, b) => (b.id || "").localeCompare(a.id || ""));
+                    renderEvents(allEvents);
                 } else {
                     container.innerHTML = "<p style='color:red; text-align:center;'>Authorization Failed. Try logging in again.</p>";
                 }
@@ -201,6 +178,57 @@
                 console.error("Fetch Error:", error);
                 container.innerHTML = "<p style='color:red; text-align:center;'>Cannot connect to the backend server.</p>";
             }
+        }
+
+        function renderEvents(events) {
+            const container = document.getElementById("eventsList");
+            
+            if (events.length === 0) {
+                container.innerHTML = `
+                    <div class="empty">
+                        <h2>No Events Found</h2>
+                        <p>No event requests match your search criteria.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            events.forEach(event => {
+                let badgeClass = "pending";
+                if (event.status === "Approved") badgeClass = "approved";
+                else if (event.status === "Rejected") badgeClass = "rejected";
+
+                let feedbackHtml = event.adminComments ? `<p><strong>Admin Note:</strong> <span style="color:#d97706">${event.adminComments}</span></p>` : '';
+
+                let html = `
+                    <div class="event-card">
+                        <div class="event-info">
+                            <h3>${event.name}</h3>
+                            <p><strong>Category:</strong> ${event.category} &nbsp;|&nbsp; <strong>Date:</strong> ${event.eventDate || 'TBD'} &nbsp;|&nbsp; <strong>Time:</strong> ${event.eventTime || 'TBD'}</p>
+                            <p><strong>Venue:</strong> ${event.venue || 'TBD'} &nbsp;|&nbsp; <strong>Capacity:</strong> ${event.maxParticipants || 'Unlimited'}</p>
+                            ${feedbackHtml}
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                            <div class="status-badge ${badgeClass}">${event.status || 'Pending'}</div>
+                            <button onclick="window.location.href='EditEvent.html?id=${event.id}'" 
+                                    style="background: #7fb3d5; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                Edit Event
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        }
+
+        function filterEvents() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = allEvents.filter(event => 
+                (event.name && event.name.toLowerCase().includes(query)) ||
+                (event.category && event.category.toLowerCase().includes(query)) ||
+                (event.venue && event.venue.toLowerCase().includes(query))
+            );
+            renderEvents(filtered);
         }
 
         window.onload = fetchMyEvents;
