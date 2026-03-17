@@ -113,12 +113,28 @@
     <div class="container">
         <a href="AdminDashboard.html" class="btn-back">← Back to Dashboard</a>
         <h1>System Events</h1>
+        
+        <div style="margin-bottom: 25px; display: flex; gap: 15px;">
+            <input type="text" id="searchInput" placeholder="Search by name, organizer, category or venue..." 
+                   style="flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #ddd; font-size: 15px; outline: none;"
+                   onkeyup="filterEvents()">
+            <select id="sortSelect" onchange="filterEvents()" 
+                    style="padding: 0 20px; border-radius: 25px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="id_desc">Sort: Newest First</option>
+                <option value="name_asc">Sort: Eventwise (A-Z)</option>
+                <option value="date_asc">Sort: Datewise (Earliest First)</option>
+                <option value="venue_asc">Sort: Venuewise (A-Z)</option>
+            </select>
+        </div>
+
         <div id="tableContainer">
             <p style="text-align:center;">Loading events...</p>
         </div>
     </div>
 
     <script>
+        let allEvents = [];
+
         async function fetchEvents() {
             const container = document.getElementById('tableContainer');
             try {
@@ -127,42 +143,82 @@
                 });
 
                 if (response.ok) {
-                    const events = (await response.json()).sort((a, b) => (b.id || "").localeCompare(a.id || ""));
-                    let tableHtml = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Event Name</th>
-                                    <th>Organizer</th>
-                                    <th>Category</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    events.forEach(event => {
-                        const statusClass = `status-${(event.status || 'pending').toLowerCase()}`;
-                        tableHtml += `
-                            <tr>
-                                <td><strong>${event.name}</strong></td>
-                                <td>${event.organizerEmail || '-'}</td>
-                                <td>${event.category || '-'}</td>
-                                <td>${event.eventDate || 'TBD'}</td>
-                                <td><span class="status-pill ${statusClass}">${event.status || 'PENDING'}</span></td>
-                            </tr>
-                        `;
-                    });
-
-                    tableHtml += `</tbody></table>`;
-                    container.innerHTML = tableHtml;
+                    allEvents = await response.json();
+                    filterEvents(); // Initial render
                 } else {
                     container.innerHTML = '<p style="color:red; text-align:center;">Failed to load data.</p>';
                 }
             } catch (error) {
                 container.innerHTML = '<p style="color:red; text-align:center;">Connection error.</p>';
             }
+        }
+
+        function renderEvents(events) {
+            const container = document.getElementById('tableContainer');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#666;">No events match your search criteria.</p>';
+                return;
+            }
+
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Organizer</th>
+                            <th>Category</th>
+                            <th>Venue</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            events.forEach(event => {
+                const statusClass = `status-${(event.status || 'pending').toLowerCase()}`;
+                tableHtml += `
+                    <tr>
+                        <td><strong>${event.name || '-'}</strong></td>
+                        <td>${event.organizerEmail || '-'}</td>
+                        <td>${event.category || '-'}</td>
+                        <td>${event.venue || '-'}</td>
+                        <td>${event.eventDate || 'TBD'}</td>
+                        <td><span class="status-pill ${statusClass}">${event.status || 'PENDING'}</span></td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table>`;
+            container.innerHTML = tableHtml;
+        }
+
+        function filterEvents() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+
+            let filtered = allEvents.filter(event => 
+                (event.name && event.name.toLowerCase().includes(query)) ||
+                (event.organizerEmail && event.organizerEmail.toLowerCase().includes(query)) ||
+                (event.category && event.category.toLowerCase().includes(query)) ||
+                (event.venue && event.venue.toLowerCase().includes(query))
+            );
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                if (sortBy === "name_asc") {
+                    return (a.name || "").localeCompare(b.name || "");
+                } else if (sortBy === "date_asc") {
+                    return (a.eventDate || "9999-12-31").localeCompare(b.eventDate || "9999-12-31");
+                } else if (sortBy === "venue_asc") {
+                    return (a.venue || "").localeCompare(b.venue || "");
+                } else {
+                    return (b.id || "").localeCompare(a.id || ""); // Newest First
+                }
+            });
+
+            renderEvents(filtered);
         }
 
         fetchEvents();

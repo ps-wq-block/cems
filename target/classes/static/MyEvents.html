@@ -143,10 +143,17 @@
     <div class="container">
         <h1 class="heading">Events Submitted By You</h1>
         
-        <div style="margin-bottom: 25px;">
+        <div style="margin-bottom: 25px; display: flex; gap: 15px;">
             <input type="text" id="searchInput" placeholder="Search events by name, category or venue..." 
-                   style="width: 100%; padding: 15px; border-radius: 25px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; outline: none;"
+                   style="flex: 1; padding: 15px; border-radius: 25px; border: 1px solid #ccc; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; outline: none;"
                    onkeyup="filterEvents()">
+            <select id="sortSelect" onchange="filterEvents()" 
+                    style="padding: 0 20px; border-radius: 25px; border: 1px solid #ccc; background: white; font-size: 15px; cursor: pointer; outline: none;">
+                <option value="id_desc">Sort: Newest First</option>
+                <option value="name_asc">Sort: Eventwise (A-Z)</option>
+                <option value="date_asc">Sort: Datewise (Earliest First)</option>
+                <option value="venue_asc">Sort: Venuewise (A-Z)</option>
+            </select>
         </div>
 
         <div id="eventsList" class="loader">Loading your events...</div>
@@ -223,11 +230,27 @@
 
         function filterEvents() {
             const query = document.getElementById("searchInput").value.toLowerCase();
-            const filtered = allEvents.filter(event => 
+            const sortBy = document.getElementById("sortSelect").value;
+
+            let filtered = allEvents.filter(event => 
                 (event.name && event.name.toLowerCase().includes(query)) ||
                 (event.category && event.category.toLowerCase().includes(query)) ||
                 (event.venue && event.venue.toLowerCase().includes(query))
             );
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                if (sortBy === "name_asc") {
+                    return (a.name || "").localeCompare(b.name || "");
+                } else if (sortBy === "date_asc") {
+                    return (a.eventDate || "9999-12-31").localeCompare(b.eventDate || "9999-12-31");
+                } else if (sortBy === "venue_asc") {
+                    return (a.venue || "").localeCompare(b.venue || "");
+                } else {
+                    return (b.id || "").localeCompare(a.id || ""); // Newest First
+                }
+            });
+
             renderEvents(filtered);
         }
 

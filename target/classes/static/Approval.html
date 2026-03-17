@@ -164,6 +164,19 @@
 
         <div class="title">Event Request Approvals</div>
 
+        <div style="margin-bottom: 20px; display: flex; gap: 12px;">
+            <input type="text" id="searchInput" placeholder="Search by name, category or venue..." 
+                   style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none;"
+                   onkeyup="filterEvents()">
+            <select id="sortSelect" onchange="filterEvents()" 
+                    style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="id_desc">Sort: Newest First</option>
+                <option value="name">Sort: Eventwise</option>
+                <option value="date">Sort: Datewise</option>
+                <option value="venue">Sort: Venuewise</option>
+            </select>
+        </div>
+
         <div id="eventList">
             <!-- Dynamic Content Loaded Here -->
         </div>
@@ -199,9 +212,9 @@
     </div>
 
     <script>
-
         let currentEventId = null;
-        let eventsData = []; // Store full event objects
+        let allEvents = []; // Store full event objects for filtering
+        let eventsData = []; // Shadow for compatibility with openEvent
 
         // --- LOAD EVENTS DYNAMICALLY ---
         async function loadEvents() {
@@ -213,31 +226,9 @@
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });
                 if (response.ok) {
-                    const events = await response.json();
-                    eventsData = events; // Store full event data
-
-                    if (events.length === 0) {
-                        eventListDiv.innerHTML = "<p>No events found.</p>";
-                        return;
-                    }
-
-                    eventListDiv.innerHTML = ""; // Clear loader
-
-                    events.forEach(event => {
-                        let badgeClass = event.status === "Approved" ? "approved" :
-                            event.status === "Rejected" ? "reject" : "pending";
-
-                        let cardHTML = `
-                <div class="event-card" onclick="openEvent('${event.id}')">
-                    <div>
-                        <strong>${event.name}</strong><br>
-                        Category: ${event.category}
-                    </div>
-                    <span class="badge ${badgeClass}">${event.status}</span>
-                </div>`;
-
-                        eventListDiv.innerHTML += cardHTML;
-                    });
+                    allEvents = await response.json();
+                    eventsData = allEvents; // Sync with existing logic
+                    filterEvents(); // Render initial list
                 } else {
                     eventListDiv.innerHTML = "<p style='color:red;'>Failed to load events.</p>";
                 }
@@ -245,6 +236,58 @@
                 eventListDiv.innerHTML = "<p style='color:red;'>Error connecting to backend server.</p>";
                 console.error('Error fetching events:', error);
             }
+        }
+
+        function renderEvents(events) {
+            const eventListDiv = document.getElementById("eventList");
+            
+            if (events.length === 0) {
+                eventListDiv.innerHTML = "<p style='text-align:center;'>No events found matching your criteria.</p>";
+                return;
+            }
+
+            eventListDiv.innerHTML = "";
+            events.forEach(event => {
+                let badgeClass = event.status === "Approved" ? "approved" :
+                    event.status === "Rejected" ? "reject" : "pending";
+
+                let cardHTML = `
+                    <div class="event-card" onclick="openEvent('${event.id}')">
+                        <div>
+                            <strong>${event.name || '-'}</strong><br>
+                            Category: ${event.category || '-'} | Venue: ${event.venue || '-'}
+                        </div>
+                        <span class="badge ${badgeClass}">${event.status || 'Pending'}</span>
+                    </div>`;
+
+                eventListDiv.innerHTML += cardHTML;
+            });
+        }
+
+        function filterEvents() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const sortBy = document.getElementById("sortSelect").value;
+
+            let filtered = allEvents.filter(event => 
+                (event.name && event.name.toLowerCase().includes(query)) ||
+                (event.category && event.category.toLowerCase().includes(query)) ||
+                (event.venue && event.venue.toLowerCase().includes(query))
+            );
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                if (sortBy === "name") {
+                    return (a.name || "").localeCompare(b.name || "");
+                } else if (sortBy === "date") {
+                    return (a.eventDate || "9999-12-31").localeCompare(b.eventDate || "9999-12-31");
+                } else if (sortBy === "venue") {
+                    return (a.venue || "").localeCompare(b.venue || "");
+                } else {
+                    return (b.id || "").localeCompare(a.id || ""); // Newest First
+                }
+            });
+
+            renderEvents(filtered);
         }
 
         // Ensure events load when page opens
