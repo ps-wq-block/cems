@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Create Event</title>
 
@@ -9,8 +8,6 @@
             font-family: Arial;
             margin: 0;
             padding: 0;
-
-            /* Light mixed background */
             background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
         }
 
@@ -47,8 +44,6 @@
             color: #a29bfe;
         }
 
-        /* Main container */
-
         .container {
             width: 520px;
             margin: 40px auto;
@@ -57,8 +52,6 @@
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
         }
-
-        /* Heading box */
 
         .heading {
             background: linear-gradient(to right, #9ad7cf, #cdb4db);
@@ -71,14 +64,10 @@
             color: #2b2b2b;
         }
 
-        /* Labels */
-
         label {
             font-weight: bold;
             color: #2f3e46;
         }
-
-        /* Input fields */
 
         input,
         select,
@@ -88,52 +77,28 @@
             margin-top: 6px;
             margin-bottom: 16px;
             border-radius: 8px;
-            border: 1px solid #b7d6d2;
+            border: 1px solid #ccc;
             background: #f4fffc;
-            font-size: 14px;
         }
 
         textarea {
             height: 80px;
         }
 
-        /* Buttons layout (Same Line) */
-
         .buttons {
             display: flex;
-            gap: 12px;
+            justify-content: center;
         }
-
-        /* Equal size buttons */
-
-        .buttons button {
-            flex: 1;
-        }
-
-        /* Buttons */
 
         button {
-            padding: 11px;
+            padding: 12px 20px;
             border: none;
             border-radius: 8px;
             font-size: 15px;
             cursor: pointer;
             font-weight: bold;
             color: white;
-        }
-
-        /* Soft button colors */
-
-        .edit {
-            background: #7fb3d5;
-        }
-
-        .approval {
             background: #a29bfe;
-        }
-
-        .publish {
-            background: #8ec5a4;
         }
 
         button:hover {
@@ -151,16 +116,13 @@
             <a href="OrganizerDashboard.html">Dashboard</a>
             <a href="MyEvents.html">My Events</a>
             <a href="CreateEvent.html">Create Event</a>
-            <a href="Approval.html">Approvals</a>
             <a href="index.html" onclick="localStorage.clear()">Logout</a>
         </div>
     </div>
 
     <div class="container">
 
-        <div class="heading">
-            Create New Event
-        </div>
+        <div class="heading">Create New Event</div>
 
         <form id="createEventForm">
 
@@ -168,7 +130,6 @@
             <input type="text" id="name" placeholder="Enter event name" required>
 
             <label>Category</label>
-
             <select id="category" required>
                 <option value="Seminar">Seminar</option>
                 <option value="Workshop">Workshop</option>
@@ -183,19 +144,21 @@
             </select>
 
             <label>Event Date</label>
-            <input type="date" id="eventDate" required>
+            <input type="date" id="date" onchange="checkAvailability()" required>
 
             <label>Event Time</label>
-            <input type="time" id="eventTime" required>
+            <input type="text" id="time" placeholder="e.g. 12 AM - 2 PM" onchange="checkAvailability()" required>
 
             <label>Venue</label>
-            <input type="text" id="venue" placeholder="Enter venue" required>
+            <select id="venueSelect" required>
+                <option value="">Select date & time first</option>
+            </select>
 
             <label>Description</label>
             <textarea id="description" placeholder="Enter event description" required></textarea>
 
             <label>Maximum Participants</label>
-            <input type="number" id="maxParticipants" placeholder="Enter number" required>
+            <input type="number" id="maxParticipants" placeholder="e.g. 50" required>
 
             <label>Registration Deadline</label>
             <input type="date" id="registrationDeadline" required>
@@ -204,27 +167,105 @@
             <textarea id="rules" placeholder="Enter event rules" required></textarea>
 
             <div class="buttons">
-
-
-
-                <button type="submit" class="approval">Request Approval</button>
-
+                <button type="submit">Request Approval</button>
             </div>
 
         </form>
+
         <div id="statusMessage" style="text-align:center; font-weight:bold; margin-top:15px; display:none;"></div>
+
     </div>
 
     <script>
+
+        // ✅ FULL VENUE LIST
+        const venues = [
+            "Open Stage",
+            "College Auditorium",
+            "Fine Arts Studio",
+            "Fine Arts Room - Block C",
+            "Conference Hall",
+            "Seminar Hall - Block B",
+            "Seminar Hall - Block A",
+            "College Medical Room",
+            "College Ground",
+            "College Football Ground",
+            "Computer Lab - Block A",
+            "Computer Lab - Block B",
+            "Computer Lab - Block C",
+            "Mechanical Workshop Area",
+            "Innovation Lab",
+            "College Campus Garden Area",
+            "College to City Park Route",
+            "Library Seminar Room",
+            "Placement Cell Hall",
+            "Main Lobby Area",
+            "Rooftop Activity Area",
+            "Basketball Court",
+            "Volleyball Court",
+            "Indoor Sports Complex",
+            "Cafeteria Hall",
+            "Admin Block Conference Room",
+            "Lecture Hall - Block A",
+            "Lecture Hall - Block B"
+        ];
+
+        // ✅ BOOKED DATA (time must match format)
+        const bookedVenues = [
+            { venue: "College Auditorium", date: "2026-03-20", time: "12 AM - 2 PM" },
+            { venue: "Seminar Hall - Block B", date: "2026-03-20", time: "2 PM - 4 PM" },
+            { venue: "College Ground", date: "2026-03-21", time: "10 AM - 12 PM" }
+        ];
+
+        function checkAvailability() {
+
+            let date = document.getElementById("date").value;
+            let time = document.getElementById("time").value.trim();
+
+            let venueSelect = document.getElementById("venueSelect");
+
+            venueSelect.innerHTML = "";
+
+            if (date === "" || time === "") {
+                venueSelect.innerHTML = "<option value=''>Select date & time first</option>";
+                return;
+            }
+
+            let availableFound = false;
+
+            venues.forEach(v => {
+
+                let isBooked = bookedVenues.some(b =>
+                    b.venue === v && b.date === date && b.time.toLowerCase() === time.toLowerCase()
+                );
+
+                // ✅ Only available venues
+                if (!isBooked) {
+                    let option = document.createElement("option");
+                    option.value = v;
+                    option.textContent = v;
+                    venueSelect.appendChild(option);
+                    availableFound = true;
+                }
+
+            });
+
+            // ❌ No venue case
+            if (!availableFound) {
+                venueSelect.innerHTML = "<option value=''>No venue available</option>";
+            }
+
+        }
+
         document.getElementById('createEventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const data = {
                 name: document.getElementById('name').value,
                 category: document.getElementById('category').value,
-                eventDate: document.getElementById('eventDate').value,
-                eventTime: document.getElementById('eventTime').value,
-                venue: document.getElementById('venue').value,
+                eventDate: document.getElementById('date').value,
+                eventTime: document.getElementById('time').value,
+                venue: document.getElementById('venueSelect').value,
                 description: document.getElementById('description').value,
                 maxParticipants: parseInt(document.getElementById('maxParticipants').value),
                 registrationDeadline: document.getElementById('registrationDeadline').value,
@@ -248,6 +289,7 @@
                     statusMessage.style.color = 'green';
                     statusMessage.textContent = 'Event request submitted successfully! Pending admin approval.';
                     this.reset();
+                    document.getElementById("venueSelect").innerHTML = "<option value=''>Select date & time first</option>";
                 } else {
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'red';
@@ -260,8 +302,9 @@
                 console.error('Error:', error);
             }
         });
+
     </script>
 
 </body>
 
-</html>
+</html>
