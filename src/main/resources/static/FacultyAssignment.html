@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assign Faculty Coordinator</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            color: #444;
+            font-size: 22px;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .navbar a:hover {
+            color: #a29bfe;
+        }
+
+        .container {
+            width: 520px;
+            margin: 40px auto;
+            background: linear-gradient(135deg, #f8fffd, #eef7f6);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .heading {
+            background: linear-gradient(to right, #9ad7cf, #cdb4db);
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2b2b2b;
+        }
+
+        label {
+            font-weight: bold;
+            color: #2f3e46;
+            display: block;
+            margin-top: 10px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #b7d6d2;
+            background: #f4fffc;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 80px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .buttons button {
+            flex: 1;
+        }
+
+        button {
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            transition: 0.2s;
+        }
+
+        .notify {
+            background: #a29bfe;
+        }
+
+        .assign {
+            background: #8ec5a4;
+        }
+
+        button:hover {
+            transform: scale(1.03);
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Event Admin Dashboard</h2>
+        <div class="nav-links">
+            <a href="AdminDashboard.html">Dashboard</a>
+            <a href="Approval.html">Approvals</a>
+            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="heading">Assign Faculty Coordinator</div>
+
+        <form id="assignForm">
+            <label>Select Event</label>
+            <select id="eventSelect" required>
+                <option value="">Select an event...</option>
+            </select>
+
+            <label>Faculty Name</label>
+            <input type="text" id="facultyName" placeholder="Enter full name (e.g., Dr. Jane Doe)" required>
+
+            <label>Faculty / Employee ID</label>
+            <input type="text" id="facultyId" placeholder="Enter faculty ID" required>
+
+            <label>Department</label>
+            <input type="text" id="department" placeholder="e.g. Information Technology" required>
+
+            <label>Contact Number</label>
+            <input type="tel" id="contactNumber" placeholder="Enter mobile number" required>
+
+            <label>Email Address</label>
+            <input type="email" id="emailAddress" placeholder="Enter faculty email address" required>
+
+            <label>Assigned Responsibilities</label>
+            <textarea id="responsibilities" placeholder="Specify the duties for this faculty member..." required></textarea>
+
+            <div class="buttons">
+                <button type="button" class="notify" onclick="notifyFaculty()">Notify Faculty</button>
+                <button type="submit" class="assign">Confirm Assignment</button>
+            </div>
+        </form>
+        <div id="statusMessage" style="text-align:center; font-weight:bold; margin-top:15px; display:none;"></div>
+    </div>
+
+    <script>
+        async function loadEvents() {
+            const select = document.getElementById("eventSelect");
+            try {
+                const response = await fetch('/api/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (response.ok) {
+                    const events = await response.json();
+                    events.filter(e => e.status === 'Approved').forEach(event => {
+                        const option = document.createElement("option");
+                        option.value = event.name;
+                        option.textContent = event.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (err) {
+                console.error("Error loading events:", err);
+            }
+        }
+
+        function notifyFaculty() {
+            const email = document.getElementById("emailAddress").value;
+            if (!email) {
+                alert("Please enter a faculty email first.");
+                return;
+            }
+            alert("Notification trigger synchronized. Emails will be dispatched once assignment is committed.");
+        }
+
+        document.getElementById("assignForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const statusMessage = document.getElementById("statusMessage");
+            
+            const assignmentData = {
+                event: document.getElementById("eventSelect").value,
+                facultyName: document.getElementById("facultyName").value,
+                facultyId: document.getElementById("facultyId").value,
+                department: document.getElementById("department").value,
+                contactNumber: document.getElementById("contactNumber").value,
+                emailAddress: document.getElementById("emailAddress").value,
+                responsibilities: document.getElementById("responsibilities").value
+            };
+
+            try {
+                const response = await fetch('/api/assignments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    },
+                    body: JSON.stringify(assignmentData)
+                });
+
+                if (response.ok) {
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = 'green';
+                    statusMessage.textContent = 'Faculty Coordinator assigned and notified successfully!';
+                    e.target.reset();
+                } else {
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = 'red';
+                    statusMessage.textContent = 'Failed to commit assignment.';
+                }
+            } catch (err) {
+                statusMessage.style.display = 'block';
+                statusMessage.style.color = 'red';
+                statusMessage.textContent = 'Connectivity error with CEMS backend.';
+                console.error(err);
+            }
+        });
+
+        window.onload = loadEvents;
+    </script>
+</body>
+</html>
