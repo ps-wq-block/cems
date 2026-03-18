@@ -201,9 +201,10 @@
 
             container.innerHTML = "";
             events.forEach(event => {
+                const status = (event.status || "PENDING").toUpperCase();
                 let badgeClass = "pending";
-                if (event.status === "Approved") badgeClass = "approved";
-                else if (event.status === "Rejected") badgeClass = "rejected";
+                if (status === "APPROVED") badgeClass = "approved";
+                else if (status === "REJECTED") badgeClass = "rejected";
 
                 let feedbackHtml = event.adminComments ? `<p><strong>Admin Note:</strong> <span style="color:#d97706">${event.adminComments}</span></p>` : '';
 
