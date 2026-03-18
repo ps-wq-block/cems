@@ -148,6 +148,9 @@
     </div>
 
     <script>
+        // Clear session data on login page load
+        localStorage.clear();
+
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 

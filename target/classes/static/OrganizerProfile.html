@@ -282,12 +282,24 @@
             tbody.innerHTML = '';
             events.forEach(event => {
                 const row = document.createElement('tr');
-                const statusColor = event.status === 'APPROVED' ? '#28a745' : (event.status === 'REJECTED' ? '#dc3545' : '#ffc107');
+                const status = (event.status || 'PENDING').toUpperCase();
+                let statusBg, statusColor;
+                if (status === 'APPROVED') {
+                    statusBg = '#dcfce7'; 
+                    statusColor = '#166534';
+                } else if (status === 'REJECTED') {
+                    statusBg = '#fee2e2'; 
+                    statusColor = '#991b1b';
+                } else {
+                    statusBg = '#fef9c3'; 
+                    statusColor = '#854d0e';
+                }
+                
                 row.innerHTML = `
                     <td>${event.name || '-'}</td>
-                    <td>${event.date || '-'}</td>
+                    <td>${event.eventDate || '-'}</td>
                     <td>${event.venue || '-'}</td>
-                    <td><span class="status-badge" style="color: ${statusColor}; border: 1px solid ${statusColor};">${event.status || 'PENDING'}</span></td>
+                    <td><span class="status-badge" style="background-color: ${statusBg}; color: ${statusColor};">${status}</span></td>
                 `;
                 tbody.appendChild(row);
             });
@@ -306,7 +318,7 @@
             if (sortBy === "name") {
                 filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
             } else if (sortBy === "date") {
-                filtered.sort((a, b) => (a.date || "9999-12-31").localeCompare(b.date || "9999-12-31"));
+                filtered.sort((a, b) => (a.eventDate || "9999-12-31").localeCompare(b.eventDate || "9999-12-31"));
             } else if (sortBy === "venue") {
                 filtered.sort((a, b) => (a.venue || "").localeCompare(b.venue || ""));
             } else {

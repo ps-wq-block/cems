@@ -184,6 +184,11 @@
     </div>
 
     <script>
+        // Role Guard
+        if (localStorage.getItem("role") !== "STUDENT") {
+            window.location.href = "index.html";
+        }
+
         let approvedEvents = [];
         let eventsByCategory = {};
 

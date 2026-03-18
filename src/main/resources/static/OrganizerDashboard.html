@@ -121,6 +121,11 @@
     </div>
 
     <script>
+        // Role Guard
+        if (localStorage.getItem("role") !== "ORGANIZER") {
+            window.location.href = "index.html";
+        }
+
         function logout() {
             localStorage.clear();
             window.location.href = "index.html";
