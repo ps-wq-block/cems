@@ -285,7 +285,7 @@
                 const statusColor = event.status === 'APPROVED' ? '#28a745' : (event.status === 'REJECTED' ? '#dc3545' : '#ffc107');
                 row.innerHTML = `
                     <td>${event.name || '-'}</td>
-                    <td>${event.date || '-'}</td>
+                    <td>${event.eventDate || '-'}</td>
                     <td>${event.venue || '-'}</td>
                     <td><span class="status-badge" style="color: ${statusColor}; border: 1px solid ${statusColor};">${event.status || 'PENDING'}</span></td>
                 `;
@@ -306,7 +306,7 @@
             if (sortBy === "name") {
                 filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
             } else if (sortBy === "date") {
-                filtered.sort((a, b) => (a.date || "9999-12-31").localeCompare(b.date || "9999-12-31"));
+                filtered.sort((a, b) => (a.eventDate || "9999-12-31").localeCompare(b.eventDate || "9999-12-31"));
             } else if (sortBy === "venue") {
                 filtered.sort((a, b) => (a.venue || "").localeCompare(b.venue || ""));
             } else {
