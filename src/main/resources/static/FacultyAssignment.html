@@ -109,10 +109,6 @@
             transition: 0.2s;
         }
 
-        .notify {
-            background: #a29bfe;
-        }
-
         .assign {
             background: #8ec5a4;
         }
@@ -162,7 +158,6 @@
             <textarea id="responsibilities" placeholder="Specify the duties for this faculty member..." required></textarea>
 
             <div class="buttons">
-                <button type="button" class="notify" onclick="notifyFaculty()">Notify Faculty</button>
                 <button type="submit" class="assign">Confirm Assignment</button>
             </div>
         </form>
@@ -190,14 +185,7 @@
             }
         }
 
-        function notifyFaculty() {
-            const email = document.getElementById("emailAddress").value;
-            if (!email) {
-                alert("Please enter a faculty email first.");
-                return;
-            }
-            alert("Notification trigger synchronized. Emails will be dispatched once assignment is committed.");
-        }
+
 
         document.getElementById("assignForm").addEventListener("submit", async (e) => {
             e.preventDefault();
