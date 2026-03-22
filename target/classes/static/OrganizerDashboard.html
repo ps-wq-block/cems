@@ -173,11 +173,25 @@
             const token = localStorage.getItem('jwt');
             const res = await fetch('/api/notifications', { headers: { 'Authorization': token ? 'Bearer ' + token : '' } });
             const notifs = await res.json();
-            const filtered = notifs.filter(n => n.receiver === target || n.receiver === 'Both'); 
+
+            // Filter by target and whether it was already shown
+            let seenStr = localStorage.getItem('seenNotifications') || '[]';
+            let seen = JSON.parse(seenStr);
+            const filtered = notifs.filter(n => 
+                (n.receiver === target || n.receiver === 'Both') && !seen.includes(n.id)
+            ); 
+            
             filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             const recent = filtered.slice(0, 2);
+            
+            if (recent.length === 0) return;
+
             const container = document.getElementById('toast-container');
             recent.forEach((n, idx) => {
+                // Mark as seen immediately
+                seen.push(n.id);
+                localStorage.setItem('seenNotifications', JSON.stringify(seen));
+
                 setTimeout(() => {
                     const toast = document.createElement('div');
                     toast.style.cssText = "background:white; border-left:5px solid #ff6a88; padding:15px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.5s ease-in-out; transform:translateX(100%); opacity:0; min-width:250px;";
