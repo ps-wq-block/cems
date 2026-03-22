@@ -158,6 +158,11 @@
 </div>
 
 <script>
+    // Role Guard
+    if (localStorage.getItem("role") !== "ADMIN") {
+        window.location.href = "index.html";
+    }
+
     const userId = localStorage.getItem("userId");
     const jwt = localStorage.getItem("jwt");
 

@@ -121,10 +121,23 @@
                 <h2>Assign Faculty</h2>
                 <p>Assign and notify faculty coordinators for approved events.</p>
             </a>
+            <a href="SendNotifications.html" class="card">
+                <h2>Send Notifications</h2>
+                <p>Schedule and transmit updates to system users.</p>
+            </a>
+            <a href="ViewReports.html" class="card">
+                <h2>View Reports</h2>
+                <p>View all overall event participation statistics.</p>
+            </a>
         </div>
     </div>
 
     <script>
+        // Role Guard
+        if (localStorage.getItem("role") !== "ADMIN") {
+            window.location.href = "index.html";
+        }
+
         function logout() {
             localStorage.clear();
             window.location.href = "index.html";

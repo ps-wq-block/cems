@@ -15,6 +15,10 @@ public class StudentRegistrationService {
         this.repository = repository;
     }
 
+    public List<StudentRegistration> saveAll(List<StudentRegistration> registrations) {
+        return repository.saveAll(registrations);
+    }
+
     public StudentRegistration registerStudent(StudentRegistration registration) {
         // You could later add checks here (e.g., max participants limit)
         return repository.save(registration);

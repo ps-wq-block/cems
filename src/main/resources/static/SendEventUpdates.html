@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Send Event Updates</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #7aa5d2, #7ed6a5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Card */
+.container {
+    width: 400px;
+    background: #e6e6e6;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Title Box */
+.title {
+    background: linear-gradient(135deg, #5f6bdc, #8e44ad);
+    color: white;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Labels */
+label {
+    font-weight: 600;
+    display: block;
+    margin-top: 10px;
+}
+
+/* Inputs */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 10px;
+    border: none;
+    background: #dcdde1;
+    outline: none;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: none;
+    height: 70px;
+}
+
+/* Row for date & time */
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.row div {
+    width: 50%;
+}
+
+/* Button */
+button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff6a88, #ff7eb3);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+</style>
+
+<script>
+    // Role Guard for Security
+    document.addEventListener("DOMContentLoaded", () => {
+        const role = localStorage.getItem("role");
+        if (role !== "ADMIN" && role !== "ORGANIZER") {
+            window.location.href = "index.html"; // Adjust based on who is allowed
+        }
+    });
+</script>
+
+</head>
+<body>
+
+<div class="container">
+    <div class="title">Send Event Updates</div>
+
+    <form id="notificationForm" onsubmit="return submitNotification(event)">
+        <label>Select Receiver</label>
+        <select id="receiver" required>
+            <option value="Students">Students</option>
+            <option value="Admin">Admin</option>
+            <option value="Both">Both</option>
+        </select>
+
+        <label>Notification Title</label>
+        <input type="text" id="notificationTitle" placeholder="Enter title" required>
+
+        <label>Message</label>
+        <textarea id="message" placeholder="Write your update..." required></textarea>
+
+        <div class="row">
+            <div>
+                <label>Date</label>
+                <input type="date" id="eventDate" required>
+            </div>
+            <div>
+                <label>Time</label>
+                <input type="time" id="eventTime" required>
+            </div>
+        </div>
+
+        <button type="submit">Schedule Notification</button>
+    </form>
+    
+    <p id="statusMsg" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+    
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="AdminDashboard.html" id="backLink" style="color: #ff6a88; text-decoration: none; font-weight: bold;">Return to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    // Dinamically adjust back link depending on role
+    if (localStorage.getItem("role") === "ORGANIZER") {
+        document.getElementById("backLink").href = "OrganizerDashboard.html";
+    }
+
+    async function submitNotification(event) {
+        event.preventDefault();
+        
+        const receiver = document.getElementById("receiver").value;
+        const title = document.getElementById("notificationTitle").value;
+        const message = document.getElementById("message").value;
+        const eventDate = document.getElementById("eventDate").value;
+        const eventTime = document.getElementById("eventTime").value;
+
+        const payload = {
+            receiver: receiver,
+            title: title,
+            message: message,
+            eventDate: eventDate,
+            eventTime: eventTime
+        };
+
+        try {
+            const token = localStorage.getItem('jwt');
+            const response = await fetch('/api/notifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? 'Bearer ' + token : ''
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const msgEl = document.getElementById("statusMsg");
+                msgEl.innerText = "Notification saved successfully!";
+                msgEl.style.color = "green";
+                document.getElementById("notificationForm").reset();
+                setTimeout(() => { msgEl.innerText = ""; }, 4000);
+            } else {
+                const data = await response.text();
+                document.getElementById("statusMsg").innerText = "Failed to send notification: " + data;
+                document.getElementById("statusMsg").style.color = "red";
+            }
+        } catch (err) {
+            console.error(err);
+            document.getElementById("statusMsg").innerText = "Error server communication.";
+            document.getElementById("statusMsg").style.color = "red";
+        }
+        return false;
+    }
+</script>
+</body>
+</html>
