@@ -488,15 +488,19 @@
             const res = await fetch('/api/notifications', { headers: { 'Authorization': token ? 'Bearer ' + token : '' } });
             const notifs = await res.json();
 
-            // Filter by target and whether it was already shown
+            // Sort all by date first to get absolute latest
+            notifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            // Only care about notifications meant for this role
+            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both');
+            
+            // Get the absolute latest 2
+            const topTwo = roleNotifs.slice(0, 2);
+
             let seenStr = localStorage.getItem('seenNotifications') || '[]';
             let seen = JSON.parse(seenStr);
-            const filtered = notifs.filter(n => 
-                (n.receiver === target || n.receiver === 'Both') && !seen.includes(n.id)
-            ); 
             
-            filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-            const recent = filtered.slice(0, 2);
+            // Only show them if they haven't been seen yet
+            const recent = topTwo.filter(n => !seen.includes(n.id));
             
             if (recent.length === 0) return;
 
