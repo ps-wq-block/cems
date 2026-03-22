@@ -97,6 +97,7 @@
         <div class="logo">CEMS Admin</div>
         <div class="nav-links">
             <a href="AdminDashboard.html">Dashboard</a>
+            <a href="Notifications.html">Inbox</a>
             <a href="adminProfile.html">Profile</a>
             <a href="#" class="logout" onclick="logout()">Logout</a>
         </div>
@@ -162,6 +163,37 @@
         }
 
         fetchAdminStats();
+    </script>
+
+    <div id="toast-container" style="position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;"></div>
+    <script>
+    async function showFloatingNotifications() {
+        let role = localStorage.getItem('role') || 'STUDENT';
+        let target = role === 'STUDENT' ? 'Students' : 'Admin';
+        try {
+            const token = localStorage.getItem('jwt');
+            const res = await fetch('/api/notifications', { headers: { 'Authorization': token ? 'Bearer ' + token : '' } });
+            const notifs = await res.json();
+            const filtered = notifs.filter(n => n.receiver === target || n.receiver === 'Both'); 
+            filtered.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const recent = filtered.slice(0, 2);
+            const container = document.getElementById('toast-container');
+            recent.forEach((n, idx) => {
+                setTimeout(() => {
+                    const toast = document.createElement('div');
+                    toast.style.cssText = "background:white; border-left:5px solid #ff6a88; padding:15px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:all 0.5s ease-in-out; transform:translateX(100%); opacity:0; min-width:250px;";
+                    toast.innerHTML = `<h4 style="margin:0 0 5px 0; color:#5f6bdc;">New: ${n.title}</h4><p style="margin:0; font-size:14px;">${n.message}</p>`;
+                    container.appendChild(toast);
+                    setTimeout(() => { toast.style.transform = "translateX(0)"; toast.style.opacity = "1"; }, 100);
+                    setTimeout(() => {
+                        toast.style.transform = "translateX(100%)"; toast.style.opacity = "0";
+                        setTimeout(() => toast.remove(), 500);
+                    }, 5000);
+                }, idx * 1000);
+            });
+        } catch(e) { console.error("Toast error", e); }
+    }
+    document.addEventListener('DOMContentLoaded', showFloatingNotifications);
     </script>
 </body>
 
