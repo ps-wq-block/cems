@@ -117,10 +117,27 @@
                 <h2>View Entries (<span id="registrationsCount">...</span>)</h2>
                 <p>Total student registrations globally.</p>
             </a>
+            <a href="MarkAttendance.html" class="card">
+                <h2>Mark Attendance</h2>
+                <p>Record participating students for your events.</p>
+            </a>
+            <a href="EventParticipationReport.html" class="card">
+                <h2>Participation Report</h2>
+                <p>Generate and view attendance reports.</p>
+            </a>
+            <a href="EventResults.html" class="card">
+                <h2>Event Results</h2>
+                <p>Manage and view event scores and winners.</p>
+            </a>
         </div>
     </div>
 
     <script>
+        // Role Guard
+        if (localStorage.getItem("role") !== "ORGANIZER") {
+            window.location.href = "index.html";
+        }
+
         function logout() {
             localStorage.clear();
             window.location.href = "index.html";

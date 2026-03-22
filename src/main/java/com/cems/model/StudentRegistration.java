@@ -17,6 +17,9 @@ public class StudentRegistration {
     private String eventName;
     private String phoneNumber;
 
+    private Boolean isPresent = false;
+    private Integer score = 0;
+
     public StudentRegistration() {
     }
 
@@ -82,5 +85,21 @@ public class StudentRegistration {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Boolean getIsPresent() {
+        return isPresent;
+    }
+
+    public void setIsPresent(Boolean isPresent) {
+        this.isPresent = isPresent;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 }

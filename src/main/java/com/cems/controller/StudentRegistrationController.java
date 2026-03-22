@@ -43,4 +43,9 @@ public class StudentRegistrationController {
         service.deleteRegistration(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/bulk-update")
+    public ResponseEntity<List<StudentRegistration>> bulkUpdateRegistrations(@RequestBody List<StudentRegistration> registrations) {
+        return ResponseEntity.ok(service.saveAll(registrations));
+    }
 }

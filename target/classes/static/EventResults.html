@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Results / Winners</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg,#6dd5fa,#c89cff,#a1ffce);">
+
+  <div class="w-full max-w-5xl bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8">
+    <div class="text-center mb-6">
+      <h1 class="text-xl font-semibold text-white bg-gradient-to-r from-sky-500 to-emerald-500 py-3 rounded-xl">
+        Event Results & Winners
+      </h1>
+      <p class="text-gray-600 mt-2">View event outcomes and update scores</p>
+      <a href="OrganizerDashboard.html" class="block mt-2 text-sky-600 hover:underline">Back to Dashboard</a>
+    </div>
+
+    <div class="mb-6">
+      <label class="block font-medium mb-1">Select Event</label>
+      <select id="eventSelect" onchange="loadResults()" class="w-full md:w-1/2 p-2 border rounded-lg focus:ring-2 focus:ring-teal-400">
+      </select>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-yellow-100 p-4 rounded-xl text-center">
+        <h2 class="font-semibold">🥇 1st Place</h2>
+        <p class="text-lg font-bold" id="firstPlace">--</p>
+      </div>
+      <div class="bg-gray-200 p-4 rounded-xl text-center">
+        <h2 class="font-semibold">🥈 2nd Place</h2>
+        <p class="text-lg font-bold" id="secondPlace">--</p>
+      </div>
+      <div class="bg-orange-100 p-4 rounded-xl text-center">
+        <h2 class="font-semibold">🥉 3rd Place</h2>
+        <p class="text-lg font-bold" id="thirdPlace">--</p>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="bg-teal-100 text-gray-700">
+            <th class="p-2 border">Rank</th>
+            <th class="p-2 border">Name</th>
+            <th class="p-2 border">Event</th>
+            <th class="p-2 border">Score</th>
+          </tr>
+        </thead>
+        <tbody id="resultsTableBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 flex justify-center gap-4">
+      <button onclick="saveScores()" class="bg-gradient-to-r from-sky-500 to-emerald-500 text-white px-6 py-2 rounded-xl shadow-lg hover:scale-105 transition">
+        Update Scores
+      </button>
+    </div>
+  </div>
+
+<script>
+async function loadEvents() {
+    const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
+    const events = res.ok ? await res.json() : await (await fetch('/api/events')).json();
+    const select = document.getElementById('eventSelect');
+    select.innerHTML = events.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+    if(events.length > 0) loadResults();
+}
+
+async function loadResults() {
+    const eventName = document.getElementById('eventSelect').value;
+    const res = await fetch(`/api/registrations/event/${eventName}`);
+    let participants = await res.json();
+    
+    participants.sort((a,b) => (b.score || 0) - (a.score || 0));
+
+    document.getElementById('firstPlace').innerText = participants[0] ? participants[0].studentName : '--';
+    document.getElementById('secondPlace').innerText = participants[1] ? participants[1].studentName : '--';
+    document.getElementById('thirdPlace').innerText = participants[2] ? participants[2].studentName : '--';
+
+    const tbody = document.getElementById('resultsTableBody');
+    tbody.innerHTML = participants.map((p, index) => `
+      <tr class="hover:bg-teal-50 text-center">
+        <td class="p-2 border">${index + 1}</td>
+        <td class="p-2 border">${p.studentName}</td>
+        <td class="p-2 border">${p.eventName}</td>
+        <td class="p-2 border">
+            <input type="number" class="score-input w-20 p-1 border text-center" data-id="${p.id}" value="${p.score || 0}" />
+        </td>
+      </tr>
+    `).join('');
+}
+
+async function saveScores() {
+    const eventName = document.getElementById('eventSelect').value;
+    const resRaw = await fetch(`/api/registrations/event/${eventName}`);
+    let participants = await resRaw.json();
+
+    document.querySelectorAll('.score-input').forEach(input => {
+        let id = input.getAttribute('data-id');
+        let score = parseInt(input.value) || 0;
+        let p = participants.find(x => x.id === id);
+        if(p) p.score = score;
+    });
+
+    const updateRes = await fetch('/api/registrations/bulk-update', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(participants)
+    });
+    
+    if(updateRes.ok) {
+        alert('Scores updated successfully!');
+        loadResults();
+    } else {
+        alert('Error saving scores');
+    }
+}
+document.addEventListener('DOMContentLoaded', loadEvents);
+</script>
+</body>
+</html>

@@ -180,7 +180,10 @@
         }
     </style>
     <script>
-
+        // Role Guard
+        if (localStorage.getItem("role") !== "STUDENT") {
+            window.location.href = "index.html";
+        }
 
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
