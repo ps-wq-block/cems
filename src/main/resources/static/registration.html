@@ -262,8 +262,29 @@
             }
         });
 
-        // Load events on page load
-        window.onload = loadEventsForRegistration;
+        // Load events on page load and auto-fill profile
+        window.onload = function() {
+            loadEventsForRegistration();
+            autoFillFromProfile();
+        };
+
+        async function autoFillFromProfile() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) return;
+            try {
+                const res = await fetch('/api/auth/users/' + userId, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (res.ok) {
+                    const user = await res.json();
+                    if (user.name) document.getElementById('studentName').value = user.name;
+                    if (user.email) document.getElementById('email').value = user.email;
+                    if (user.rollNumber) document.getElementById('rollNumber').value = user.rollNumber;
+                    if (user.course) document.getElementById('course').value = user.course;
+                    if (user.phoneNumber) document.getElementById('phoneNumber').value = user.phoneNumber;
+                }
+            } catch(e) { console.error('Auto-fill error:', e); }
+        }
 
         // --- Form Submission ---
         document.getElementById("registerForm").addEventListener("submit", async function (e) {

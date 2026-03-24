@@ -1,6 +1,8 @@
 package com.cems.controller;
 
+import com.cems.model.Event;
 import com.cems.model.StudentRegistration;
+import com.cems.repository.EventRepository;
 import com.cems.service.StudentRegistrationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +15,22 @@ import java.util.List;
 public class StudentRegistrationController {
 
     private final StudentRegistrationService service;
+    private final EventRepository eventRepository;
 
-    public StudentRegistrationController(StudentRegistrationService service) {
+    public StudentRegistrationController(StudentRegistrationService service, EventRepository eventRepository) {
         this.service = service;
+        this.eventRepository = eventRepository;
     }
 
     @PostMapping
     public ResponseEntity<StudentRegistration> registerStudent(@RequestBody StudentRegistration registration) {
+        // Auto-populate eventDate from Event model if not set
+        if (registration.getEventDate() == null && registration.getEventName() != null) {
+            eventRepository.findAll().stream()
+                .filter(e -> registration.getEventName().equals(e.getName()))
+                .findFirst()
+                .ifPresent(e -> registration.setEventDate(e.getEventDate()));
+        }
         return ResponseEntity.ok(service.registerStudent(registration));
     }
 

@@ -241,14 +241,26 @@
                         return;
                     }
 
+                    // Fetch all events to fill in missing eventDate for old registrations
+                    let eventsMap = {};
+                    try {
+                        const evRes = await fetch('/api/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') } });
+                        if (evRes.ok) {
+                            const allEvts = await evRes.json();
+                            allEvts.forEach(e => { eventsMap[e.name] = e.eventDate; });
+                        }
+                    } catch(_) {}
+
                     tbody.innerHTML = '';
                     registrations.forEach(reg => {
+                        const evDate = reg.eventDate || eventsMap[reg.eventName] || '-';
+                        const regDate = reg.registrationDate || '-';
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${reg.eventName || '-'}</td>
                             <td>${reg.category || '-'}</td>
-                            <td>${reg.registrationDate || '-'}</td>
-                            <td>${reg.eventDate || '-'}</td>
+                            <td>${regDate}</td>
+                            <td>${evDate}</td>
                             <td>
                                 <button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">Cancel</button>
                             </td>
