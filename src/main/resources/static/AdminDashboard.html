@@ -178,7 +178,8 @@
             // Sort all by date first to get absolute latest
             notifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             // Only care about notifications meant for this role
-            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both');
+            const userEmail = localStorage.getItem('userEmail');
+            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both' || (userEmail && n.receiver === userEmail));
             
             // Get the absolute latest 2
             const topTwo = roleNotifs.slice(0, 2);

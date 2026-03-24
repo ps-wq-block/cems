@@ -85,8 +85,9 @@ async function loadNotifications() {
         const notifs = await res.json();
         
         const now = new Date();
+        const userEmail = localStorage.getItem('userEmail');
         const filtered = notifs
-            .filter(n => n.receiver === target || n.receiver === 'Both')
+            .filter(n => n.receiver === target || n.receiver === 'Both' || n.receiver === userEmail)
             .filter(n => {
                 if(!n.eventDate || !n.eventTime) return true;
                 return new Date(n.eventDate + 'T' + n.eventTime) <= now;

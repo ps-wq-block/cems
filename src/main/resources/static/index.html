@@ -237,10 +237,11 @@
                 if (response.ok) {
                     const result = await response.json();
 
-                    // Store JWT and Role locally
+                    // Store JWT, Role, and Email locally
                     localStorage.setItem("jwt", result.token);
                     localStorage.setItem("role", result.role);
                     localStorage.setItem("userId", result.userId);
+                    localStorage.setItem("userEmail", requestBody.email);
 
                     message.innerHTML = "Login Successful ✅ Redirecting...";
                     message.className = "message success";
