@@ -226,7 +226,7 @@
 
     <script>
         // Role Guard
-        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || !_role) { window.location.href = "index.html"; } else if (_role !== "ADMIN") { window.location.href = _role === "STUDENT" ? "categories.html" : "OrganizerDashboard.html"; }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || _role !== "ADMIN") { window.location.href = "index.html"; }
 
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
@@ -268,5 +268,6 @@
 
 </body>
 </html>
+
 
 
