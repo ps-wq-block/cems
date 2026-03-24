@@ -4,6 +4,7 @@ import com.cems.model.StudentRegistration;
 import com.cems.repository.StudentRegistrationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,7 +21,9 @@ public class StudentRegistrationService {
     }
 
     public StudentRegistration registerStudent(StudentRegistration registration) {
-        // You could later add checks here (e.g., max participants limit)
+        if (registration.getRegistrationDate() == null) {
+            registration.setRegistrationDate(LocalDate.now().toString());
+        }
         return repository.save(registration);
     }
 

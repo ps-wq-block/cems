@@ -271,14 +271,19 @@
 
             const msgDiv = document.getElementById("msg");
 
+            const selectedEventName = document.getElementById('event').value;
+            const selectedCategory = document.getElementById('category').value;
+            const selectedEvent = (eventsByCategory[selectedCategory] || []).find(e => e.name === selectedEventName);
+
             const data = {
                 studentName: document.getElementById('studentName').value,
                 email: document.getElementById('email').value,
                 rollNumber: document.getElementById('rollNumber').value,
                 course: document.getElementById('course').value,
-                category: document.getElementById('category').value,
-                eventName: document.getElementById('event').value,
-                phoneNumber: document.getElementById('phoneNumber').value
+                category: selectedCategory,
+                eventName: selectedEventName,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                eventDate: selectedEvent ? selectedEvent.eventDate : null
             };
 
             try {

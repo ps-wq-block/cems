@@ -247,8 +247,8 @@
                         row.innerHTML = `
                             <td>${reg.eventName || '-'}</td>
                             <td>${reg.category || '-'}</td>
-                            <td>${reg.rollNumber || '-'}</td>
-                            <td>${reg.course || '-'}</td>
+                            <td>${reg.registrationDate || '-'}</td>
+                            <td>${reg.eventDate || '-'}</td>
                             <td>
                                 <button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">Cancel</button>
                             </td>
@@ -331,8 +331,8 @@
                 <tr>
                     <th>Event Name</th>
                     <th>Category</th>
-                    <th>Roll Number</th>
-                    <th>Course</th>
+                    <th>Registration Date</th>
+                    <th>Event Date</th>
                     <th>Action</th>
                 </tr>
             </thead>
