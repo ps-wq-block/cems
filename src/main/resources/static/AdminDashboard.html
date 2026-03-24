@@ -187,14 +187,17 @@
             let seen = JSON.parse(seenStr);
             
             // Only show them if they haven't been seen yet
-            const recent = topTwo.filter(n => !seen.includes(n.id));
+            const recent = topTwo.filter(n => {
+                n.uid = n.id || n._id || (n.title + (n.createdAt||''));
+                return !seen.includes(n.uid);
+            });
             
             if (recent.length === 0) return;
 
             const container = document.getElementById('toast-container');
             recent.forEach((n, idx) => {
                 // Mark as seen immediately
-                seen.push(n.id);
+                seen.push(n.uid);
                 localStorage.setItem('seenNotifications', JSON.stringify(seen));
 
                 setTimeout(() => {

@@ -104,14 +104,30 @@ async function loadNotifications() {
             return;
         }
 
-        container.innerHTML = filtered.map(n => `
+        let seenStr = localStorage.getItem('seenNotifications') || '[]';
+        let seen = JSON.parse(seenStr);
+        let updatedSeen = false;
+
+        container.innerHTML = filtered.map(n => {
+            const uid = n.id || n._id || (n.title + (n.createdAt||''));
+            const isNew = !seen.includes(uid);
+            if (isNew) {
+                seen.push(uid);
+                updatedSeen = true;
+            }
+            return `
             <div class="notification">
-                <span class="badge">New</span>
+                ${isNew ? '<span class="badge">New</span>' : ''}
                 <h4>${n.title}</h4>
                 <p>${n.message}</p>
-                <small>${n.eventDate} ${n.eventTime}</small>
+                <small>${n.eventDate || ''} ${n.eventTime || ''}</small>
             </div>
-        `).join('');
+            `;
+        }).join('');
+        
+        if (updatedSeen) {
+            localStorage.setItem('seenNotifications', JSON.stringify(seen));
+        }
     } catch(err) {
         document.getElementById('notifBox').innerHTML = 'Error loading notifications.';
     }
