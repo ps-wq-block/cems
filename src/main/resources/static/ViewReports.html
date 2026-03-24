@@ -71,6 +71,9 @@
   </div>
 
   <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
     async function loadAllReports() {
         const adminHeaders = { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') };
         let eventsRes = await fetch('/api/admin/events', { headers: adminHeaders });
@@ -126,3 +129,4 @@
   </script>
 </body>
 </html>
+

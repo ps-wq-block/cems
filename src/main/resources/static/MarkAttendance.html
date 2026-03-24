@@ -49,6 +49,9 @@
   </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
 async function loadEvents() {
     const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
     // Fallback if not admin
@@ -108,3 +111,4 @@ document.addEventListener('DOMContentLoaded', loadEvents);
 </script>
 </body>
 </html>
+

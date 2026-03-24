@@ -220,7 +220,7 @@
 
     <script>
         // Role Guard
-        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || _role !== "ORGANIZER") { window.location.href = "index.html"; }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ORGANIZER")) { window.location.href = "index.html"; }
 
         const userId = localStorage.getItem("userId");
         const jwt = localStorage.getItem("jwt");
@@ -336,6 +336,7 @@
 
 </body>
 </html>
+
 
 
 

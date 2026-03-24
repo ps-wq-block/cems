@@ -68,6 +68,9 @@ small { color: #555; }
 </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
 function goBack() {
     window.history.back();
 }
@@ -137,3 +140,4 @@ document.addEventListener('DOMContentLoaded', loadNotifications);
 </script>
 </body>
 </html>
+

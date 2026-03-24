@@ -61,6 +61,9 @@
   </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
 async function loadEvents() {
     const role = (localStorage.getItem('role') || '').toUpperCase();
     if (role === 'STUDENT') {
@@ -131,3 +134,4 @@ document.addEventListener('DOMContentLoaded', loadEvents);
 </script>
 </body>
 </html>
+
