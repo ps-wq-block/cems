@@ -14,12 +14,16 @@ public class Notification {
     private String message;
     private String eventDate;
     private String eventTime;
+    private boolean isSeen = false;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Notification() {}
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public boolean isSeen() { return isSeen; }
+    public void setSeen(boolean seen) { isSeen = seen; }
 
     public String getReceiver() { return receiver; }
     public void setReceiver(String receiver) { this.receiver = receiver; }

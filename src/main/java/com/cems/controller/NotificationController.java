@@ -27,4 +27,13 @@ public class NotificationController {
     public ResponseEntity<List<Notification>> getAllNotifications() {
         return ResponseEntity.ok(notificationRepository.findAll());
     }
+
+    @PutMapping("/{id}/seen")
+    public ResponseEntity<?> markAsSeen(@PathVariable String id) {
+        return notificationRepository.findById(id).map(n -> {
+            n.setSeen(true);
+            notificationRepository.save(n);
+            return ResponseEntity.ok().build();
+        }).orElse(ResponseEntity.notFound().build());
+    }
 }

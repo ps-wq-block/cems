@@ -149,7 +149,7 @@
                         const roleClass = `badge-${user.role.toLowerCase()}`;
                         tableHtml += `
                             <tr>
-                                <td>${user.fullName || user.username || 'N/A'}</td>
+                                <td>${user.name || 'N/A'}</td>
                                 <td>${user.email}</td>
                                 <td><span class="badge ${roleClass}">${user.role}</span></td>
                                 <td>${user.phoneNumber || '-'}</td>

@@ -57,7 +57,21 @@
   </div>
 
 <script>
-async function scheduleNotification(event) {
+    // Role Guard
+    const _role = localStorage.getItem("role"); 
+    if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER")) { 
+        window.location.href = "index.html"; 
+    }
+
+    // Set Dashboard Link
+    document.addEventListener("DOMContentLoaded", () => {
+        const backLink = document.querySelector('a[href="AdminDashboard.html"]');
+        if (backLink && _role && _role.toUpperCase() === "ORGANIZER") {
+            backLink.href = "OrganizerDashboard.html";
+        }
+    });
+
+    async function scheduleNotification(event) {
     event.preventDefault();
     const payload = {
         title: document.getElementById('title').value,

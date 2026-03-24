@@ -62,6 +62,20 @@
   </div>
 
 <script>
+// Role Guard
+const _role = localStorage.getItem("role"); 
+if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER")) { 
+    window.location.href = "index.html"; 
+}
+
+// Set Dashboard Link
+document.addEventListener("DOMContentLoaded", () => {
+    const backLink = document.querySelector('a[href="OrganizerDashboard.html"]');
+    if (backLink && _role && _role.toUpperCase() === "ADMIN") {
+        backLink.href = "AdminDashboard.html";
+    }
+});
+
 async function loadEvents() {
     // If admin
     const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
