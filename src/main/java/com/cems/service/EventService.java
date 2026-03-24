@@ -55,6 +55,7 @@ public class EventService {
             event.setMaxParticipants(eventDetails.getMaxParticipants());
             event.setRegistrationDeadline(eventDetails.getRegistrationDeadline());
             event.setRules(eventDetails.getRules());
+            event.setRegistrationOpen(eventDetails.isRegistrationOpen());
             // We keep the original organizer and status (or reset if needed)
             return repository.save(event);
         }).orElse(null);
