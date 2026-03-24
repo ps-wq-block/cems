@@ -156,7 +156,7 @@
             <a href="AdminDashboard.html">Dashboard</a>
             <a href="Approval.html">Approvals</a>
             <a href="FacultyAssignment.html">Assign Faculty</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 

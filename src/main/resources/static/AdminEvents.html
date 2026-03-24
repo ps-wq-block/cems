@@ -106,7 +106,7 @@
         <div class="logo">CEMS Admin</div>
         <div class="nav-links">
             <a href="AdminDashboard.html">Dashboard</a>
-            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html'">Logout</a>
+            <a href="#" class="logout" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');; window.location.href='index.html'">Logout</a>
         </div>
     </div>
 

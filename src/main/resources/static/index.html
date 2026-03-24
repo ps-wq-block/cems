@@ -149,7 +149,7 @@
 
     <script>
         // Clear session data on login page load
-        localStorage.clear();
+        localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
 
         document.getElementById('loginForm').addEventListener('submit', async function (e) {
             e.preventDefault();

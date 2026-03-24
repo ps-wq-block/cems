@@ -142,7 +142,7 @@
         <div class="nav-links">
             <a href="categories.html">Events</a>
             <a href="StudentProfile.html">Profile</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 
@@ -214,7 +214,7 @@
                         if (!eventsByCategory[cat]) {
                             eventsByCategory[cat] = [];
                         }
-                        eventsByCategory[cat].push(event.name);
+                        eventsByCategory[cat].push(event);
                     });
 
                     // Build the category dropdown
@@ -254,10 +254,11 @@
             eventDropdown.innerHTML = '<option value="">Select Event</option>';
 
             if (category && eventsByCategory[category]) {
-                eventsByCategory[category].forEach(function (eventName) {
+                eventsByCategory[category].forEach(function (evt) {
                     let option = document.createElement("option");
-                    option.value = eventName;
-                    option.text = eventName;
+                    option.value = evt.name;
+                    option.text = evt.name + (evt.registrationOpen === false ? " (Registration Closed)" : "");
+                    if(evt.registrationOpen === false) option.disabled = true;
                     eventDropdown.add(option);
                 });
             }

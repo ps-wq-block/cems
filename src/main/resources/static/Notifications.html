@@ -84,7 +84,19 @@ async function loadNotifications() {
         });
         const notifs = await res.json();
         
-        const filtered = notifs.filter(n => n.receiver === target || n.receiver === 'Both'); 
+        const now = new Date();
+        const filtered = notifs
+            .filter(n => n.receiver === target || n.receiver === 'Both')
+            .filter(n => {
+                if(!n.eventDate || !n.eventTime) return true;
+                return new Date(n.eventDate + 'T' + n.eventTime) <= now;
+            })
+            .sort((a,b) => {
+                const dA = new Date(a.eventDate && a.eventTime ? a.eventDate + 'T' + a.eventTime : (a.createdAt || 0));
+                const dB = new Date(b.eventDate && b.eventTime ? b.eventDate + 'T' + b.eventTime : (b.createdAt || 0));
+                return dB - dA;
+            });
+            
         const container = document.getElementById('notifBox');
         
         if(filtered.length === 0) {

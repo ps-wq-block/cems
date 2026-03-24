@@ -62,6 +62,14 @@
 
 <script>
 async function loadEvents() {
+    const role = (localStorage.getItem('role') || '').toUpperCase();
+    if (role === 'STUDENT') {
+        const updateBtnContainer = document.querySelector('.mt-6.flex.justify-center.gap-4');
+        if(updateBtnContainer) updateBtnContainer.style.display = 'none';
+        const backLink = document.querySelector('a[href="OrganizerDashboard.html"]');
+        if(backLink) backLink.href = 'categories.html';
+    }
+
     const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
     const events = res.ok ? await res.json() : await (await fetch('/api/events')).json();
     const select = document.getElementById('eventSelect');
@@ -70,6 +78,7 @@ async function loadEvents() {
 }
 
 async function loadResults() {
+    const role = (localStorage.getItem('role') || '').toUpperCase();
     const eventName = document.getElementById('eventSelect').value;
     const res = await fetch(`/api/registrations/event/${eventName}`);
     let participants = await res.json();
@@ -87,7 +96,7 @@ async function loadResults() {
         <td class="p-2 border">${p.studentName}</td>
         <td class="p-2 border">${p.eventName}</td>
         <td class="p-2 border">
-            <input type="number" class="score-input w-20 p-1 border text-center" data-id="${p.id}" value="${p.score || 0}" />
+            ${role === 'STUDENT' ? (p.score || 0) : `<input type="number" class="score-input w-20 p-1 border text-center" data-id="${p.id}" value="${p.score || 0}" />`}
         </td>
       </tr>
     `).join('');

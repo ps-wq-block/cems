@@ -140,7 +140,7 @@
         }
 
         function logout() {
-            localStorage.clear();
+            localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
             window.location.href = "index.html";
         }
 

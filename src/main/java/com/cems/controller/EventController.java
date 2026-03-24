@@ -68,6 +68,17 @@ public class EventController {
         }
     }
 
+    @PutMapping("/{id}/toggle-registration")
+    public ResponseEntity<Event> toggleRegistration(@PathVariable String id) {
+        Event event = service.getEventById(id);
+        if (event != null) {
+            event.setRegistrationOpen(!event.isRegistrationOpen());
+            Event updatedEvent = service.updateEvent(id, event);
+            return ResponseEntity.ok(updatedEvent);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Event> updateEvent(
             @PathVariable String id,

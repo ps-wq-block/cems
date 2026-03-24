@@ -298,8 +298,7 @@
         <div class="nav-links">
             <a href="categories.html">Events</a>
             <a href="StudentProfile.html">Profile</a>
-            <a href="Notifications.html">Inbox</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
     <div class="container">

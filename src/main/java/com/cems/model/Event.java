@@ -27,6 +27,8 @@ public class Event {
 
     private String status = "Pending"; // Pending, Approved, Rejected
     private String adminComments;
+    
+    private boolean registrationOpen = true;
 
     // Constructors
     public Event() {
@@ -135,5 +137,13 @@ public class Event {
 
     public void setAdminComments(String adminComments) {
         this.adminComments = adminComments;
+    }
+
+    public boolean isRegistrationOpen() {
+        return registrationOpen;
+    }
+
+    public void setRegistrationOpen(boolean registrationOpen) {
+        this.registrationOpen = registrationOpen;
     }
 }

@@ -116,7 +116,7 @@
             <a href="OrganizerDashboard.html">Dashboard</a>
             <a href="MyEvents.html">My Events</a>
             <a href="CreateEvent.html">Create Event</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 
@@ -311,4 +311,4 @@
 
 </body>
 
-</html>
+</html>
