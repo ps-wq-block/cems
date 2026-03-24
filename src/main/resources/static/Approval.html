@@ -213,7 +213,7 @@
 
     <script>
         // Role Guard
-        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || !_role) { window.location.href = "index.html"; } else if (_role !== "ADMIN") { window.location.href = _role === "STUDENT" ? "categories.html" : "OrganizerDashboard.html"; }
 
         let currentEventId = null;
         let allEvents = []; // Store full event objects for filtering
@@ -382,4 +382,5 @@
 </body>
 
 </html>
+
 
