@@ -178,9 +178,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ORGANIZER") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         // ✅ FULL VENUE LIST
         const venues = [
@@ -312,3 +310,4 @@
 </body>
 
 </html>
+

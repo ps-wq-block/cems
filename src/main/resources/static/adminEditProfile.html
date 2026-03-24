@@ -159,9 +159,7 @@
 
 <script>
     // Role Guard
-    if (localStorage.getItem("role") !== "ADMIN") {
-        window.location.href = "index.html";
-    }
+    if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
     const userId = localStorage.getItem("userId");
     const jwt = localStorage.getItem("jwt");
@@ -247,3 +245,4 @@
 
 </body>
 </html>
+

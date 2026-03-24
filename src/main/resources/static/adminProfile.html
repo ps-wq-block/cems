@@ -226,9 +226,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
@@ -270,3 +268,4 @@
 
 </body>
 </html>
+

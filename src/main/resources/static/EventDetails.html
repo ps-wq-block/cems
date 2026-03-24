@@ -231,9 +231,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         async function fetchEventDetails() {
             // 1. Get the '?id=' parameter from the URL
@@ -294,3 +292,4 @@
 </body>
 
 </html>
+

@@ -185,9 +185,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         let approvedEvents = [];
         let eventsByCategory = {};
@@ -312,3 +310,4 @@
 </body>
 
 </html>
+

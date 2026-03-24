@@ -180,9 +180,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ORGANIZER") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         const urlParams = new URLSearchParams(window.location.search);
         const eventId = urlParams.get('id');
@@ -267,3 +265,4 @@
 </body>
 
 </html>
+

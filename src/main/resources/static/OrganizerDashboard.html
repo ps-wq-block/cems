@@ -139,9 +139,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ORGANIZER") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         function logout() {
             localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
@@ -223,3 +221,4 @@
 </body>
 
 </html>
+

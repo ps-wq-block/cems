@@ -338,9 +338,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        if (!localStorage.getItem("jwt")) { window.location.href = "index.html"; }
 
         let allEvents = [];
         let currentFilter = 'All';
@@ -500,3 +498,4 @@
 </body>
 
 </html>
+
