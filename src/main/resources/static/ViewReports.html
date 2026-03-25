@@ -79,7 +79,7 @@
         let eventsRes = await fetch('/api/admin/events', { headers: adminHeaders });
         if(!eventsRes.ok) eventsRes = await fetch('/api/events');
         
-        const regsRes = await fetch('/api/registrations');
+        const regsRes = await fetch('/api/registrations', { headers: adminHeaders });
         const events = await eventsRes.json();
         const regs = await regsRes.json();
 
@@ -129,4 +129,3 @@
   </script>
 </body>
 </html>
-
