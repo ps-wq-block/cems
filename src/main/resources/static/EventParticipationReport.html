@@ -43,9 +43,10 @@
       <table id="reportTable" class="w-full border-collapse">
         <thead>
           <tr class="bg-teal-100 text-gray-700">
-            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Roll Number</th>
             <th class="p-2 border">Name</th>
             <th class="p-2 border">Email</th>
+            <th class="p-2 border">Course</th>
             <th class="p-2 border">Status</th>
           </tr>
         </thead>
@@ -101,9 +102,10 @@ async function loadReport() {
     const tbody = document.getElementById('reportTableBody');
     tbody.innerHTML = participants.map(p => `
       <tr class="hover:bg-teal-50 text-center">
-        <td class="p-2 border">${p.id}</td>
+        <td class="p-2 border">${p.rollNumber || '-'}</td>
         <td class="p-2 border">${p.studentName}</td>
         <td class="p-2 border">${p.email}</td>
+        <td class="p-2 border">${p.course || '-'}</td>
         <td class="p-2 border font-semibold ${p.isPresent ? 'text-green-600' : 'text-red-500'}">
             ${p.isPresent ? 'Present' : 'Absent'}
         </td>
