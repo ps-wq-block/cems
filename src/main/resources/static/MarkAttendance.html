@@ -106,10 +106,17 @@ async function saveAttendance() {
 
     const res = await fetch('/api/registrations/bulk-update', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+        },
         body: JSON.stringify(participants)
     });
-    if(res.ok) alert("Attendance saved successfully!");
+    if(res.ok) {
+        alert("Attendance saved successfully!");
+    } else {
+        alert("Error saving attendance. Please check your permissions.");
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadEvents);
