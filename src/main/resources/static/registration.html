@@ -246,6 +246,30 @@
             }
         }
 
+        function isEventStarted(event) {
+            if (!event.eventDate) return false;
+            try {
+                const [year, month, day] = event.eventDate.split('-').map(Number);
+                let hour = 0, minute = 0;
+
+                if (event.eventTime) {
+                    const startPart = event.eventTime.split('-')[0].trim().toUpperCase();
+                    const match = startPart.match(/(\d{1,2})(:(\d{2}))?\s*(AM|PM)?/);
+                    if (match) {
+                        hour = parseInt(match[1]);
+                        minute = match[3] ? parseInt(match[3]) : 0;
+                        const ampm = match[4];
+                        if (ampm === "PM" && hour < 12) hour += 12;
+                        if (ampm === "AM" && hour === 12) hour = 0;
+                    }
+                }
+                const eventStart = new Date(year, month - 1, day, hour, minute);
+                return new Date() > eventStart;
+            } catch (e) {
+                return new Date() > new Date(event.eventDate);
+            }
+        }
+
         // When category changes, populate event dropdown
         categoryDropdown.addEventListener("change", function () {
             let category = this.value;
@@ -253,10 +277,16 @@
 
             if (category && eventsByCategory[category]) {
                 eventsByCategory[category].forEach(function (evt) {
+                    const started = isEventStarted(evt);
                     let option = document.createElement("option");
                     option.value = evt.name;
-                    option.text = evt.name + (evt.registrationOpen === false ? " (Registration Closed)" : "");
-                    if(evt.registrationOpen === false) option.disabled = true;
+                    
+                    let statusText = "";
+                    if (evt.registrationOpen === false) statusText = " (Registration Closed)";
+                    else if (started) statusText = " (Event Started)";
+                    
+                    option.text = evt.name + statusText;
+                    if (evt.registrationOpen === false || started) option.disabled = true;
                     eventDropdown.add(option);
                 });
             }

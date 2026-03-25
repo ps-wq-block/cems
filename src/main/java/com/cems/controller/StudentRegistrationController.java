@@ -23,7 +23,7 @@ public class StudentRegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<StudentRegistration> registerStudent(@RequestBody StudentRegistration registration) {
+    public ResponseEntity<?> registerStudent(@RequestBody StudentRegistration registration) {
         // Auto-populate eventDate from Event model if not set
         if (registration.getEventDate() == null && registration.getEventName() != null) {
             eventRepository.findAll().stream()
@@ -31,7 +31,11 @@ public class StudentRegistrationController {
                 .findFirst()
                 .ifPresent(e -> registration.setEventDate(e.getEventDate()));
         }
-        return ResponseEntity.ok(service.registerStudent(registration));
+        try {
+            return ResponseEntity.ok(service.registerStudent(registration));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 
     @GetMapping

@@ -262,9 +262,42 @@
                     document.getElementById('evDesc').innerText = event.description || 'No description provided.';
                     document.getElementById('evRules').innerText = event.rules || 'No specific rules.';
 
-                    // 4. Configure the Registration Button to auto-fill the form
+                    function isEventStarted(ev) {
+                        if (!ev.eventDate) return false;
+                        try {
+                            const [year, month, day] = ev.eventDate.split('-').map(Number);
+                            let hr = 0, min = 0;
+                            if (ev.eventTime) {
+                                const start = ev.eventTime.split('-')[0].trim().toUpperCase();
+                                const m = start.match(/(\d{1,2})(:(\d{2}))?\s*(AM|PM)?/);
+                                if (m) {
+                                    hr = parseInt(m[1]);
+                                    min = m[3] ? parseInt(m[3]) : 0;
+                                    if (m[4] === "PM" && hr < 12) hr += 12;
+                                    if (m[4] === "AM" && hr === 12) hr = 0;
+                                }
+                            }
+                            return new Date() > new Date(year, month - 1, day, hr, min);
+                        } catch (e) { return new Date() > new Date(ev.eventDate); }
+                    }
+
+                    // 4. Configure the Registration Button
                     const regBtn = document.getElementById('registerLink');
-                    regBtn.href = `registration.html?cat=${encodeURIComponent(event.category)}&event=${encodeURIComponent(event.name)}`;
+                    const started = isEventStarted(event);
+
+                    if (!event.registrationOpen) {
+                        regBtn.innerText = "Registration Closed";
+                        regBtn.style.background = "#ccc";
+                        regBtn.style.cursor = "not-allowed";
+                        regBtn.href = "javascript:void(0)";
+                    } else if (started) {
+                        regBtn.innerText = "Registration Closed (Event Started)";
+                        regBtn.style.background = "#ff6b6b";
+                        regBtn.style.cursor = "not-allowed";
+                        regBtn.href = "javascript:void(0)";
+                    } else {
+                        regBtn.href = `registration.html?cat=${encodeURIComponent(event.category)}&event=${encodeURIComponent(event.name)}`;
+                    }
 
                     // Show content
                     document.getElementById('loading').style.display = 'none';
