@@ -5,8 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Results / Winners</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(-100px);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg,#6dd5fa,#c89cff,#a1ffce);">
+
+  <div id="toast" class="toast bg-gradient-to-r from-emerald-500 to-teal-600">
+    Scores updated successfully!
+  </div>
 
   <div class="w-full max-w-5xl bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8">
     <div class="text-center mb-6">
@@ -64,6 +86,17 @@
     if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
 </script>
 <script>
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = isError 
+        ? 'toast show bg-gradient-to-r from-red-500 to-pink-600' 
+        : 'toast show bg-gradient-to-r from-emerald-500 to-teal-600';
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+}
+
 async function loadEvents() {
     const role = (localStorage.getItem('role') || '').toUpperCase();
     if (role === 'STUDENT') {
@@ -131,10 +164,10 @@ async function saveScores() {
     });
     
     if(updateRes.ok) {
-        alert('Scores updated successfully!');
+        showToast('Scores updated successfully!');
         loadResults();
     } else {
-        alert('Error saving scores. Please check your permissions.');
+        showToast('Error saving scores. Please check permissions.', true);
     }
 }
 document.addEventListener('DOMContentLoaded', loadEvents);
