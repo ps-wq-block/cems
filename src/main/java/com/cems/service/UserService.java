@@ -19,6 +19,11 @@ public class UserService {
     }
 
     public User registerUser(User user) {
+        // Validate Name: Only letters and spaces
+        if (user.getName() == null || !user.getName().matches("^[a-zA-Z\\s]+$")) {
+            throw new IllegalArgumentException("Name can only contain letters and spaces.");
+        }
+
         Optional<User> existingUser = repository.findByEmail(user.getEmail());
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Email already exists.");

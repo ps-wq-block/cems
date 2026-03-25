@@ -193,6 +193,13 @@
                 name.classList.add("error-border");
                 nameError.innerHTML = "Name is required";
                 valid = false;
+            } else {
+                const namePattern = /^[a-zA-Z\s]+$/;
+                if (!namePattern.test(name.value.trim())) {
+                    name.classList.add("error-border");
+                    nameError.innerHTML = "Name can only contain letters and spaces";
+                    valid = false;
+                }
             }
             if (email.value.trim() === "") {
                 email.classList.add("error-border");
