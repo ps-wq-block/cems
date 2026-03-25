@@ -42,10 +42,10 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
         try {
-            authenticationManager.authenticate(
+            org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
-            User user = service.findByEmail(request.getEmail());
+            User user = (User) authentication.getPrincipal();
             String token = jwtService.generateToken(user);
 
             return ResponseEntity.ok(new AuthResponse(token, user.getRole(), user.getId()));
