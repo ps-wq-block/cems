@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public class StudentRegistrationService {
 
+    private final StudentRegistrationRepository repository;
     private final com.cems.repository.EventRepository eventRepository;
 
     public StudentRegistrationService(StudentRegistrationRepository repository, com.cems.repository.EventRepository eventRepository) {
