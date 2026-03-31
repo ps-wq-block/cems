@@ -120,9 +120,50 @@
     }
 
     function exportExcel() {
+      // Build data array with proper types
+      const headers = ["Event Name", "Date", "Total Registrations", "Present", "Attendance %", "Status"];
       const table = document.getElementById("reportTable");
-      const wb = XLSX.utils.table_to_book(table, { sheet: "Report" });
-      XLSX.writeFile(wb, "All_Reports.xlsx");
+      const rows = table.querySelectorAll("tbody tr");
+      
+      const data = [headers];
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length === 0) return;
+        data.push([
+          cells[0].innerText.trim(),
+          cells[1].innerText.trim(),
+          parseInt(cells[2].innerText.trim()) || 0,
+          parseInt(cells[3].innerText.trim()) || 0,
+          cells[4].innerText.trim(),
+          cells[5].innerText.trim()
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(data);
+
+      // Set column widths for readability
+      ws['!cols'] = [
+        { wch: 30 },  // Event Name
+        { wch: 14 },  // Date
+        { wch: 20 },  // Total Registrations
+        { wch: 12 },  // Present
+        { wch: 16 },  // Attendance %
+        { wch: 14 }   // Status
+      ];
+
+      // Auto-filter on header row
+      ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: data.length - 1, c: headers.length - 1 } }) };
+
+      // Add a summary row at the bottom
+      const totalRegs = data.slice(1).reduce((sum, r) => sum + (r[2] || 0), 0);
+      const totalPresent = data.slice(1).reduce((sum, r) => sum + (r[3] || 0), 0);
+      const avgPercent = totalRegs === 0 ? "0%" : Math.round((totalPresent / totalRegs) * 100) + "%";
+      const summaryRow = ["TOTAL", "", totalRegs, totalPresent, avgPercent, ""];
+      XLSX.utils.sheet_add_aoa(ws, [summaryRow], { origin: -1 });
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Event Reports");
+      XLSX.writeFile(wb, "CEMS_Event_Reports.xlsx");
     }
 
     document.addEventListener('DOMContentLoaded', loadAllReports);
