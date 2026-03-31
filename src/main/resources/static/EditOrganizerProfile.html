@@ -96,7 +96,7 @@
         <div class="title">Edit Organizer Profile</div>
         <form id="editForm" onsubmit="saveOrganizer(event)">
             <label for="name">Full Name</label>
-            <input type="text" id="name" required>
+            <input type="text" id="name" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
 
             <label for="email">Email (Read-only)</label>
             <input type="email" id="email" readonly>

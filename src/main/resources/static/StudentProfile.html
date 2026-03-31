@@ -366,7 +366,7 @@
                 Edit Profile</div>
             <form id="editForm">
                 <label style="font-weight:600; font-size:14px;">Full Name</label>
-                <input type="text" id="editName"
+                <input type="text" id="editName" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Phone Number</label>
