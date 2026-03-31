@@ -307,11 +307,26 @@
                 });
                 if (res.ok) {
                     const user = await res.json();
-                    if (user.name) document.getElementById('studentName').value = user.name;
-                    if (user.email) document.getElementById('email').value = user.email;
-                    if (user.rollNumber) document.getElementById('rollNumber').value = user.rollNumber;
-                    if (user.course) document.getElementById('course').value = user.course;
-                    if (user.phoneNumber) document.getElementById('phoneNumber').value = user.phoneNumber;
+                    
+                    const mappings = [
+                        { key: 'name', id: 'studentName' },
+                        { key: 'email', id: 'email' },
+                        { key: 'rollNumber', id: 'rollNumber' },
+                        { key: 'course', id: 'course' },
+                        { key: 'phoneNumber', id: 'phoneNumber' }
+                    ];
+
+                    mappings.forEach(mapping => {
+                        if (user[mapping.key]) {
+                            const el = document.getElementById(mapping.id);
+                            el.value = user[mapping.key];
+                            el.readOnly = true;
+                            el.style.backgroundColor = '#e9ecef';
+                            el.style.color = '#495057';
+                            el.style.cursor = 'not-allowed';
+                            el.style.border = '1px solid #ced4da';
+                        }
+                    });
                 }
             } catch(e) { console.error('Auto-fill error:', e); }
         }
