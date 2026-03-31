@@ -121,7 +121,7 @@
         <form id="signupForm">
             <div class="input-group">
                 <label>Full Name</label>
-                <input type="text" id="name" placeholder="Enter Full Name">
+                <input type="text" id="name" placeholder="Enter Full Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                 <small class="error-text" id="nameError"></small>
             </div>
 
