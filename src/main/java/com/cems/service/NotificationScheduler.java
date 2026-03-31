@@ -33,17 +33,17 @@ public class NotificationScheduler {
     @Scheduled(cron = "0 0 10 * * ?")
     public void scheduleDayBeforeReminders() {
         String tomorrow = LocalDate.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        sendReminders(tomorrow, "Reminder: " + " is tomorrow!", "Don't forget to attend ");
+        sendReminders(tomorrow, false);
     }
 
     // Runs every day at 1:00 AM server time (Event Day Reminder)
     @Scheduled(cron = "0 0 1 * * ?")
     public void scheduleEventDayReminders() {
         String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        sendReminders(today, "Reminder: " + " is TODAY!", "Don't forget to attend ");
+        sendReminders(today, true);
     }
 
-    private void sendReminders(String targetDate, String titleTemplate, String messagePrefix) {
+    private void sendReminders(String targetDate, boolean isToday) {
         List<Event> allEvents = eventRepository.findAll();
         for (Event event : allEvents) {
             if (targetDate.equals(event.getEventDate())) {
@@ -52,9 +52,12 @@ public class NotificationScheduler {
                 for (StudentRegistration reg : registrations) {
                     if (event.getName().equals(reg.getEventName())) {
                         
-                        String title = titleTemplate.replace("Reminder: ", "Reminder: " + event.getName());
-                        String message = messagePrefix + event.getName() + (targetDate.equals(LocalDate.now().toString()) ? " today" : " tomorrow") 
-                                       + " at " + event.getEventTime() + " at " + event.getVenue() + ".";
+                        String title = "Reminder: " + event.getName() + (isToday ? " is TODAY!" : " is tomorrow!");
+                        String message = "Don't forget to attend " + event.getName()
+                                       + (isToday ? " today" : " tomorrow") 
+                                       + (event.getEventTime() != null ? " at " + event.getEventTime() : "")
+                                       + (event.getVenue() != null ? " at " + event.getVenue() : "")
+                                       + ".";
 
                         // Check if reminder already sent to prevent duplicates
                         boolean alreadySent = notificationRepository.findAll().stream()
