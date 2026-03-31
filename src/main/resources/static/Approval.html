@@ -165,9 +165,23 @@
         <div class="title">Event Request Approvals</div>
 
         <div style="margin-bottom: 20px; display: flex; gap: 12px;">
-            <input type="text" id="searchInput" placeholder="Search by name, category or venue..." 
+            <input type="text" id="searchInput" placeholder="Search by name or venue..." 
                    style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none;"
                    onkeyup="filterEvents()">
+            <select id="categorySelect" onchange="filterEvents()" 
+                    style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="">All Categories</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Sports">Sports</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Technical">Technical</option>
+                <option value="Fine Arts">Fine Arts</option>
+                <option value="Literary Event">Literary Event</option>
+                <option value="Social and Community">Social and Community</option>
+                <option value="Guest Lectures">Guest Lectures</option>
+                <option value="Health and Wellness Events">Health and Wellness Events</option>
+            </select>
             <select id="sortSelect" onchange="filterEvents()" 
                     style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
                 <option value="id_desc">Sort: Newest First</option>
@@ -269,13 +283,15 @@
 
         function filterEvents() {
             const query = document.getElementById("searchInput").value.toLowerCase();
+            const categoryFilter = document.getElementById("categorySelect").value;
             const sortBy = document.getElementById("sortSelect").value;
 
-            let filtered = allEvents.filter(event => 
-                (event.name && event.name.toLowerCase().includes(query)) ||
-                (event.category && event.category.toLowerCase().includes(query)) ||
-                (event.venue && event.venue.toLowerCase().includes(query))
-            );
+            let filtered = allEvents.filter(event => {
+                const matchesSearch = (event.name && event.name.toLowerCase().includes(query)) ||
+                                      (event.venue && event.venue.toLowerCase().includes(query));
+                const matchesCategory = categoryFilter === "" || event.category === categoryFilter;
+                return matchesSearch && matchesCategory;
+            });
 
             // Sorting logic
             filtered.sort((a, b) => {
