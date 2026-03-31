@@ -226,6 +226,29 @@
             }
         }
 
+        function isEventEnded(dateStr, timeStr) {
+            if (!dateStr || dateStr === '-' || dateStr === 'TBD') return false;
+            try {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                let hour = 23, minute = 59;
+                if (timeStr) {
+                    const startPart = timeStr.split('-')[0].trim().toUpperCase();
+                    const match = startPart.match(/(\d{1,2})([:.](\d{2}))?\s*(AM|PM)?/);
+                    if (match) {
+                        hour = parseInt(match[1]);
+                        minute = match[3] ? parseInt(match[3]) : 0;
+                        const ampm = match[4];
+                        if (ampm === 'PM' && hour < 12) hour += 12;
+                        if (ampm === 'AM' && hour === 12) hour = 0;
+                    }
+                }
+                const eventEnd = new Date(year, month - 1, day, hour, minute);
+                return new Date() > eventEnd;
+            } catch (e) {
+                try { return new Date() > new Date(dateStr + 'T23:59:59'); } catch(_) { return false; }
+            }
+        }
+
         async function loadRegisteredEvents(email) {
             const tbody = document.getElementById("registeredEventsBody");
             try {
@@ -237,42 +260,49 @@
                     const registrations = await response.json();
 
                     if (registrations.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
                         return;
                     }
 
-                    // Fetch all events to fill in missing eventDate for old registrations
+                    // Fetch all events to fill in missing eventDate and eventTime for old registrations
                     let eventsMap = {};
                     try {
                         const evRes = await fetch('/api/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') } });
                         if (evRes.ok) {
                             const allEvts = await evRes.json();
-                            allEvts.forEach(e => { eventsMap[e.name] = e.eventDate; });
+                            allEvts.forEach(e => { eventsMap[e.name] = { date: e.eventDate, time: e.eventTime }; });
                         }
                     } catch(_) {}
 
                     tbody.innerHTML = '';
                     registrations.forEach(reg => {
-                        const evDate = reg.eventDate || eventsMap[reg.eventName] || '-';
+                        const evInfo = eventsMap[reg.eventName] || {};
+                        const evDate = reg.eventDate || evInfo.date || '-';
+                        const evTime = evInfo.time || '';
                         const regDate = reg.registrationDate || '-';
+                        const ended = isEventEnded(evDate, evTime);
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${reg.eventName || '-'}</td>
                             <td>${reg.category || '-'}</td>
                             <td>${regDate}</td>
                             <td>${evDate}</td>
+                            <td style="font-weight:600; color:${ended ? '#dc2626' : '#16a34a'};">${ended ? 'Ended' : 'Upcoming'}</td>
                             <td>
-                                <button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">Cancel</button>
+                                ${ended
+                                    ? '<button class="cancel-btn" disabled style="opacity:0.4; cursor:not-allowed;">Cancel</button>'
+                                    : '<button class="cancel-btn" onclick="cancelRegistration(\'' + reg.id + '\')">Cancel</button>'
+                                }
                             </td>
                         `;
                         tbody.appendChild(row);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
                 }
             } catch (error) {
                 console.error("Error loading registrations:", error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
             }
         }
 
@@ -345,12 +375,13 @@
                     <th>Category</th>
                     <th>Registration Date</th>
                     <th>Event Date</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="registeredEventsBody">
                 <tr>
-                    <td colspan="5" style="text-align:center; color:#888;">Loading registrations...</td>
+                    <td colspan="6" style="text-align:center; color:#888;">Loading registrations...</td>
                 </tr>
             </tbody>
         </table>
