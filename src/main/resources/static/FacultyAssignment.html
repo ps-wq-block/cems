@@ -135,9 +135,15 @@
 
         <form id="assignForm">
             <label>Select Event</label>
-            <select id="eventSelect" required>
+            <select id="eventSelect" required onchange="handleEventSelection()">
                 <option value="">Select an event...</option>
             </select>
+
+            <label>Event Date</label>
+            <input type="date" id="eventDate" required>
+
+            <label>Event Time</label>
+            <input type="time" id="eventTime" required>
 
             <label>Faculty Name</label>
             <input type="text" id="facultyName" placeholder="Enter full name (e.g., Jane Doe)" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
@@ -168,9 +174,15 @@
         // Role Guard
         const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
+        let allAssignments = [];
+        let currentAssignmentId = null;
+
         async function loadEvents() {
             const select = document.getElementById("eventSelect");
             try {
+                const assnRes = await fetch('/api/assignments', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') } });
+                if (assnRes.ok) allAssignments = await assnRes.json();
+
                 const response = await fetch('/api/events', {
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });
@@ -188,7 +200,32 @@
             }
         }
 
+        function handleEventSelection() {
+            const evName = document.getElementById("eventSelect").value;
+            const existingAssn = allAssignments.find(a => a.event === evName);
+            const submitBtn = document.querySelector(".buttons .assign");
 
+            if (existingAssn) {
+                currentAssignmentId = existingAssn.id;
+                document.getElementById("facultyName").value = existingAssn.facultyName || '';
+                document.getElementById("facultyId").value = existingAssn.facultyId || '';
+                document.getElementById("department").value = existingAssn.department || '';
+                document.getElementById("contactNumber").value = existingAssn.contactNumber || '';
+                document.getElementById("emailAddress").value = existingAssn.emailAddress || '';
+                document.getElementById("responsibilities").value = existingAssn.responsibilities || '';
+                document.getElementById("eventDate").value = existingAssn.eventDate || '';
+                document.getElementById("eventTime").value = existingAssn.eventTime || '';
+                submitBtn.textContent = "Update Assignment (Emergency)";
+                submitBtn.style.background = "#ff9800"; 
+            } else {
+                currentAssignmentId = null;
+                document.getElementById("assignForm").reset();
+                document.getElementById("eventSelect").value = evName; // Restore select
+                submitBtn.textContent = "Confirm Assignment";
+                submitBtn.style.background = "#8ec5a4";
+            }
+            document.getElementById("statusMessage").style.display = 'none';
+        }
 
         document.getElementById("assignForm").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -201,12 +238,17 @@
                 department: document.getElementById("department").value,
                 contactNumber: document.getElementById("contactNumber").value,
                 emailAddress: document.getElementById("emailAddress").value,
-                responsibilities: document.getElementById("responsibilities").value
+                responsibilities: document.getElementById("responsibilities").value,
+                eventDate: document.getElementById("eventDate").value,
+                eventTime: document.getElementById("eventTime").value
             };
 
+            const method = currentAssignmentId ? 'PUT' : 'POST';
+            const url = currentAssignmentId ? `/api/assignments/${currentAssignmentId}` : '/api/assignments';
+
             try {
-                const response = await fetch('/api/assignments', {
-                    method: 'POST',
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('jwt')
@@ -217,12 +259,21 @@
                 if (response.ok) {
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'green';
-                    statusMessage.textContent = 'Faculty Coordinator assigned and notified successfully!';
-                    e.target.reset();
+                    statusMessage.textContent = currentAssignmentId 
+                        ? 'Faculty Coordinator updated successfully!' 
+                        : 'Faculty Coordinator assigned and notified successfully!';
+                    
+                    const reloadReq = await fetch('/api/assignments', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') } });
+                    if(reloadReq.ok) allAssignments = await reloadReq.json();
+                    
+                    if(!currentAssignmentId) {
+                        e.target.reset();
+                    }
                 } else {
+                    const errorMsg = await response.text();
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'red';
-                    statusMessage.textContent = 'Failed to commit assignment.';
+                    statusMessage.textContent = 'Action failed: ' + (errorMsg || 'Duplicate/Invalid Assignment');
                 }
             } catch (err) {
                 statusMessage.style.display = 'block';

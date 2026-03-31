@@ -18,6 +18,9 @@ public class FacultyCoordinatorAssignment {
 
     private String responsibilities;
 
+    private String eventDate;
+    private String eventTime;
+
     // Constructors
     public FacultyCoordinatorAssignment() {
     }
@@ -85,5 +88,21 @@ public class FacultyCoordinatorAssignment {
 
     public void setResponsibilities(String responsibilities) {
         this.responsibilities = responsibilities;
+    }
+
+    public String getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(String eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public String getEventTime() {
+        return eventTime;
+    }
+
+    public void setEventTime(String eventTime) {
+        this.eventTime = eventTime;
     }
 }
