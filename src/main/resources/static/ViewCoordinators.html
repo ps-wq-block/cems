@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Coordinators</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f3e8ff, #e6f7f5);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            margin-left: 20px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .logout {
+            color: #ff6b6b !important;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .page-title p {
+            color: #888;
+            margin-top: 8px;
+        }
+
+        /* Search */
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 450px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-bar input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Cards Grid */
+        .coord-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .coord-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 5px solid #667eea;
+        }
+
+        .coord-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .coord-card .event-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5b86e5;
+            margin-bottom: 14px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 10px;
+        }
+
+        .coord-card .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .coord-card .detail-label {
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.4px;
+            min-width: 110px;
+        }
+
+        .coord-card .detail-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+        }
+
+        .coord-card .responsibilities-tag {
+            margin-top: 14px;
+            padding: 10px 14px;
+            background: #f0fdf4;
+            border-left: 4px solid #10B981;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #065f46;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">CEMS</div>
+        <div class="nav-links">
+            <a href="#" id="dashboardLink">Dashboard</a>
+            <a href="Notifications.html">Inbox</a>
+            <a href="#" class="logout" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="#" class="back-link" id="backLink">← Back to Dashboard</a>
+
+        <div class="page-title">
+            <h1>Faculty Coordinators</h1>
+            <p>All assigned faculty coordinators and their event responsibilities.</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search by name, event, department..." autocomplete="off">
+        </div>
+
+        <div class="coord-grid" id="coordGrid">
+            <div class="empty-state">Loading assignments...</div>
+        </div>
+    </div>
+
+    <script>
+        // Role Guard - allow both ADMIN and ORGANIZER
+        const _role = localStorage.getItem("role");
+        if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER")) {
+            window.location.href = "index.html";
+        }
+
+        // Set dashboard links based on role
+        const dashLink = _role && _role.toUpperCase() === "ADMIN" ? "AdminDashboard.html" : "OrganizerDashboard.html";
+        document.getElementById("dashboardLink").href = dashLink;
+        document.getElementById("backLink").href = dashLink;
+
+        function logout() {
+            localStorage.removeItem('jwt');
+            localStorage.removeItem('role');
+            localStorage.removeItem('userId');
+            window.location.href = "index.html";
+        }
+
+        let allAssignments = [];
+
+        async function loadAssignments() {
+            const grid = document.getElementById('coordGrid');
+            try {
+                const res = await fetch('/api/assignments', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (res.ok) {
+                    allAssignments = await res.json();
+                    renderAssignments(allAssignments);
+                } else {
+                    grid.innerHTML = '<div class="empty-state"><h3>Failed to load</h3><p>Could not retrieve coordinator data.</p></div>';
+                }
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<div class="empty-state"><h3>Connection Error</h3><p>Backend server may be offline.</p></div>';
+            }
+        }
+
+        function renderAssignments(assignments) {
+            const grid = document.getElementById('coordGrid');
+
+            if (assignments.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No Coordinators Assigned</h3><p>No faculty coordinators have been assigned to events yet.</p></div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            assignments.forEach(a => {
+                const card = document.createElement('div');
+                card.className = 'coord-card';
+
+                card.innerHTML = `
+                    <div class="event-title">${a.event || 'Unassigned Event'}</div>
+                    <div class="detail-row">
+                        <span class="detail-label">Name</span>
+                        <span class="detail-value">${a.facultyName || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Faculty ID</span>
+                        <span class="detail-value">${a.facultyId || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Department</span>
+                        <span class="detail-value">${a.department || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Contact</span>
+                        <span class="detail-value">${a.contactNumber || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value">${a.emailAddress || '-'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Event Date</span>
+                        <span class="detail-value">${a.eventDate || 'TBD'}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Event Time</span>
+                        <span class="detail-value">${a.eventTime || 'TBD'}</span>
+                    </div>
+                    ${a.responsibilities ? '<div class="responsibilities-tag"><strong>Responsibilities:</strong> ' + a.responsibilities + '</div>' : ''}
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Search logic
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const q = this.value.toLowerCase();
+            const filtered = allAssignments.filter(a => {
+                const searchable = `${a.event || ''} ${a.facultyName || ''} ${a.facultyId || ''} ${a.department || ''} ${a.emailAddress || ''}`.toLowerCase();
+                return searchable.includes(q);
+            });
+            renderAssignments(filtered);
+        });
+
+        window.onload = loadAssignments;
+    </script>
+
+</body>
+</html>
