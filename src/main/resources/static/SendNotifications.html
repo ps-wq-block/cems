@@ -71,14 +71,35 @@
         }
     });
 
+    // Set min date to today
+    document.addEventListener("DOMContentLoaded", () => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('date').min = `${yyyy}-${mm}-${dd}`;
+    });
+
     async function scheduleNotification(event) {
     event.preventDefault();
+
+    // Validate date+time is not in the past
+    const selectedDate = document.getElementById('date').value;
+    const selectedTime = document.getElementById('time').value;
+    if (selectedDate && selectedTime) {
+        const selectedDateTime = new Date(selectedDate + 'T' + selectedTime);
+        if (selectedDateTime < new Date()) {
+            alert("Cannot schedule a notification in the past. Please select a future date and time.");
+            return;
+        }
+    }
+
     const payload = {
         title: document.getElementById('title').value,
         message: document.getElementById('msg').value,
         receiver: document.getElementById('target').value,
-        eventDate: document.getElementById('date').value,
-        eventTime: document.getElementById('time').value
+        eventDate: selectedDate,
+        eventTime: selectedTime
     };
     
     const token = localStorage.getItem('jwt');

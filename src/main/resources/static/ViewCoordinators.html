@@ -184,6 +184,38 @@
         .back-link:hover {
             text-decoration: underline;
         }
+
+        /* Event Filter */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background: white;
+            color: #666;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .filter-pill.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
     </style>
 </head>
 
@@ -208,6 +240,10 @@
 
         <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search by name, event, department..." autocomplete="off">
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-pill active" data-event="All">All Events</button>
         </div>
 
         <div class="coord-grid" id="coordGrid">
@@ -235,6 +271,7 @@
         }
 
         let allAssignments = [];
+        let currentEventFilter = 'All';
 
         async function loadAssignments() {
             const grid = document.getElementById('coordGrid');
@@ -245,7 +282,8 @@
 
                 if (res.ok) {
                     allAssignments = await res.json();
-                    renderAssignments(allAssignments);
+                    buildEventFilters();
+                    applyFilters();
                 } else {
                     grid.innerHTML = '<div class="empty-state"><h3>Failed to load</h3><p>Could not retrieve coordinator data.</p></div>';
                 }
@@ -255,11 +293,45 @@
             }
         }
 
+        function buildEventFilters() {
+            const filterBar = document.getElementById('filterBar');
+            const events = [...new Set(allAssignments.map(a => a.event).filter(Boolean))].sort();
+
+            filterBar.innerHTML = '<button class="filter-pill active" data-event="All">All Events</button>';
+            events.forEach(ev => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-pill';
+                btn.dataset.event = ev;
+                btn.innerText = ev;
+                filterBar.appendChild(btn);
+            });
+
+            filterBar.querySelectorAll('.filter-pill').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBar.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentEventFilter = btn.dataset.event;
+                    applyFilters();
+                });
+            });
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allAssignments.filter(a => {
+                const matchesEvent = currentEventFilter === 'All' || a.event === currentEventFilter;
+                const searchable = `${a.event || ''} ${a.facultyName || ''} ${a.facultyId || ''} ${a.department || ''} ${a.emailAddress || ''}`.toLowerCase();
+                const matchesSearch = searchable.includes(q);
+                return matchesEvent && matchesSearch;
+            });
+            renderAssignments(filtered);
+        }
+
         function renderAssignments(assignments) {
             const grid = document.getElementById('coordGrid');
 
             if (assignments.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><h3>No Coordinators Assigned</h3><p>No faculty coordinators have been assigned to events yet.</p></div>';
+                grid.innerHTML = '<div class="empty-state"><h3>No Coordinators Found</h3><p>No faculty coordinators match the current filters.</p></div>';
                 return;
             }
 
@@ -308,12 +380,7 @@
 
         // Search logic
         document.getElementById('searchInput').addEventListener('input', function () {
-            const q = this.value.toLowerCase();
-            const filtered = allAssignments.filter(a => {
-                const searchable = `${a.event || ''} ${a.facultyName || ''} ${a.facultyId || ''} ${a.department || ''} ${a.emailAddress || ''}`.toLowerCase();
-                return searchable.includes(q);
-            });
-            renderAssignments(filtered);
+            applyFilters();
         });
 
         window.onload = loadAssignments;
