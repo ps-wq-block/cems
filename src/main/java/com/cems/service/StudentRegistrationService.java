@@ -12,10 +12,12 @@ public class StudentRegistrationService {
 
     private final StudentRegistrationRepository repository;
     private final com.cems.repository.EventRepository eventRepository;
+    private final com.cems.repository.NotificationRepository notificationRepository;
 
-    public StudentRegistrationService(StudentRegistrationRepository repository, com.cems.repository.EventRepository eventRepository) {
+    public StudentRegistrationService(StudentRegistrationRepository repository, com.cems.repository.EventRepository eventRepository, com.cems.repository.NotificationRepository notificationRepository) {
         this.repository = repository;
         this.eventRepository = eventRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     public List<StudentRegistration> saveAll(List<StudentRegistration> registrations) {
@@ -41,7 +43,19 @@ public class StudentRegistrationService {
         if (registration.getRegistrationDate() == null) {
             registration.setRegistrationDate(java.time.LocalDate.now().toString());
         }
-        return repository.save(registration);
+        
+        StudentRegistration savedRegistration = repository.save(registration);
+
+        // Send Notification
+        com.cems.model.Notification successNotification = new com.cems.model.Notification();
+        successNotification.setReceiver(savedRegistration.getEmail());
+        successNotification.setTitle("Registration Successful \uD83C\uDF89");
+        successNotification.setMessage("You have successfully registered for the event: " + savedRegistration.getEventName());
+        successNotification.setEventDate(savedRegistration.getEventDate() != null ? savedRegistration.getEventDate() : "TBD");
+        successNotification.setEventTime("");
+        notificationRepository.save(successNotification);
+
+        return savedRegistration;
     }
 
     private boolean isEventStarted(com.cems.model.Event event) {

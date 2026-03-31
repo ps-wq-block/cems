@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - Assigned Events</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #10B981;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-sub: #6B7280;
+            --border: #E5E7EB;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--card-bg);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .navbar a:hover {
+            color: var(--primary);
+        }
+
+        /* Header Area */
+        .page-header {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            padding: 50px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .page-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Centered Content */
+        .content-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-grow: 1;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* Events List */
+        .assignment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .assignment-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 12px;
+        }
+
+        .event-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .faculty-id {
+            background: #EEF2FF;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .card-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .card-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .detail-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        .responsibilities-box {
+            background: #F9FAFB;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            margin-top: 8px;
+        }
+        
+        .responsibilities-box .detail-label {
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px dashed var(--text-sub);
+            color: var(--text-sub);
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: var(--text-main);
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>CEMS FACULTY</h2>
+        <div class="nav-links">
+            <a href="FacultyDashboard.html" style="color: var(--primary);">Assigned Events</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId'); localStorage.removeItem('userEmail');">Logout</a>
+        </div>
+    </div>
+
+    <div class="page-header">
+        <h1>Coordinator Dashboard</h1>
+        <p>Review your assigned responsibilities and schedules for upcoming events.</p>
+    </div>
+
+    <div class="content-container">
+        
+        <h2 class="section-title">My Event Assignments</h2>
+        
+        <div class="assignment-list" id="assignmentList">
+            <div class="empty-state">Loading your assignments...</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Check Role
+        const role = localStorage.getItem("role");
+        const jwt = localStorage.getItem("jwt");
+        const userEmail = localStorage.getItem("userEmail");
+
+        if (!jwt || (role && role.toUpperCase() !== "FACULTY")) {
+            window.location.href = "index.html";
+        }
+
+        async function loadFacultyAssignments() {
+            const listContainer = document.getElementById('assignmentList');
+            
+            try {
+                const response = await fetch('/api/assignments', {
+                    headers: { 'Authorization': `Bearer ${jwt}` }
+                });
+
+                if (response.ok) {
+                    const allAssignments = await response.json();
+                    
+                    // Filter exclusively for logged-in faculty email
+                    const myAssignments = allAssignments.filter(a => a.emailAddress === userEmail);
+
+                    if (myAssignments.length === 0) {
+                        listContainer.innerHTML = `
+                            <div class="empty-state">
+                                <h3>No Assignments Yet</h3>
+                                <p>The administrator has not assigned you any events yet. Check back soon.</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    listContainer.innerHTML = ''; // clear
+
+                    myAssignments.forEach(assignment => {
+                        const card = document.createElement('div');
+                        card.className = 'assignment-card';
+
+                        const dateText = assignment.eventDate ? assignment.eventDate : 'Pending Admin Scheduling';
+                        const timeText = assignment.eventTime ? assignment.eventTime : 'Time TBD';
+
+                        card.innerHTML = `
+                            <div class="card-header">
+                                <h3 class="event-name">${assignment.event}</h3>
+                                <div class="faculty-id">ID: ${assignment.facultyId}</div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="detail-group">
+                                    <span class="detail-label">Coordinator Name</span>
+                                    <span class="detail-value">${assignment.facultyName}</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Department</span>
+                                    <span class="detail-value">${assignment.department}</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Event Date</span>
+                                    <span class="detail-value">${dateText}</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Event Time</span>
+                                    <span class="detail-value">${timeText}</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Contact Number</span>
+                                    <span class="detail-value">${assignment.contactNumber}</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Email Verified</span>
+                                    <span class="detail-value">${assignment.emailAddress}</span>
+                                </div>
+                            </div>
+
+                            <div class="responsibilities-box">
+                                <div class="detail-label">Assigned Responsibilities</div>
+                                <div class="detail-value">${assignment.assignedResponsibilities || 'No specific responsibilities listed.'}</div>
+                            </div>
+                        `;
+
+                        listContainer.appendChild(card);
+                    });
+                } else {
+                    listContainer.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Unable to load assignments</h3>
+                            <p>Authentication error or server disconnected.</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Connection Error</h3>
+                        <p>Could not connect to the CEMS Backend. Please check your network connection.</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.onload = loadFacultyAssignments;
+
+    </script>
+
+</body>
+</html>

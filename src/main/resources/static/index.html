@@ -120,6 +120,7 @@
                     <option value="STUDENT">Student</option>
                     <option value="ADMIN">Administrator</option>
                     <option value="ORGANIZER">Organizer</option>
+                    <option value="FACULTY">Faculty Coordinator</option>
                 </select>
                 <small class="error-text" id="roleError"></small>
             </div>
@@ -259,6 +260,8 @@
                             window.location.href = "OrganizerDashboard.html";
                         } else if (userRole === 'ADMIN') {
                             window.location.href = "AdminDashboard.html";
+                        } else if (userRole === 'FACULTY') {
+                            window.location.href = "FacultyDashboard.html";
                         } else {
                             window.location.href = "categories.html";
                         }
