@@ -140,7 +140,7 @@
             </select>
 
             <label>Faculty Name</label>
-            <input type="text" id="facultyName" placeholder="Enter full name (e.g., Dr. Jane Doe)" required>
+            <input type="text" id="facultyName" placeholder="Enter full name (e.g., Jane Doe)" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
 
             <label>Faculty / Employee ID</label>
             <input type="text" id="facultyId" placeholder="Enter faculty ID" required>
@@ -149,10 +149,10 @@
             <input type="text" id="department" placeholder="e.g. Information Technology" required>
 
             <label>Contact Number</label>
-            <input type="tel" id="contactNumber" placeholder="Enter mobile number" required>
+            <input type="tel" id="contactNumber" placeholder="Enter mobile number" required oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10">
 
             <label>Email Address</label>
-            <input type="email" id="emailAddress" placeholder="Enter faculty email address" required>
+            <input type="email" id="emailAddress" placeholder="Enter faculty email address" required title="Please enter a valid @gmail.com address" pattern="[a-zA-Z0-9._%+\-]+@gmail\.com$">
 
             <label>Assigned Responsibilities</label>
             <textarea id="responsibilities" placeholder="Specify the duties for this faculty member..." required></textarea>
