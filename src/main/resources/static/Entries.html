@@ -95,6 +95,24 @@
             text-decoration: none;
             font-weight: bold;
         }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .controls input, .controls select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .controls input {
+            flex: 1;
+        }
     </style>
 </head>
 
@@ -110,6 +128,14 @@
     <div class="container">
         <a href="OrganizerDashboard.html" class="btn-back">← Back to Dashboard</a>
         <h1>Student Registrations</h1>
+        
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search by student name, roll no, or email..." onkeyup="filterRegistrations()">
+            <select id="eventFilter" onchange="filterRegistrations()">
+                <option value="">All Events</option>
+            </select>
+        </div>
+
         <div id="tableContainer">
             <p style="text-align:center;">Loading registrations...</p>
         </div>
@@ -119,6 +145,8 @@
         // Role Guard
         const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ORGANIZER")) { window.location.href = "index.html"; }
 
+        let allRegistrations = [];
+
         async function fetchRegistrations() {
             const container = document.getElementById('tableContainer');
             try {
@@ -127,43 +155,27 @@
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    console.log("Registrations data received:", data);
-                    if (data.length === 0) {
+                    allRegistrations = await response.json();
+                    
+                    if (allRegistrations.length === 0) {
                         container.innerHTML = '<div class="no-data">No registrations found for your events.</div>';
+                        document.querySelector('.controls').style.display = 'none';
                         return;
                     }
 
-                    let tableHtml = `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Student Name</th>
-                                    <th>Email</th>
-                                    <th>Roll Number</th>
-                                    <th>Course</th>
-                                    <th>Event Name</th>
-                                    <th>Phone</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    data.forEach(reg => {
-                        tableHtml += `
-                            <tr>
-                                <td>${reg.studentName}</td>
-                                <td>${reg.email}</td>
-                                <td>${reg.rollNumber}</td>
-                                <td>${reg.course}</td>
-                                <td><span class="badge">${reg.eventName}</span></td>
-                                <td>${reg.phoneNumber || '-'}</td>
-                            </tr>
-                        `;
+                    // Populate Event Filter Dropdown
+                    const uniqueEvents = [...new Set(allRegistrations.map(reg => reg.eventName))];
+                    const eventSelect = document.getElementById('eventFilter');
+                    uniqueEvents.forEach(evt => {
+                        if(evt) {
+                            const opt = document.createElement("option");
+                            opt.value = evt;
+                            opt.textContent = evt;
+                            eventSelect.appendChild(opt);
+                        }
                     });
 
-                    tableHtml += `</tbody></table>`;
-                    container.innerHTML = tableHtml;
+                    filterRegistrations();
                 } else {
                     container.innerHTML = '<p style="color:red; text-align:center;">Failed to load data. Please log in again.</p>';
                 }
@@ -171,6 +183,62 @@
                 console.error("Error:", error);
                 container.innerHTML = '<p style="color:red; text-align:center;">Connection error.</p>';
             }
+        }
+
+        function filterRegistrations() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const eventFltr = document.getElementById('eventFilter').value;
+
+            const filtered = allRegistrations.filter(reg => {
+                const matchesSearch = 
+                    (reg.studentName && reg.studentName.toLowerCase().includes(query)) ||
+                    (reg.email && reg.email.toLowerCase().includes(query)) ||
+                    (reg.rollNumber && reg.rollNumber.toLowerCase().includes(query));
+                const matchesEvent = eventFltr === "" || reg.eventName === eventFltr;
+                
+                return matchesSearch && matchesEvent;
+            });
+
+            renderTable(filtered);
+        }
+
+        function renderTable(data) {
+            const container = document.getElementById('tableContainer');
+            if (data.length === 0) {
+                container.innerHTML = '<div class="no-data">No registrations match your search criteria.</div>';
+                return;
+            }
+
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Roll Number</th>
+                            <th>Course</th>
+                            <th>Event Name</th>
+                            <th>Phone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach(reg => {
+                tableHtml += `
+                    <tr>
+                        <td>${reg.studentName || '-'}</td>
+                        <td>${reg.email || '-'}</td>
+                        <td>${reg.rollNumber || '-'}</td>
+                        <td>${reg.course || '-'}</td>
+                        <td><span class="badge">${reg.eventName || '-'}</span></td>
+                        <td>${reg.phoneNumber || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `</tbody></table>`;
+            container.innerHTML = tableHtml;
         }
 
         fetchRegistrations();
