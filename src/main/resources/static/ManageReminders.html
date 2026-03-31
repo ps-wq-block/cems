@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Reminders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen p-4" style="background: linear-gradient(135deg,#6dd5fa,#c89cff,#a1ffce);">
+
+  <div class="w-full max-w-4xl mx-auto bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8">
+    <div class="text-center mb-6">
+      <h1 class="text-xl font-semibold text-white bg-gradient-to-r from-sky-500 to-emerald-500 py-3 rounded-xl">
+        Manage Event Reminders
+      </h1>
+      <p class="text-gray-600 mt-2">Configure when reminders are sent or cancel them for specific events</p>
+      <a href="#" id="backLink" class="block mt-2 text-sky-600 hover:underline">Back to Dashboard</a>
+    </div>
+
+    <div id="eventsContainer" class="space-y-4">
+      <p class="text-gray-400 text-center py-8">Loading events...</p>
+    </div>
+  </div>
+
+<script>
+    const _role = localStorage.getItem("role");
+    if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER")) {
+        window.location.href = "index.html";
+    }
+
+    document.getElementById("backLink").href = _role && _role.toUpperCase() === "ADMIN" ? "AdminDashboard.html" : "OrganizerDashboard.html";
+
+    const token = localStorage.getItem('jwt');
+    const authHeaders = { 'Authorization': token ? 'Bearer ' + token : '' };
+
+    let allEvents = [];
+    let allSettings = {};
+
+    const timingOptions = [
+        { value: 1, label: "1 hour before" },
+        { value: 2, label: "2 hours before" },
+        { value: 6, label: "6 hours before" },
+        { value: 12, label: "12 hours before" },
+        { value: 24, label: "1 day before" },
+        { value: 48, label: "2 days before" },
+        { value: 72, label: "3 days before" }
+    ];
+
+    async function loadData() {
+        try {
+            const [evRes, remRes] = await Promise.all([
+                fetch('/api/events', { headers: authHeaders }),
+                fetch('/api/reminders', { headers: authHeaders })
+            ]);
+
+            allEvents = evRes.ok ? await evRes.json() : [];
+            const settings = remRes.ok ? await remRes.json() : [];
+
+            // Index settings by event name
+            allSettings = {};
+            settings.forEach(s => { allSettings[s.eventName] = s; });
+
+            renderEvents();
+        } catch (err) {
+            console.error(err);
+            document.getElementById('eventsContainer').innerHTML = '<p class="text-red-500 text-center">Error loading data.</p>';
+        }
+    }
+
+    function renderEvents() {
+        const container = document.getElementById('eventsContainer');
+        const approvedEvents = allEvents.filter(e => e.status === 'Approved' || e.status === 'Completed');
+
+        if (approvedEvents.length === 0) {
+            container.innerHTML = '<p class="text-gray-400 text-center py-8">No approved events found.</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        approvedEvents.forEach(event => {
+            const setting = allSettings[event.name];
+            const enabled = setting ? setting.enabled : true;
+            const hours = setting ? setting.reminderHoursBefore : 24;
+
+            const card = document.createElement('div');
+            card.className = `border rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${enabled ? 'bg-white border-emerald-200' : 'bg-gray-50 border-gray-200 opacity-70'}`;
+
+            const optionsHtml = timingOptions.map(opt =>
+                `<option value="${opt.value}" ${opt.value === hours ? 'selected' : ''}>${opt.label}</option>`
+            ).join('');
+
+            card.innerHTML = `
+                <div class="flex-1 min-w-0">
+                    <div class="font-bold text-gray-800 text-lg">${event.name}</div>
+                    <div class="text-sm text-gray-500 mt-1">
+                        📅 ${event.eventDate || 'TBD'} ${event.eventTime ? '⏰ ' + event.eventTime : ''}
+                        ${event.venue ? '📍 ' + event.venue : ''}
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">
+                        ${enabled ? '✅ Reminders active' : '❌ Reminders cancelled'}
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0 flex-wrap">
+                    <select id="timing-${event.name}" class="border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-teal-400" ${!enabled ? 'disabled' : ''}>
+                        ${optionsHtml}
+                    </select>
+                    <button onclick="saveReminder('${event.name}')" class="bg-gradient-to-r from-sky-500 to-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:scale-105 transition" ${!enabled ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>
+                        Save
+                    </button>
+                    ${enabled
+                        ? `<button onclick="cancelReminder('${event.name}')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-200 transition">Cancel Reminder</button>`
+                        : `<button onclick="enableReminder('${event.name}')" class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-200 transition">Enable Reminder</button>`
+                    }
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+    async function saveReminder(eventName) {
+        const hours = parseInt(document.getElementById('timing-' + eventName).value);
+        const existing = allSettings[eventName];
+
+        const payload = { eventName: eventName, reminderHoursBefore: hours, enabled: true };
+
+        let res;
+        if (existing) {
+            res = await fetch('/api/reminders/' + existing.id, {
+                method: 'PUT',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            res = await fetch('/api/reminders', {
+                method: 'POST',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (res.ok) {
+            alert('Reminder timing saved!');
+            loadData();
+        } else {
+            alert('Failed to save reminder.');
+        }
+    }
+
+    async function cancelReminder(eventName) {
+        if (!confirm('Cancel reminders for "' + eventName + '"? Students will NOT be notified before this event.')) return;
+
+        const existing = allSettings[eventName];
+        const payload = { eventName: eventName, reminderHoursBefore: existing ? existing.reminderHoursBefore : 24, enabled: false };
+
+        let res;
+        if (existing) {
+            res = await fetch('/api/reminders/' + existing.id, {
+                method: 'PUT',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } else {
+            res = await fetch('/api/reminders', {
+                method: 'POST',
+                headers: { ...authHeaders, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        if (res.ok) {
+            alert('Reminders cancelled for ' + eventName);
+            loadData();
+        } else {
+            alert('Failed to cancel reminder.');
+        }
+    }
+
+    async function enableReminder(eventName) {
+        const existing = allSettings[eventName];
+        if (!existing) return;
+
+        const payload = { eventName: eventName, reminderHoursBefore: existing.reminderHoursBefore, enabled: true };
+        const res = await fetch('/api/reminders/' + existing.id, {
+            method: 'PUT',
+            headers: { ...authHeaders, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert('Reminders re-enabled for ' + eventName);
+            loadData();
+        } else {
+            alert('Failed to enable reminder.');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
