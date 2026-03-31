@@ -147,7 +147,35 @@
             <input type="date" id="date" onchange="checkAvailability()" required>
 
             <label>Event Time</label>
-            <input type="text" id="time" placeholder="e.g. 12 AM - 2 PM" onchange="checkAvailability()" required>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                <select id="timeHour" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="">Hour</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <select id="timeMinute" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="">Minute</option>
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                </select>
+                <select id="timeAmPm" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+            <input type="hidden" id="time">
 
             <label>Venue</label>
             <select id="venueSelect" required>
@@ -257,6 +285,20 @@
                 venueSelect.innerHTML = "<option value=''>No venue available</option>";
             }
 
+        }
+
+        function formatTime() {
+            let h = document.getElementById("timeHour").value;
+            let m = document.getElementById("timeMinute").value;
+            let ap = document.getElementById("timeAmPm").value;
+            
+            if (h && m && ap) {
+                document.getElementById("time").value = `${h}:${m} ${ap}`;
+                checkAvailability();
+            } else {
+                document.getElementById("time").value = "";
+                document.getElementById("venueSelect").innerHTML = "<option value=''>Select date & time first</option>";
+            }
         }
 
         // Set minimum date to today for date inputs

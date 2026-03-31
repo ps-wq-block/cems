@@ -153,7 +153,35 @@
             <input type="date" id="eventDate" required>
 
             <label>Event Time</label>
-            <input type="time" id="eventTime" required>
+            <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                <select id="timeHour" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="">Hour</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                    <option value="07">07</option>
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+                <select id="timeMinute" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="">Minute</option>
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                </select>
+                <select id="timeAmPm" onchange="formatTime()" required style="margin-top: 6px; margin-bottom: 0;">
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                </select>
+            </div>
+            <input type="hidden" id="eventTime">
 
             <label>Venue</label>
             <input type="text" id="venue" placeholder="Enter venue" required>
@@ -201,7 +229,22 @@
                     document.getElementById('name').value = event.name;
                     document.getElementById('category').value = event.category;
                     document.getElementById('eventDate').value = event.eventDate;
-                    document.getElementById('eventTime').value = event.eventTime;
+                    
+                    const tVal = event.eventTime;
+                    document.getElementById('eventTime').value = tVal;
+                    if (tVal) {
+                        try {
+                            const match = tVal.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+                            if (match) {
+                                let hr = match[1];
+                                if(hr.length === 1) hr = "0" + hr;
+                                document.getElementById('timeHour').value = hr;
+                                document.getElementById('timeMinute').value = match[2];
+                                document.getElementById('timeAmPm').value = match[3].toUpperCase();
+                            }
+                        } catch(e) {}
+                    }
+
                     document.getElementById('venue').value = event.venue;
                     document.getElementById('description').value = event.description;
                     document.getElementById('maxParticipants').value = event.maxParticipants;
@@ -212,6 +255,18 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+            }
+        }
+
+        function formatTime() {
+            let h = document.getElementById("timeHour").value;
+            let m = document.getElementById("timeMinute").value;
+            let ap = document.getElementById("timeAmPm").value;
+            
+            if (h && m && ap) {
+                document.getElementById("eventTime").value = `${h}:${m} ${ap}`;
+            } else {
+                document.getElementById("eventTime").value = "";
             }
         }
 
