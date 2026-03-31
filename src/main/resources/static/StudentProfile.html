@@ -366,35 +366,35 @@
                 Edit Profile</div>
             <form id="editForm">
                 <label style="font-weight:600; font-size:14px;">Full Name</label>
-                <input type="text" id="editName" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
+                <input type="text" id="editName" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Phone Number</label>
-                <input type="text" id="editPhone"
+                <input type="text" id="editPhone" required maxlength="10"
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Roll Number</label>
-                <input type="text" id="editRoll"
+                <input type="text" id="editRoll" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Department</label>
-                <input type="text" id="editDept"
+                <input type="text" id="editDept" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Course</label>
-                <input type="text" id="editCourse"
+                <input type="text" id="editCourse" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Year</label>
-                <input type="text" id="editYear"
+                <input type="text" id="editYear" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Date of Birth</label>
-                <input type="date" id="editDob"
+                <input type="date" id="editDob" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Gender</label>
-                <select id="editGender"
+                <select id="editGender" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
                     <option value="">-- Select --</option>
                     <option value="Male">Male</option>
@@ -403,11 +403,11 @@
                 </select>
 
                 <label style="font-weight:600; font-size:14px;">Address</label>
-                <input type="text" id="editAddress"
+                <input type="text" id="editAddress" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">College</label>
-                <input type="text" id="editCollege"
+                <input type="text" id="editCollege" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <div style="display:flex; gap:12px; margin-top:10px;">
