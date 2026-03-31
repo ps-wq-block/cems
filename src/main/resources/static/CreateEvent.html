@@ -342,9 +342,10 @@
                     this.reset();
                     document.getElementById("venueSelect").innerHTML = "<option value=''>Select date & time first</option>";
                 } else {
+                    const errorMsg = await response.text();
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'red';
-                    statusMessage.textContent = 'Failed to submit event request.';
+                    statusMessage.textContent = errorMsg || 'Failed to submit event request.';
                 }
             } catch (error) {
                 statusMessage.style.display = 'block';

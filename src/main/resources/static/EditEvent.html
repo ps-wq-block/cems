@@ -303,9 +303,10 @@
                     statusMessage.textContent = 'Event updated successfully!';
                     setTimeout(() => { window.location.href = 'MyEvents.html'; }, 1500);
                 } else {
+                    const errorMsg = await response.text();
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'red';
-                    statusMessage.textContent = 'Failed to update event.';
+                    statusMessage.textContent = errorMsg || 'Failed to update event.';
                 }
             } catch (error) {
                 console.error('Error:', error);

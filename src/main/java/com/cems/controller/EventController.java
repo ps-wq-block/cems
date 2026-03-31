@@ -23,13 +23,17 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<Event> createEvent(@RequestBody Event event) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            event.setOrganizerEmail(userDetails.getUsername());
+    public ResponseEntity<?> createEvent(@RequestBody Event event) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+                event.setOrganizerEmail(userDetails.getUsername());
+            }
+            return ResponseEntity.ok(service.createEvent(event));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.ok(service.createEvent(event));
     }
 
     @GetMapping
@@ -80,13 +84,17 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(
+    public ResponseEntity<?> updateEvent(
             @PathVariable String id,
             @RequestBody Event eventDetails) {
-        Event updatedEvent = service.updateEvent(id, eventDetails);
-        if (updatedEvent != null) {
-            return ResponseEntity.ok(updatedEvent);
+        try {
+            Event updatedEvent = service.updateEvent(id, eventDetails);
+            if (updatedEvent != null) {
+                return ResponseEntity.ok(updatedEvent);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.notFound().build();
     }
 }
