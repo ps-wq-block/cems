@@ -125,8 +125,7 @@ public class NotificationScheduler {
 
         for (StudentRegistration reg : registrations) {
             if (event.getName().equals(reg.getEventName())) {
-                boolean alreadySent = notificationRepository.findAll().stream()
-                        .anyMatch(n -> title.equals(n.getTitle()) && reg.getEmail().equals(n.getReceiver()));
+                boolean alreadySent = notificationRepository.findByTitleAndReceiver(title, reg.getEmail()).isPresent();
 
                 if (!alreadySent) {
                     Notification notification = new Notification();
@@ -162,8 +161,7 @@ public class NotificationScheduler {
                                        + (event.getVenue() != null ? " at " + event.getVenue() : "")
                                        + ".";
 
-                        boolean alreadySent = notificationRepository.findAll().stream()
-                                .anyMatch(n -> title.equals(n.getTitle()) && reg.getEmail().equals(n.getReceiver()));
+                        boolean alreadySent = notificationRepository.findByTitleAndReceiver(title, reg.getEmail()).isPresent();
 
                         if (!alreadySent) {
                             Notification notification = new Notification();
