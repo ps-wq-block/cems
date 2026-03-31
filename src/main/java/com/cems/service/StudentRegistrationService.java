@@ -23,6 +23,11 @@ public class StudentRegistrationService {
     }
 
     public StudentRegistration registerStudent(StudentRegistration registration) {
+        // Prevent duplicate registration
+        if (repository.findByEmailAndEventName(registration.getEmail(), registration.getEventName()).isPresent()) {
+            throw new IllegalArgumentException("You are already registered for this event.");
+        }
+
         // Check if event has already started
         com.cems.model.Event event = eventRepository.findAll().stream()
                 .filter(e -> e.getName().equals(registration.getEventName()))
