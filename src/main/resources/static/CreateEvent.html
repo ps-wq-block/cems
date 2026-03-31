@@ -259,6 +259,13 @@
 
         }
 
+        // Set minimum date to today for date inputs
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').setAttribute('min', today);
+            document.getElementById('registrationDeadline').setAttribute('min', today);
+        });
+
         document.getElementById('createEventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 

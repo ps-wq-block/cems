@@ -260,7 +260,14 @@
             }
         });
 
-        window.onload = loadEventDetails;
+        window.onload = () => {
+            // Prevent selecting past dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').setAttribute('min', today);
+            document.getElementById('registrationDeadline').setAttribute('min', today);
+
+            loadEventDetails();
+        };
     </script>
 </body>
 
