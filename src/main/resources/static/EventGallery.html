@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Gallery | CEMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            padding-bottom: 50px;
+        }
+
+        header {
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .controls {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-upload {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #10b981, #3b82f6);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: none; /* Shown for Admin/Organizer */
+            transition: all 0.3s ease;
+        }
+
+        .btn-upload:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .gallery-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 20px;
+        }
+
+        .photo-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            aspect-ratio: 4/5;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .photo-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .photo-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            color: white;
+        }
+
+        .photo-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background: rgba(239, 68, 68, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: none; /* Shown for Admin/Organizer */
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ef4444;
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #0f172a;
+            border-radius: 4px;
+            margin-top: 20px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav-back {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-back:hover {
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px;
+            color: #64748b;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .controls { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" id="backLink" class="nav-back">← Back to Dashboard</a>
+        <h1>Event Gallery</h1>
+        <p>Capturing the vibrant moments of CEMS events</p>
+    </header>
+
+    <div class="controls">
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterPhotos('All')">All</button>
+            <button class="filter-btn" onclick="filterPhotos('Technical')">Technical</button>
+            <button class="filter-btn" onclick="filterPhotos('Cultural')">Cultural</button>
+            <button class="filter-btn" onclick="filterPhotos('Sports')">Sports</button>
+            <button class="filter-btn" onclick="filterPhotos('Social')">Social</button>
+            <button class="filter-btn" onclick="filterPhotos('Litrary')">Litrary</button>
+        </div>
+        <button class="btn-upload" id="uploadBtn" onclick="openModal()">+ Upload Photo</button>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid">
+        <!-- Photos will be loaded here -->
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 style="margin-bottom: 20px;">Upload Event Photo</h2>
+            <div class="form-group">
+                <label>Category</label>
+                <select id="photoCategory">
+                    <option value="Technical">Technical</option>
+                    <option value="Cultural">Cultural</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Social">Social</option>
+                    <option value="Litrary">Litrary</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Choose Photo</label>
+                <input type="file" id="photoInput" accept="image/*" onchange="previewImage()">
+            </div>
+            <button class="btn-upload" style="display: block; width: 100%; margin-top: 20px;" onclick="handleUpload()">Upload Now</button>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allPhotos = [];
+        const role = localStorage.getItem('role');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkPermissions();
+            setBackLink();
+            fetchPhotos();
+        });
+
+        function checkPermissions() {
+            const uploadBtn = document.getElementById('uploadBtn');
+            if (role === 'ADMIN' || role === 'ORGANIZER') {
+                uploadBtn.style.display = 'block';
+            }
+        }
+
+        function setBackLink() {
+            const backLink = document.getElementById('backLink');
+            if (role === 'ADMIN') backLink.href = 'AdminDashboard.html';
+            else if (role === 'ORGANIZER') backLink.href = 'OrganizerDashboard.html';
+            else if (role === 'STUDENT') backLink.href = 'categories.html';
+            else backLink.href = 'index.html';
+        }
+
+        async function fetchPhotos(category = 'All') {
+            try {
+                let url = '/api/gallery/photos';
+                if (category !== 'All') url += `?category=${category}`;
+                
+                const response = await fetch(url);
+                allPhotos = await response.json();
+                renderPhotos();
+            } catch (error) {
+                console.error("Error fetching photos:", error);
+            }
+        }
+
+        function renderPhotos() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+
+            if (allPhotos.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><h3>No photos found in this category</h3></div>';
+                return;
+            }
+
+            allPhotos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                
+                const showDelete = (role === 'ADMIN' || role === 'ORGANIZER');
+
+                card.innerHTML = `
+                    <img src="${photo.photoData}" alt="Event Photo" loading="lazy">
+                    ${showDelete ? `<button class="delete-btn" onclick="handleDelete('${photo.id}')" style="display:flex">×</button>` : ''}
+                    <div class="photo-info">
+                        <span class="photo-category">${photo.category}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterPhotos(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === category);
+            });
+            fetchPhotos(category);
+        }
+
+        function openModal() {
+            document.getElementById('uploadModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            document.getElementById('photoInput').value = '';
+            document.getElementById('progressBar').style.display = 'none';
+        }
+
+        async function handleUpload() {
+            const fileInput = document.getElementById('photoInput');
+            const categoryInput = document.getElementById('photoCategory');
+            
+            if (!fileInput.files[0]) {
+                alert('Please select a photo first');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            
+            document.getElementById('progressBar').style.display = 'block';
+            const progressFill = document.getElementById('progressFill');
+
+            reader.onloadstart = () => progressFill.style.width = '10%';
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 90;
+                    progressFill.style.width = percent + '%';
+                }
+            };
+            
+            reader.onload = async () => {
+                const base64 = reader.result;
+                try {
+                    const response = await fetch('/api/gallery/upload', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                        },
+                        body: JSON.stringify({
+                            category: categoryInput.value,
+                            photoData: base64
+                        })
+                    });
+
+                    if (response.ok) {
+                        progressFill.style.width = '100%';
+                        setTimeout(() => {
+                            closeModal();
+                            fetchPhotos();
+                        }, 500);
+                    } else {
+                        alert('Upload failed: ' + response.statusText);
+                    }
+                } catch (error) {
+                    console.error("Upload Error:", error);
+                    alert('An error occurred during upload.');
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function handleDelete(id) {
+            if (!confirm('Are you sure you want to delete this photo?')) return;
+
+            try {
+                const response = await fetch(`/api/gallery/photos/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+                    }
+                });
+
+                if (response.ok) {
+                    fetchPhotos();
+                } else {
+                    alert('Delete failed');
+                }
+            } catch (error) {
+                console.error("Delete error:", error);
+            }
+        }
+    </script>
+</body>
+</html>
