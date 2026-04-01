@@ -5,7 +5,6 @@ import com.cems.repository.EventPhotoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +33,19 @@ public class EventPhotoController {
     @PostMapping("/upload")
     public ResponseEntity<EventPhoto> uploadPhoto(@RequestBody Map<String, String> payload) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)) {
-            return ResponseEntity.status(401).build();
-        }
-        String role = auth.getAuthorities().stream()
-                .findFirst().map(Object::toString).orElse("");
-        if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("ORGANIZER")) {
+        if (auth == null) return ResponseEntity.status(401).build();
+        
+        boolean isAuthorized = auth.getAuthorities().stream()
+                .map(a -> a.getAuthority().toUpperCase())
+                .anyMatch(a -> a.equals("ADMIN") || a.equals("ROLE_ADMIN") || a.equals("ORGANIZER") || a.equals("ROLE_ORGANIZER"));
+        
+        if (!isAuthorized) {
             return ResponseEntity.status(403).build();
         }
+
         String category = payload.get("category");
         String photoData = payload.get("photoData");
+        
         EventPhoto photo = new EventPhoto();
         photo.setCategory(category);
         photo.setPhotoData(photoData);
@@ -55,14 +57,16 @@ public class EventPhotoController {
     @DeleteMapping("/photos/{id}")
     public ResponseEntity<Void> deletePhoto(@PathVariable String id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !(auth.getPrincipal() instanceof UserDetails)) {
-            return ResponseEntity.status(401).build();
-        }
-        String role = auth.getAuthorities().stream()
-                .findFirst().map(Object::toString).orElse("");
-        if (!role.equalsIgnoreCase("ADMIN") && !role.equalsIgnoreCase("ORGANIZER")) {
+        if (auth == null) return ResponseEntity.status(401).build();
+        
+        boolean isAuthorized = auth.getAuthorities().stream()
+                .map(a -> a.getAuthority().toUpperCase())
+                .anyMatch(a -> a.equals("ADMIN") || a.equals("ROLE_ADMIN") || a.equals("ORGANIZER") || a.equals("ROLE_ORGANIZER"));
+        
+        if (!isAuthorized) {
             return ResponseEntity.status(403).build();
         }
+        
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
