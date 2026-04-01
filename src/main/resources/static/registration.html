@@ -142,7 +142,7 @@
         <div class="nav-links">
             <a href="categories.html">Events</a>
             <a href="StudentProfile.html">Profile</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 
@@ -185,9 +185,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "STUDENT")) { window.location.href = "index.html"; }
 
         let approvedEvents = [];
         let eventsByCategory = {};
@@ -214,7 +212,7 @@
                         if (!eventsByCategory[cat]) {
                             eventsByCategory[cat] = [];
                         }
-                        eventsByCategory[cat].push(event.name);
+                        eventsByCategory[cat].push(event);
                     });
 
                     // Build the category dropdown
@@ -248,23 +246,90 @@
             }
         }
 
+        function isEventStarted(event) {
+            if (!event.eventDate) return false;
+            try {
+                const [year, month, day] = event.eventDate.split('-').map(Number);
+                let hour = 0, minute = 0;
+
+                if (event.eventTime) {
+                    const startPart = event.eventTime.split('-')[0].trim().toUpperCase();
+                    const match = startPart.match(/(\d{1,2})(:(\d{2}))?\s*(AM|PM)?/);
+                    if (match) {
+                        hour = parseInt(match[1]);
+                        minute = match[3] ? parseInt(match[3]) : 0;
+                        const ampm = match[4];
+                        if (ampm === "PM" && hour < 12) hour += 12;
+                        if (ampm === "AM" && hour === 12) hour = 0;
+                    }
+                }
+                const eventStart = new Date(year, month - 1, day, hour, minute);
+                return new Date() > eventStart;
+            } catch (e) {
+                return new Date() > new Date(event.eventDate);
+            }
+        }
+
         // When category changes, populate event dropdown
         categoryDropdown.addEventListener("change", function () {
             let category = this.value;
             eventDropdown.innerHTML = '<option value="">Select Event</option>';
 
             if (category && eventsByCategory[category]) {
-                eventsByCategory[category].forEach(function (eventName) {
+                eventsByCategory[category].forEach(function (evt) {
+                    const started = isEventStarted(evt);
                     let option = document.createElement("option");
-                    option.value = eventName;
-                    option.text = eventName;
+                    option.value = evt.name;
+                    
+                    let statusText = "";
+                    if (evt.registrationOpen === false) statusText = " (Registration Closed)";
+                    else if (started) statusText = " (Event Started)";
+                    
+                    option.text = evt.name + statusText;
+                    if (evt.registrationOpen === false || started) option.disabled = true;
                     eventDropdown.add(option);
                 });
             }
         });
 
-        // Load events on page load
-        window.onload = loadEventsForRegistration;
+        // Load events on page load and auto-fill profile
+        window.onload = function() {
+            loadEventsForRegistration();
+            autoFillFromProfile();
+        };
+
+        async function autoFillFromProfile() {
+            const userId = localStorage.getItem('userId');
+            if (!userId) return;
+            try {
+                const res = await fetch('/api/auth/users/' + userId, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if (res.ok) {
+                    const user = await res.json();
+                    
+                    const mappings = [
+                        { key: 'name', id: 'studentName' },
+                        { key: 'email', id: 'email' },
+                        { key: 'rollNumber', id: 'rollNumber' },
+                        { key: 'course', id: 'course' },
+                        { key: 'phoneNumber', id: 'phoneNumber' }
+                    ];
+
+                    mappings.forEach(mapping => {
+                        if (user[mapping.key]) {
+                            const el = document.getElementById(mapping.id);
+                            el.value = user[mapping.key];
+                            el.readOnly = true;
+                            el.style.backgroundColor = '#e9ecef';
+                            el.style.color = '#495057';
+                            el.style.cursor = 'not-allowed';
+                            el.style.border = '1px solid #ced4da';
+                        }
+                    });
+                }
+            } catch(e) { console.error('Auto-fill error:', e); }
+        }
 
         // --- Form Submission ---
         document.getElementById("registerForm").addEventListener("submit", async function (e) {
@@ -272,14 +337,19 @@
 
             const msgDiv = document.getElementById("msg");
 
+            const selectedEventName = document.getElementById('event').value;
+            const selectedCategory = document.getElementById('category').value;
+            const selectedEvent = (eventsByCategory[selectedCategory] || []).find(e => e.name === selectedEventName);
+
             const data = {
                 studentName: document.getElementById('studentName').value,
                 email: document.getElementById('email').value,
                 rollNumber: document.getElementById('rollNumber').value,
                 course: document.getElementById('course').value,
-                category: document.getElementById('category').value,
-                eventName: document.getElementById('event').value,
-                phoneNumber: document.getElementById('phoneNumber').value
+                category: selectedCategory,
+                eventName: selectedEventName,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                eventDate: selectedEvent ? selectedEvent.eventDate : null
             };
 
             try {
@@ -311,3 +381,7 @@
 </body>
 
 </html>
+
+
+
+

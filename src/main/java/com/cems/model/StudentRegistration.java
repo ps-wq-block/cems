@@ -16,6 +16,8 @@ public class StudentRegistration {
     private String category;
     private String eventName;
     private String phoneNumber;
+    private String registrationDate;
+    private String eventDate;
 
     private Boolean isPresent = false;
     private Integer score = 0;
@@ -86,6 +88,12 @@ public class StudentRegistration {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public String getRegistrationDate() { return registrationDate; }
+    public void setRegistrationDate(String registrationDate) { this.registrationDate = registrationDate; }
+
+    public String getEventDate() { return eventDate; }
+    public void setEventDate(String eventDate) { this.eventDate = eventDate; }
 
     public Boolean getIsPresent() {
         return isPresent;

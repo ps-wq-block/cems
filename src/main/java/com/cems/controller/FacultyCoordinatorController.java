@@ -19,10 +19,14 @@ public class FacultyCoordinatorController {
     }
 
     @PostMapping
-    public ResponseEntity<FacultyCoordinatorAssignment> createAssignment(
+    public ResponseEntity<?> createAssignment(
             @RequestBody FacultyCoordinatorAssignment assignment) {
-        FacultyCoordinatorAssignment savedAssignment = service.assignCoordinator(assignment);
-        return ResponseEntity.ok(savedAssignment);
+        try {
+            FacultyCoordinatorAssignment savedAssignment = service.assignCoordinator(assignment);
+            return ResponseEntity.ok(savedAssignment);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping
@@ -41,14 +45,18 @@ public class FacultyCoordinatorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FacultyCoordinatorAssignment> updateAssignment(
+    public ResponseEntity<?> updateAssignment(
             @PathVariable String id,
             @RequestBody FacultyCoordinatorAssignment assignment) {
-        FacultyCoordinatorAssignment updatedAssignment = service.updateAssignment(id, assignment);
-        if (updatedAssignment != null) {
-            return ResponseEntity.ok(updatedAssignment);
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            FacultyCoordinatorAssignment updatedAssignment = service.updateAssignment(id, assignment);
+            if (updatedAssignment != null) {
+                return ResponseEntity.ok(updatedAssignment);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

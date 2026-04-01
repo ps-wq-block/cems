@@ -139,12 +139,10 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
         function logout() {
-            localStorage.clear();
+            localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
             window.location.href = "index.html";
         }
 
@@ -182,7 +180,8 @@
             // Sort all by date first to get absolute latest
             notifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             // Only care about notifications meant for this role
-            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both');
+            const userEmail = localStorage.getItem('userEmail');
+            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both' || (userEmail && n.receiver === userEmail));
             
             // Get the absolute latest 2
             const topTwo = roleNotifs.slice(0, 2);
@@ -191,14 +190,17 @@
             let seen = JSON.parse(seenStr);
             
             // Only show them if they haven't been seen yet
-            const recent = topTwo.filter(n => !seen.includes(n.id));
+            const recent = topTwo.filter(n => {
+                n.uid = n.id || n._id || (n.title + (n.createdAt||''));
+                return !seen.includes(n.uid);
+            });
             
             if (recent.length === 0) return;
 
             const container = document.getElementById('toast-container');
             recent.forEach((n, idx) => {
                 // Mark as seen immediately
-                seen.push(n.id);
+                seen.push(n.uid);
                 localStorage.setItem('seenNotifications', JSON.stringify(seen));
 
                 setTimeout(() => {
@@ -220,3 +222,7 @@
 </body>
 
 </html>
+
+
+
+

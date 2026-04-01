@@ -161,12 +161,10 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ORGANIZER") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ORGANIZER")) { window.location.href = "index.html"; }
 
         function logout() {
-            localStorage.clear();
+            localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
             window.location.href = "index.html";
         }
 
@@ -227,11 +225,26 @@
                                     style="background: #7fb3d5; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
                                 Edit Event
                             </button>
+                            <button onclick="toggleRegistration('${event.id}')" 
+                                    style="background: ${event.registrationOpen === false ? '#d9534f' : '#5cb85c'}; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                ${event.registrationOpen === false ? 'Enable Reg' : 'Disable Reg'}
+                            </button>
                         </div>
                     </div>
                 `;
                 container.innerHTML += html;
             });
+        }
+        
+        async function toggleRegistration(id) {
+            if(!confirm("Are you sure you want to toggle registration status for this event?")) return;
+            try {
+                const res = await fetch('/api/events/' + id + '/toggle-registration', {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+                if(res.ok) fetchMyEvents();
+            } catch(e) { console.error(e); }
         }
 
         function filterEvents() {
@@ -265,3 +278,7 @@
 </body>
 
 </html>
+
+
+
+

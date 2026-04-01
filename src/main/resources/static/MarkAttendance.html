@@ -5,8 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mark Attendance</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(-100px);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg,#6dd5fa,#c89cff,#a1ffce);">
+
+  <div id="toast" class="toast bg-gradient-to-r from-emerald-500 to-teal-600">
+    Attendance saved successfully!
+  </div>
 
   <div class="w-full max-w-4xl bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8">
     <div class="text-center mb-6">
@@ -30,9 +52,10 @@
       <table class="w-full border-collapse">
         <thead>
           <tr class="bg-teal-100 text-gray-700">
-            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Roll Number</th>
             <th class="p-2 border">Name</th>
             <th class="p-2 border">Email</th>
+            <th class="p-2 border">Course</th>
             <th class="p-2 border">Present</th>
           </tr>
         </thead>
@@ -49,9 +72,22 @@
   </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = isError 
+        ? 'toast show bg-gradient-to-r from-red-500 to-pink-600' 
+        : 'toast show bg-gradient-to-r from-emerald-500 to-teal-600';
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+}
+
 async function loadEvents() {
     const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
-    // Fallback if not admin
     const events = res.ok ? await res.json() : await (await fetch('/api/events')).json();
     const select = document.getElementById('eventSelect');
     select.innerHTML = events.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
@@ -60,14 +96,17 @@ async function loadEvents() {
 
 async function loadParticipants() {
     const eventName = document.getElementById('eventSelect').value;
-    const res = await fetch(`/api/registrations/event/${eventName}`);
+    const res = await fetch(`/api/registrations/event/${encodeURIComponent(eventName)}`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+    });
     const participants = await res.json();
     const tbody = document.getElementById('participantsTable');
     tbody.innerHTML = participants.map(p => `
       <tr class="hover:bg-teal-50" data-id="${p.id}">
-        <td class="p-2 border">${p.id}</td>
+        <td class="p-2 border">${p.rollNumber || '-'}</td>
         <td class="p-2 border name-cell">${p.studentName}</td>
         <td class="p-2 border email-cell">${p.email}</td>
+        <td class="p-2 border">${p.course || '-'}</td>
         <td class="p-2 border text-center">
           <input type="checkbox" class="w-4 h-4 accent-emerald-500" ${p.isPresent ? 'checked' : ''} />
         </td>
@@ -85,7 +124,9 @@ function filterTable() {
 
 async function saveAttendance() {
     const eventName = document.getElementById('eventSelect').value;
-    const resRaw = await fetch(`/api/registrations/event/${eventName}`);
+    const resRaw = await fetch(`/api/registrations/event/${encodeURIComponent(eventName)}`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+    });
     const participants = await resRaw.json();
 
     const rows = document.querySelectorAll('#participantsTable tr');
@@ -98,10 +139,17 @@ async function saveAttendance() {
 
     const res = await fetch('/api/registrations/bulk-update', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+        },
         body: JSON.stringify(participants)
     });
-    if(res.ok) alert("Attendance saved successfully!");
+    if(res.ok) {
+        showToast("Attendance saved successfully!");
+    } else {
+        showToast("Error saving attendance. Please check permissions.", true);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadEvents);

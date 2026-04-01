@@ -106,7 +106,7 @@
         <div class="logo">CEMS Admin</div>
         <div class="nav-links">
             <a href="AdminDashboard.html">Dashboard</a>
-            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html'">Logout</a>
+            <a href="#" class="logout" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');; window.location.href='index.html'">Logout</a>
         </div>
     </div>
 
@@ -120,9 +120,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
         async function fetchUsers() {
             const container = document.getElementById('tableContainer');
@@ -151,7 +149,7 @@
                         const roleClass = `badge-${user.role.toLowerCase()}`;
                         tableHtml += `
                             <tr>
-                                <td>${user.fullName || user.username || 'N/A'}</td>
+                                <td>${user.name || 'N/A'}</td>
                                 <td>${user.email}</td>
                                 <td><span class="badge ${roleClass}">${user.role}</span></td>
                                 <td>${user.phoneNumber || '-'}</td>
@@ -175,3 +173,7 @@
 </body>
 
 </html>
+
+
+
+

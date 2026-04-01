@@ -5,8 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Results / Winners</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 2rem;
+      border-radius: 1rem;
+      color: white;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      transform: translateY(-100px);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1000;
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+  </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4" style="background: linear-gradient(135deg,#6dd5fa,#c89cff,#a1ffce);">
+
+  <div id="toast" class="toast bg-gradient-to-r from-emerald-500 to-teal-600">
+    Scores updated successfully!
+  </div>
 
   <div class="w-full max-w-5xl bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8">
     <div class="text-center mb-6">
@@ -61,7 +83,29 @@
   </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
+function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = isError 
+        ? 'toast show bg-gradient-to-r from-red-500 to-pink-600' 
+        : 'toast show bg-gradient-to-r from-emerald-500 to-teal-600';
+    setTimeout(() => {
+        toast.className = 'toast';
+    }, 3000);
+}
+
 async function loadEvents() {
+    const role = (localStorage.getItem('role') || '').toUpperCase();
+    if (role === 'STUDENT') {
+        const updateBtnContainer = document.querySelector('.mt-6.flex.justify-center.gap-4');
+        if(updateBtnContainer) updateBtnContainer.style.display = 'none';
+        const backLink = document.querySelector('a[href="OrganizerDashboard.html"]');
+        if(backLink) backLink.href = 'categories.html';
+    }
+
     const res = await fetch('/api/admin/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }});
     const events = res.ok ? await res.json() : await (await fetch('/api/events')).json();
     const select = document.getElementById('eventSelect');
@@ -70,8 +114,11 @@ async function loadEvents() {
 }
 
 async function loadResults() {
+    const role = (localStorage.getItem('role') || '').toUpperCase();
     const eventName = document.getElementById('eventSelect').value;
-    const res = await fetch(`/api/registrations/event/${eventName}`);
+    const res = await fetch(`/api/registrations/event/${encodeURIComponent(eventName)}`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+    });
     let participants = await res.json();
     
     participants.sort((a,b) => (b.score || 0) - (a.score || 0));
@@ -87,7 +134,7 @@ async function loadResults() {
         <td class="p-2 border">${p.studentName}</td>
         <td class="p-2 border">${p.eventName}</td>
         <td class="p-2 border">
-            <input type="number" class="score-input w-20 p-1 border text-center" data-id="${p.id}" value="${p.score || 0}" />
+            ${role === 'STUDENT' ? (p.score || 0) : `<input type="number" class="score-input w-20 p-1 border text-center" data-id="${p.id}" value="${p.score || 0}" />`}
         </td>
       </tr>
     `).join('');
@@ -95,7 +142,9 @@ async function loadResults() {
 
 async function saveScores() {
     const eventName = document.getElementById('eventSelect').value;
-    const resRaw = await fetch(`/api/registrations/event/${eventName}`);
+    const resRaw = await fetch(`/api/registrations/event/${encodeURIComponent(eventName)}`, {
+        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+    });
     let participants = await resRaw.json();
 
     document.querySelectorAll('.score-input').forEach(input => {
@@ -107,15 +156,18 @@ async function saveScores() {
 
     const updateRes = await fetch('/api/registrations/bulk-update', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('jwt')
+        },
         body: JSON.stringify(participants)
     });
     
     if(updateRes.ok) {
-        alert('Scores updated successfully!');
+        showToast('Scores updated successfully!');
         loadResults();
     } else {
-        alert('Error saving scores');
+        showToast('Error saving scores. Please check permissions.', true);
     }
 }
 document.addEventListener('DOMContentLoaded', loadEvents);

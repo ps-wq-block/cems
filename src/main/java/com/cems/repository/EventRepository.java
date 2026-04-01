@@ -13,4 +13,6 @@ public interface EventRepository extends MongoRepository<Event, String> {
     List<Event> findByOrganizerEmail(String organizerEmail);
 
     long countByOrganizerEmail(String organizerEmail);
+
+    boolean existsByName(String name);
 }

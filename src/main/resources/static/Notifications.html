@@ -35,7 +35,7 @@ body {
 }
 .notification {
     background: #dcdde1;
-    padding: 12px;
+    padding: 12px 12px 36px 12px;
     border-radius: 12px;
     margin-bottom: 12px;
     position: relative;
@@ -55,12 +55,34 @@ body {
 .notification p { margin: 5px 0; font-size: 14px; }
 small { color: #555; }
 .back-btn { display: block; text-align: center; margin-bottom: 15px; font-weight: bold; color: #5f6bdc; text-decoration: none; }
+.delete-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.delete-btn:hover { background: #e60000; }
+.unread-count {
+    background: #ff6a88;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin-left: 8px;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="title">Notifications Inbox</div>
+    <div class="title">Notifications Inbox <span class="unread-count" id="unreadCount" style="display:none;"></span></div>
     <a href="#" class="back-btn" onclick="goBack()">Go Back</a>
     <div id="notifBox">
        Loading notifications...
@@ -68,13 +90,31 @@ small { color: #555; }
 </div>
 
 <script>
+    if (!localStorage.getItem('jwt')) { window.location.href = 'index.html'; }
+</script>
+<script>
 function goBack() {
     window.history.back();
 }
 
+async function deleteNotif(id) {
+    if (!confirm('Delete this notification?')) return;
+    try {
+        const token = localStorage.getItem('jwt');
+        const res = await fetch('/api/notifications/' + id, {
+            method: 'DELETE',
+            headers: { 'Authorization': token ? 'Bearer ' + token : '' }
+        });
+        if (res.ok) {
+            loadNotifications();
+        } else {
+            alert('Failed to delete.');
+        }
+    } catch(e) { alert('Error deleting notification.'); }
+}
+
 async function loadNotifications() {
     let role = localStorage.getItem('role') || 'STUDENT';
-    // Mappings: "ORGANIZER" and "ADMIN" see "Admin"
     let target = role === 'STUDENT' ? 'Students' : 'Admin';
 
     try {
@@ -84,22 +124,64 @@ async function loadNotifications() {
         });
         const notifs = await res.json();
         
-        const filtered = notifs.filter(n => n.receiver === target || n.receiver === 'Both'); 
+        const now = new Date();
+        const userEmail = localStorage.getItem('userEmail');
+        const filtered = notifs
+            .filter(n => n.receiver === target || n.receiver === 'Both' || n.receiver === userEmail)
+            .filter(n => {
+                if(!n.eventDate || !n.eventTime) return true;
+                return new Date(n.eventDate + 'T' + n.eventTime) <= now;
+            })
+            .sort((a,b) => {
+                const dA = new Date(a.eventDate && a.eventTime ? a.eventDate + 'T' + a.eventTime : (a.createdAt || 0));
+                const dB = new Date(b.eventDate && b.eventTime ? b.eventDate + 'T' + b.eventTime : (b.createdAt || 0));
+                return dB - dA;
+            });
+            
         const container = document.getElementById('notifBox');
         
         if(filtered.length === 0) {
-            container.innerHTML = "<p style='text-align:center'>No clear notifications found.</p>";
+            container.innerHTML = "<p style='text-align:center'>No notifications found.</p>";
+            document.getElementById('unreadCount').style.display = 'none';
             return;
         }
 
-        container.innerHTML = filtered.map(n => `
+        let seenStr = localStorage.getItem('seenNotifications') || '[]';
+        let seen = JSON.parse(seenStr);
+        let updatedSeen = false;
+        let unreadCount = 0;
+
+        container.innerHTML = filtered.map(n => {
+            const uid = n.id || n._id || (n.title + (n.createdAt||''));
+            const isNew = !seen.includes(uid);
+            if (isNew) {
+                unreadCount++;
+                seen.push(uid);
+                updatedSeen = true;
+            }
+            return `
             <div class="notification">
-                <span class="badge">New</span>
+                ${isNew ? '<span class="badge">New</span>' : ''}
                 <h4>${n.title}</h4>
                 <p>${n.message}</p>
-                <small>${n.eventDate} ${n.eventTime}</small>
+                <small>${n.eventDate || ''} ${n.eventTime || ''}</small>
+                <button class="delete-btn" onclick="deleteNotif('${n.id}')">Delete</button>
             </div>
-        `).join('');
+            `;
+        }).join('');
+
+        // Show unread count
+        const countEl = document.getElementById('unreadCount');
+        if (unreadCount > 0) {
+            countEl.innerText = unreadCount + ' new';
+            countEl.style.display = 'inline';
+        } else {
+            countEl.style.display = 'none';
+        }
+        
+        if (updatedSeen) {
+            localStorage.setItem('seenNotifications', JSON.stringify(seen));
+        }
     } catch(err) {
         document.getElementById('notifBox').innerHTML = 'Error loading notifications.';
     }

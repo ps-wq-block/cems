@@ -16,6 +16,9 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
+        if (repository.existsByName(event.getName())) {
+            throw new IllegalArgumentException("An event with this name already exists.");
+        }
         event.setStatus("Pending"); // Always pending upon creation
         return repository.save(event);
     }
@@ -46,6 +49,9 @@ public class EventService {
 
     public Event updateEvent(String id, Event eventDetails) {
         return repository.findById(id).map(event -> {
+            if (!event.getName().equalsIgnoreCase(eventDetails.getName()) && repository.existsByName(eventDetails.getName())) {
+                throw new IllegalArgumentException("An event with this name already exists.");
+            }
             event.setName(eventDetails.getName());
             event.setCategory(eventDetails.getCategory());
             event.setEventDate(eventDetails.getEventDate());
@@ -55,6 +61,7 @@ public class EventService {
             event.setMaxParticipants(eventDetails.getMaxParticipants());
             event.setRegistrationDeadline(eventDetails.getRegistrationDeadline());
             event.setRules(eventDetails.getRules());
+            event.setRegistrationOpen(eventDetails.isRegistrationOpen());
             // We keep the original organizer and status (or reset if needed)
             return repository.save(event);
         }).orElse(null);

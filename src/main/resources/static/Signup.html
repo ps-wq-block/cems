@@ -121,7 +121,7 @@
         <form id="signupForm">
             <div class="input-group">
                 <label>Full Name</label>
-                <input type="text" id="name" placeholder="Enter Full Name">
+                <input type="text" id="name" placeholder="Enter Full Name" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')">
                 <small class="error-text" id="nameError"></small>
             </div>
 
@@ -193,6 +193,13 @@
                 name.classList.add("error-border");
                 nameError.innerHTML = "Name is required";
                 valid = false;
+            } else {
+                const namePattern = /^[a-zA-Z\s]+$/;
+                if (!namePattern.test(name.value.trim())) {
+                    name.classList.add("error-border");
+                    nameError.innerHTML = "Name can only contain letters and spaces";
+                    valid = false;
+                }
             }
             if (email.value.trim() === "") {
                 email.classList.add("error-border");

@@ -308,7 +308,7 @@
             <a href="categories.html" style="color: var(--primary);">Dashboard</a>
             <a href="EventGallery.html">Gallery</a>
             <a href="StudentProfile.html">Profile</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 
@@ -337,15 +337,22 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "STUDENT")) { window.location.href = "index.html"; }
 
         let allEvents = [];
+        let myRegistrations = [];
         let currentFilter = 'All';
 
         async function fetchAllEvents() {
             try {
+                const userEmail = localStorage.getItem("userEmail");
+                if (userEmail) {
+                    const regRes = await fetch('/api/registrations/student/' + encodeURIComponent(userEmail), {
+                        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                    });
+                    if (regRes.ok) myRegistrations = await regRes.json();
+                }
+
                 const response = await fetch('/api/events', {
                     headers: {
                         'Authorization': 'Bearer ' + localStorage.getItem('jwt')
@@ -479,7 +486,12 @@
                     
                     <div class="card-footer">
                         <a href="EventDetails.html?id=${event.id}" class="btn btn-secondary">View Details</a>
-                        <a href="registration.html?event=${encodeURIComponent(event.name)}&cat=${encodeURIComponent(event.category || '')}" class="btn btn-primary">Register Now</a>
+                        ${event.registrationOpen === false 
+                            ? '<span class="btn btn-primary" style="opacity:0.4; pointer-events:none; cursor:not-allowed;">Registration Closed</span>' 
+                            : (myRegistrations.some(r => r.eventName === event.name)
+                                ? '<span class="btn btn-primary" style="background:#10B981; pointer-events:none; cursor:default;">Already Registered</span>'
+                                : '<a href="registration.html?event=' + encodeURIComponent(event.name) + '&cat=' + encodeURIComponent(event.category || '') + '" class="btn btn-primary">Register Now</a>')
+                        }
                     </div>
                 `;
 
@@ -499,3 +511,7 @@
 </body>
 
 </html>
+
+
+
+

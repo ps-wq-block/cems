@@ -156,7 +156,7 @@
             <a href="AdminDashboard.html">Dashboard</a>
             <a href="Approval.html">Approvals</a>
             <a href="FacultyAssignment.html">Assign Faculty</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
 
@@ -165,15 +165,36 @@
         <div class="title">Event Request Approvals</div>
 
         <div style="margin-bottom: 20px; display: flex; gap: 12px;">
-            <input type="text" id="searchInput" placeholder="Search by name, category or venue..." 
+            <input type="text" id="searchInput" placeholder="Search by name or venue..." 
                    style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #ddd; outline: none;"
                    onkeyup="filterEvents()">
+            <select id="categorySelect" onchange="filterEvents()" 
+                    style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="">All Categories</option>
+                <option value="Seminar">Seminar</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Sports">Sports</option>
+                <option value="Cultural">Cultural</option>
+                <option value="Technical">Technical</option>
+                <option value="Fine Arts">Fine Arts</option>
+                <option value="Literary Event">Literary Event</option>
+                <option value="Social and Community">Social and Community</option>
+                <option value="Guest Lectures">Guest Lectures</option>
+                <option value="Health and Wellness Events">Health and Wellness Events</option>
+            </select>
             <select id="sortSelect" onchange="filterEvents()" 
                     style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
                 <option value="id_desc">Sort: Newest First</option>
                 <option value="name">Sort: Eventwise</option>
                 <option value="date">Sort: Datewise</option>
                 <option value="venue">Sort: Venuewise</option>
+            </select>
+            <select id="statusSelect" onchange="filterEvents()" 
+                    style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="">Status: All Events</option>
+                <option value="Pending">Status: Pending</option>
+                <option value="Approved">Status: Approved</option>
+                <option value="Rejected">Status: Rejected</option>
             </select>
         </div>
 
@@ -213,9 +234,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
         let currentEventId = null;
         let allEvents = []; // Store full event objects for filtering
@@ -271,13 +290,17 @@
 
         function filterEvents() {
             const query = document.getElementById("searchInput").value.toLowerCase();
+            const categoryFilter = document.getElementById("categorySelect").value;
+            const statusFilter = document.getElementById("statusSelect").value;
             const sortBy = document.getElementById("sortSelect").value;
 
-            let filtered = allEvents.filter(event => 
-                (event.name && event.name.toLowerCase().includes(query)) ||
-                (event.category && event.category.toLowerCase().includes(query)) ||
-                (event.venue && event.venue.toLowerCase().includes(query))
-            );
+            let filtered = allEvents.filter(event => {
+                const matchesSearch = (event.name && event.name.toLowerCase().includes(query)) ||
+                                      (event.venue && event.venue.toLowerCase().includes(query));
+                const matchesCategory = categoryFilter === "" || event.category === categoryFilter;
+                const matchesStatus = statusFilter === "" || event.status === statusFilter;
+                return matchesSearch && matchesCategory && matchesStatus;
+            });
 
             // Sorting logic
             filtered.sort((a, b) => {
@@ -384,3 +407,7 @@
 </body>
 
 </html>
+
+
+
+

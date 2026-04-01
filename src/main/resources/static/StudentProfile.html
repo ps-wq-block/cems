@@ -181,9 +181,7 @@
     </style>
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "STUDENT") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "STUDENT")) { window.location.href = "index.html"; }
 
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
@@ -228,6 +226,29 @@
             }
         }
 
+        function isEventEnded(dateStr, timeStr) {
+            if (!dateStr || dateStr === '-' || dateStr === 'TBD') return false;
+            try {
+                const [year, month, day] = dateStr.split('-').map(Number);
+                let hour = 23, minute = 59;
+                if (timeStr) {
+                    const startPart = timeStr.split('-')[0].trim().toUpperCase();
+                    const match = startPart.match(/(\d{1,2})([:.](\d{2}))?\s*(AM|PM)?/);
+                    if (match) {
+                        hour = parseInt(match[1]);
+                        minute = match[3] ? parseInt(match[3]) : 0;
+                        const ampm = match[4];
+                        if (ampm === 'PM' && hour < 12) hour += 12;
+                        if (ampm === 'AM' && hour === 12) hour = 0;
+                    }
+                }
+                const eventEnd = new Date(year, month - 1, day, hour, minute);
+                return new Date() > eventEnd;
+            } catch (e) {
+                try { return new Date() > new Date(dateStr + 'T23:59:59'); } catch(_) { return false; }
+            }
+        }
+
         async function loadRegisteredEvents(email) {
             const tbody = document.getElementById("registeredEventsBody");
             try {
@@ -239,30 +260,49 @@
                     const registrations = await response.json();
 
                     if (registrations.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#888;">No registered events yet. Browse events to register!</td></tr>';
                         return;
                     }
 
+                    // Fetch all events to fill in missing eventDate and eventTime for old registrations
+                    let eventsMap = {};
+                    try {
+                        const evRes = await fetch('/api/events', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') } });
+                        if (evRes.ok) {
+                            const allEvts = await evRes.json();
+                            allEvts.forEach(e => { eventsMap[e.name] = { date: e.eventDate, time: e.eventTime }; });
+                        }
+                    } catch(_) {}
+
                     tbody.innerHTML = '';
                     registrations.forEach(reg => {
+                        const evInfo = eventsMap[reg.eventName] || {};
+                        const evDate = reg.eventDate || evInfo.date || '-';
+                        const evTime = evInfo.time || '';
+                        const regDate = reg.registrationDate || '-';
+                        const ended = isEventEnded(evDate, evTime);
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${reg.eventName || '-'}</td>
                             <td>${reg.category || '-'}</td>
-                            <td>${reg.rollNumber || '-'}</td>
-                            <td>${reg.course || '-'}</td>
+                            <td>${regDate}</td>
+                            <td>${evDate}</td>
+                            <td style="font-weight:600; color:${ended ? '#dc2626' : '#16a34a'};">${ended ? 'Ended' : 'Upcoming'}</td>
                             <td>
-                                <button class="cancel-btn" onclick="cancelRegistration('${reg.id}')">Cancel</button>
+                                ${ended
+                                    ? '<button class="cancel-btn" disabled style="opacity:0.4; cursor:not-allowed;">Cancel</button>'
+                                    : '<button class="cancel-btn" onclick="cancelRegistration(\'' + reg.id + '\')">Cancel</button>'
+                                }
                             </td>
                         `;
                         tbody.appendChild(row);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Failed to load registrations.</td></tr>';
                 }
             } catch (error) {
                 console.error("Error loading registrations:", error);
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:red;">Error connecting to server.</td></tr>';
             }
         }
 
@@ -298,8 +338,7 @@
         <div class="nav-links">
             <a href="categories.html">Events</a>
             <a href="StudentProfile.html">Profile</a>
-            <a href="Notifications.html">Inbox</a>
-            <a href="index.html" onclick="localStorage.clear()">Logout</a>
+            <a href="index.html" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');">Logout</a>
         </div>
     </div>
     <div class="container">
@@ -334,14 +373,15 @@
                 <tr>
                     <th>Event Name</th>
                     <th>Category</th>
-                    <th>Roll Number</th>
-                    <th>Course</th>
+                    <th>Registration Date</th>
+                    <th>Event Date</th>
+                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody id="registeredEventsBody">
                 <tr>
-                    <td colspan="5" style="text-align:center; color:#888;">Loading registrations...</td>
+                    <td colspan="6" style="text-align:center; color:#888;">Loading registrations...</td>
                 </tr>
             </tbody>
         </table>
@@ -357,35 +397,35 @@
                 Edit Profile</div>
             <form id="editForm">
                 <label style="font-weight:600; font-size:14px;">Full Name</label>
-                <input type="text" id="editName"
+                <input type="text" id="editName" oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Phone Number</label>
-                <input type="text" id="editPhone"
+                <input type="text" id="editPhone" required maxlength="10"
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Roll Number</label>
-                <input type="text" id="editRoll"
+                <input type="text" id="editRoll" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Department</label>
-                <input type="text" id="editDept"
+                <input type="text" id="editDept" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Course</label>
-                <input type="text" id="editCourse"
+                <input type="text" id="editCourse" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Year</label>
-                <input type="text" id="editYear"
+                <input type="text" id="editYear" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Date of Birth</label>
-                <input type="date" id="editDob"
+                <input type="date" id="editDob" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">Gender</label>
-                <select id="editGender"
+                <select id="editGender" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
                     <option value="">-- Select --</option>
                     <option value="Male">Male</option>
@@ -394,11 +434,11 @@
                 </select>
 
                 <label style="font-weight:600; font-size:14px;">Address</label>
-                <input type="text" id="editAddress"
+                <input type="text" id="editAddress" required
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <label style="font-weight:600; font-size:14px;">College</label>
-                <input type="text" id="editCollege"
+                <input type="text" id="editCollege" required oninput="this.value = this.value.replace(/[^a-zA-Z\s]/g, '')"
                     style="width:100%; padding:10px; margin:5px 0 15px 0; border-radius:8px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
 
                 <div style="display:flex; gap:12px; margin-top:10px;">
@@ -491,7 +531,8 @@
             // Sort all by date first to get absolute latest
             notifs.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
             // Only care about notifications meant for this role
-            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both');
+            const userEmail = localStorage.getItem('userEmail');
+            const roleNotifs = notifs.filter(n => n.receiver === target || n.receiver === 'Both' || (userEmail && n.receiver === userEmail));
             
             // Get the absolute latest 2
             const topTwo = roleNotifs.slice(0, 2);
@@ -500,14 +541,17 @@
             let seen = JSON.parse(seenStr);
             
             // Only show them if they haven't been seen yet
-            const recent = topTwo.filter(n => !seen.includes(n.id));
+            const recent = topTwo.filter(n => {
+                n.uid = n.id || n._id || (n.title + (n.createdAt||''));
+                return !seen.includes(n.uid);
+            });
             
             if (recent.length === 0) return;
 
             const container = document.getElementById('toast-container');
             recent.forEach((n, idx) => {
                 // Mark as seen immediately
-                seen.push(n.id);
+                seen.push(n.uid);
                 localStorage.setItem('seenNotifications', JSON.stringify(seen));
 
                 setTimeout(() => {
@@ -528,3 +572,7 @@
     </script>
 </body>
 </html>
+
+
+
+

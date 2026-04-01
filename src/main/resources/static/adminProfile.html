@@ -173,7 +173,7 @@
         <div class="nav-links">
             <a href="AdminDashboard.html">Dashboard</a>
             <a href="adminProfile.html">Profile</a>
-            <a href="#" class="logout" onclick="localStorage.clear(); window.location.href='index.html';">Logout</a>
+            <a href="#" class="logout" onclick="localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');; window.location.href='index.html';">Logout</a>
         </div>
     </div>
 
@@ -226,9 +226,7 @@
 
     <script>
         // Role Guard
-        if (localStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "index.html";
-        }
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
         async function loadProfile() {
             const userId = localStorage.getItem("userId");
@@ -270,3 +268,7 @@
 
 </body>
 </html>
+
+
+
+
