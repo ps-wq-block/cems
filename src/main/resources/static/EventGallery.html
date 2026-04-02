@@ -263,10 +263,7 @@
                 <label>Category</label>
                 <select id="photoCategory" onchange="loadEventsByCategory()">
                     <option value="">Select Category</option>
-                    <option value="Technical">Technical</option>
-                    <option value="Sports">Sports</option>
-                    <option value="Cultural">Cultural</option>
-                    <option value="Workshops">Workshops</option>
+                    <!-- Categories will be loaded here -->
                 </select>
             </div>
             <div class="input-group">
@@ -286,10 +283,7 @@
     <div class="gallery-container">
         <div class="filter-tabs" id="filterTabs">
             <button class="filter-btn active" onclick="filterGallery('All')">All</button>
-            <button class="filter-btn" onclick="filterGallery('Technical')">Technical</button>
-            <button class="filter-btn" onclick="filterGallery('Sports')">Sports</button>
-            <button class="filter-btn" onclick="filterGallery('Cultural')">Cultural</button>
-            <button class="filter-btn" onclick="filterGallery('Workshops')">Workshops</button>
+            <!-- Filter buttons will be loaded here -->
         </div>
 
         <div class="gallery-grid" id="galleryGrid">
@@ -306,6 +300,34 @@
         // Initialize UI based on role
         if (isAdmin) {
             document.getElementById('adminArea').style.display = 'block';
+        }
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/events/categories');
+                const categories = await response.json();
+                
+                // Populate upload dropdown
+                const categorySelect = document.getElementById('photoCategory');
+                categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    opt.textContent = cat;
+                    categorySelect.appendChild(opt);
+                });
+
+                // Populate filter tabs
+                const filterTabs = document.getElementById('filterTabs');
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = 'filter-btn';
+                    btn.textContent = cat;
+                    btn.onclick = () => filterGallery(cat);
+                    filterTabs.appendChild(btn);
+                });
+            } catch (err) {
+                console.error("Failed to load categories", err);
+            }
         }
 
         async function loadEventsByCategory() {
@@ -449,7 +471,10 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
 
-        window.onload = loadPhotos;
+        window.onload = () => {
+            loadPhotos();
+            loadCategories();
+        };
     </script>
 </body>
 </html>

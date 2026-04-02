@@ -63,6 +63,11 @@ public class EventController {
         return ResponseEntity.ok(service.getEventsByStatus("Approved"));
     }
 
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> getAllCategories() {
+        return ResponseEntity.ok(service.getAllCategories());
+    }
+
     // Required by Approval.html
     @PutMapping("/{id}/status")
     public ResponseEntity<Event> updateEventStatus(
