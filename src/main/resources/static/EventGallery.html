@@ -305,11 +305,16 @@
         async function loadCategories() {
             try {
                 const response = await fetch('/api/events/categories');
-                const categories = await response.json();
+                let categories = await response.json();
                 
+                // Merge with standard categories to ensure "all" are shown
+                const standard = ["Technical", "Sports", "Cultural", "Workshops", "Seminars", "Competitions", "Other"];
+                const combined = [...new Set([...standard, ...categories])].sort();
+
                 // Populate upload dropdown
                 const categorySelect = document.getElementById('photoCategory');
-                categories.forEach(cat => {
+                combined.forEach(cat => {
+                    if (!cat) return;
                     const opt = document.createElement('option');
                     opt.value = cat;
                     opt.textContent = cat;
@@ -318,11 +323,13 @@
 
                 // Populate filter tabs
                 const filterTabs = document.getElementById('filterTabs');
-                categories.forEach(cat => {
+                // Ensure All is already there (it should be)
+                combined.forEach(cat => {
+                    if (!cat) return;
                     const btn = document.createElement('button');
                     btn.className = 'filter-btn';
                     btn.textContent = cat;
-                    btn.onclick = () => filterGallery(cat);
+                    btn.onclick = (e) => filterGallery(cat, e);
                     filterTabs.appendChild(btn);
                 });
             } catch (err) {
@@ -451,11 +458,18 @@
             }
         }
 
-        function filterGallery(category) {
+        function filterGallery(category, e) {
             // Update active button
             const btns = document.querySelectorAll('.filter-btn');
             btns.forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+            if (e && e.target) {
+                e.target.classList.add('active');
+            } else if (!e) {
+                // If called without event, find the button by text
+                btns.forEach(b => {
+                    if (b.textContent === category) b.classList.add('active');
+                });
+            }
 
             // Fetch filtered
             const url = category === 'All' ? '/api/gallery/photos' : `/api/gallery/photos?category=${category}`;

@@ -40,11 +40,17 @@ public class EventService {
     }
 
     public List<String> getAllCategories() {
-        return repository.findAll().stream()
-                .filter(e -> "Approved".equalsIgnoreCase(e.getStatus()))
+        List<String> categories = repository.findAll().stream()
                 .map(Event::getCategory)
+                .filter(c -> c != null && !c.isEmpty())
                 .distinct()
                 .toList();
+        
+        // Ensure standard categories are always present if not in DB
+        if (categories.isEmpty()) {
+            return List.of("Technical", "Sports", "Cultural", "Workshops", "Seminars", "Competitions");
+        }
+        return categories;
     }
 
     public List<Event> getEventsByOrganizerEmail(String email) {
