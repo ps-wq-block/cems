@@ -12,8 +12,18 @@ public class EventPhoto {
     private String category;
     
     private String photoData; // Base64 image data
+    
+    private String eventName;
 
     public EventPhoto() {
+    }
+
+    public String getEventName() {
+        return eventName;
+    }
+
+    public void setEventName(String eventName) {
+        this.eventName = eventName;
     }
 
     public String getId() {

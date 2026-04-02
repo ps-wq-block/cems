@@ -35,6 +35,10 @@ public class EventService {
         return repository.findByStatus(status);
     }
 
+    public List<Event> getApprovedEventsByCategory(String category) {
+        return repository.findByCategoryAndStatus(category, "Approved");
+    }
+
     public List<Event> getEventsByOrganizerEmail(String email) {
         return repository.findByOrganizerEmail(email);
     }

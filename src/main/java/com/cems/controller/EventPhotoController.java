@@ -45,10 +45,12 @@ public class EventPhotoController {
 
         String category = payload.get("category");
         String photoData = payload.get("photoData");
+        String eventName = payload.get("eventName");
         
         EventPhoto photo = new EventPhoto();
         photo.setCategory(category);
         photo.setPhotoData(photoData);
+        photo.setEventName(eventName);
         EventPhoto saved = repository.save(photo);
         return ResponseEntity.ok(saved);
     }

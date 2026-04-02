@@ -261,11 +261,18 @@
         <div class="upload-form">
             <div class="input-group">
                 <label>Category</label>
-                <select id="photoCategory">
+                <select id="photoCategory" onchange="loadEventsByCategory()">
+                    <option value="">Select Category</option>
                     <option value="Technical">Technical</option>
                     <option value="Sports">Sports</option>
                     <option value="Cultural">Cultural</option>
                     <option value="Workshops">Workshops</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Event Name</label>
+                <select id="photoEvent">
+                    <option value="">Select Event</option>
                 </select>
             </div>
             <div class="input-group" style="flex:2">
@@ -282,6 +289,7 @@
             <button class="filter-btn" onclick="filterGallery('Technical')">Technical</button>
             <button class="filter-btn" onclick="filterGallery('Sports')">Sports</button>
             <button class="filter-btn" onclick="filterGallery('Cultural')">Cultural</button>
+            <button class="filter-btn" onclick="filterGallery('Workshops')">Workshops</button>
         </div>
 
         <div class="gallery-grid" id="galleryGrid">
@@ -298,6 +306,27 @@
         // Initialize UI based on role
         if (isAdmin) {
             document.getElementById('adminArea').style.display = 'block';
+        }
+
+        async function loadEventsByCategory() {
+            const category = document.getElementById('photoCategory').value;
+            const eventDropdown = document.getElementById('photoEvent');
+            eventDropdown.innerHTML = '<option value="">Select Event</option>';
+
+            if (!category) return;
+
+            try {
+                const response = await fetch(`/api/events/approved?category=${category}`);
+                const events = await response.json();
+                events.forEach(ev => {
+                    const opt = document.createElement('option');
+                    opt.value = ev.name;
+                    opt.textContent = ev.name;
+                    eventDropdown.appendChild(opt);
+                });
+            } catch (err) {
+                console.error("Failed to load events", err);
+            }
         }
 
         async function loadPhotos() {
@@ -317,7 +346,12 @@
                 const card = document.createElement('div');
                 card.className = 'photo-card';
                 card.innerHTML = `
-                    <img src="${photo.photoData}" alt="Event Photo">
+                    <div style="position: relative;">
+                        <img src="${photo.photoData}" alt="Event Photo">
+                        <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem;">
+                            ${photo.eventName || 'Unnamed Event'}
+                        </div>
+                    </div>
                     <div class="photo-info">
                         <span class="photo-category">${photo.category}</span>
                         <button class="delete-btn" style="display: ${isAdmin ? 'grid' : 'none'}" onclick="deletePhoto('${photo.id}')">✕</button>
@@ -330,7 +364,13 @@
         async function uploadPhoto() {
             const fileInput = document.getElementById('photoFile');
             const category = document.getElementById('photoCategory').value;
+            const eventName = document.getElementById('photoEvent').value;
             
+            if (!category || !eventName) {
+                showToast("Please select category and event first!", "error");
+                return;
+            }
+
             if (!fileInput.files[0]) {
                 showToast("Please select a file first!", "error");
                 return;
@@ -352,6 +392,7 @@
                         },
                         body: JSON.stringify({
                             category: category,
+                            eventName: eventName,
                             photoData: base64String
                         })
                     });
