@@ -85,6 +85,9 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_STUDENT", "ROLE_ORGANIZER", "ROLE_ADMIN")
                         .requestMatchers("/api/assignments/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/h2-console/**").permitAll() // Dev tool
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/gallery/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/gallery/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZER")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/gallery/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_ORGANIZER")
                         .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())) // Required for H2
                                                                                                   // console

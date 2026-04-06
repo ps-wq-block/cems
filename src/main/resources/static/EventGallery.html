@@ -275,7 +275,7 @@
             </div>
             <div class="input-group" style="flex:2">
                 <label>Choose Photo</label>
-                <input type="file" id="photoFile" accept="image/*">
+                <input type="file" id="photoFile" accept="image/*" multiple>
             </div>
             <button class="btn-upload" onclick="uploadPhoto()">Upload to Gallery</button>
         </div>
@@ -416,18 +416,20 @@
                 return;
             }
 
-            if (!fileInput.files[0]) {
-                showToast("Please select a file first!", "error");
+            if (fileInput.files.length === 0) {
+                showToast("Please select at least one file!", "error");
                 return;
             }
 
-            const file = fileInput.files[0];
-            const reader = new FileReader();
+            const files = Array.from(fileInput.files);
+            showToast(`Uploading ${files.length} photos...`, "info");
 
-            reader.onloadend = async function() {
-                const base64String = reader.result;
+            let successCount = 0;
+            let failCount = 0;
 
+            for (const file of files) {
                 try {
+                    const base64String = await toBase64(file);
                     const response = await fetch('/api/gallery/upload', {
                         method: 'POST',
                         headers: {
@@ -442,18 +444,32 @@
                     });
 
                     if (response.ok) {
-                        showToast("Photo uploaded successfully! ✅");
-                        loadPhotos();
-                        fileInput.value = '';
+                        successCount++;
                     } else {
-                        const err = await response.text();
-                        showToast("Upload failed ❌: " + (err || "Check role permissions"), "error");
+                        failCount++;
                     }
                 } catch (err) {
-                    showToast("Network error ❌", "error");
+                    failCount++;
                 }
-            };
-            reader.readAsDataURL(file);
+            }
+
+            if (successCount > 0) {
+                showToast(`Successfully uploaded ${successCount} photos! ✅`, "success");
+                loadPhotos();
+                fileInput.value = '';
+            }
+            if (failCount > 0) {
+                showToast(`${failCount} uploads failed ❌`, "error");
+            }
+        }
+
+        function toBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
         }
 
         async function deletePhoto(id) {
@@ -495,10 +511,16 @@
         function showToast(msg, type = "success") {
             const toast = document.getElementById('toast');
             toast.innerText = msg;
-            toast.style.background = type === "success" ? "#4caf50" : "#f44336";
+            if (type === "success") toast.style.background = "#4caf50";
+            else if (type === "error") toast.style.background = "#f44336";
+            else toast.style.background = "#3498db"; // Blue for info
+            
             toast.style.color = "white";
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            
+            if (type !== "info") {
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
         }
 
         window.onload = () => {
