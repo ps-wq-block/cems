@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Maintenance - CEMS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #1e293b;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .backup-section {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .restore-section {
+            background: #fff7ed;
+            border-color: #fed7aa;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-size: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-backup {
+            background: #22c55e;
+            color: white;
+        }
+
+        .btn-backup:hover {
+            background: #16a34a;
+        }
+
+        .btn-restore {
+            background: #f97316;
+            color: white;
+        }
+
+        .btn-restore:hover {
+            background: #ea580c;
+        }
+
+        .file-input {
+            margin: 15px 0;
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .warning {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-top: 15px;
+            border-left: 4px solid #ef4444;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .loading {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="logo">CEMS Admin</div>
+        <div class="nav-links">
+            <a href="AdminDashboard.html" style="text-decoration:none; color:#666; font-weight:bold;">Dashboard</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>System Maintenance</h1>
+
+        <div class="section backup-section">
+            <h2>📦 Data Backup</h2>
+            <p>Download a snapshot of the entire system database, including all users, events, registrations, and photos. Use this for off-site storage or before making major changes.</p>
+            <button class="btn btn-backup" id="backupBtn" onclick="downloadBackup()">Download .json Backup</button>
+        </div>
+
+        <div class="section restore-section">
+            <h2>🔄 System Restore</h2>
+            <p>Restore the system to a previous state by uploading a backup file. This is useful for recovering from accidental data loss.</p>
+            
+            <div class="warning">
+                <strong>CAUTION:</strong> Restoring will <strong>PERMANENTLY DELETE</strong> all current data in the database and replace it with the contents of the backup file. This action cannot be undone.
+            </div>
+
+            <input type="file" id="restoreFile" class="file-input" accept=".json">
+            <button class="btn btn-restore" id="restoreBtn" onclick="uploadRestore()">Start Restoration</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Role Guard
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
+
+        const token = localStorage.getItem('jwt');
+
+        async function downloadBackup() {
+            const btn = document.getElementById('backupBtn');
+            const status = document.getElementById('status');
+            
+            btn.classList.add('loading');
+            status.innerText = "Generating backup...";
+            status.style.color = "blue";
+
+            try {
+                const response = await fetch('/api/admin/backup', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `cems_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    status.innerText = "✅ Backup downloaded successfully!";
+                    status.style.color = "green";
+                } else {
+                    status.innerText = "❌ Failed to generate backup.";
+                    status.style.color = "red";
+                }
+            } catch (e) {
+                status.innerText = "❌ Connection error.";
+                status.style.color = "red";
+            } finally {
+                btn.classList.remove('loading');
+            }
+        }
+
+        async function uploadRestore() {
+            const fileInput = document.getElementById('restoreFile');
+            const btn = document.getElementById('restoreBtn');
+            const status = document.getElementById('status');
+
+            if (!fileInput.files[0]) {
+                alert("Please select a backup file first.");
+                return;
+            }
+
+            if (!confirm("CRITICAL WARNING: This will overwrite ALL current data with the backup. Are you absolutely sure?")) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            btn.classList.add('loading');
+            status.innerText = "Restoring system... please wait.";
+            status.style.color = "orange";
+
+            try {
+                const response = await fetch('/api/admin/restore', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + token },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    status.innerText = "✅ System restored successfully! Redirecting...";
+                    status.style.color = "green";
+                    setTimeout(() => window.location.href = "AdminDashboard.html", 2000);
+                } else {
+                    const msg = await response.text();
+                    status.innerText = "❌ Restore failed: " + msg;
+                    status.style.color = "red";
+                }
+            } catch (e) {
+                status.innerText = "❌ Connection error during restore.";
+                status.style.color = "red";
+            } finally {
+                btn.classList.remove('loading');
+            }
+        }
+    </script>
+</body>
+
+</html>

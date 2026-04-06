@@ -83,6 +83,7 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_STUDENT", "ROLE_ADMIN")
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/registrations/**")
                         .hasAnyAuthority("ROLE_STUDENT", "ROLE_ORGANIZER", "ROLE_ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api/assignments/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/h2-console/**").permitAll() // Dev tool
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/gallery/**").permitAll()
