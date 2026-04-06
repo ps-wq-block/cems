@@ -131,7 +131,7 @@
 
             <label>Category</label>
             <select id="category" required>
-                <option value="Seminar">Seminar</option>
+                <option value="">Select Category</option>
                 <option value="Workshop">Workshop</option>
                 <option value="Sports">Sports</option>
                 <option value="Cultural">Cultural</option>
@@ -374,9 +374,12 @@
                 if (response.ok) {
                     statusMessage.style.display = 'block';
                     statusMessage.style.color = 'green';
-                    statusMessage.textContent = 'Event request submitted successfully! Pending admin approval.';
+                    statusMessage.textContent = 'Event request submitted successfully! Redirecting to dashboard...';
                     this.reset();
-                    document.getElementById("venueSelect").innerHTML = "<option value=''>Select date & time first</option>";
+                    
+                    setTimeout(() => {
+                        window.location.href = "OrganizerDashboard.html";
+                    }, 2000);
                 } else {
                     const errorMsg = await response.text();
                     statusMessage.style.display = 'block';
