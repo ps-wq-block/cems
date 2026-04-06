@@ -254,12 +254,15 @@
     <script>
         // Role Guard - allow both ADMIN and ORGANIZER
         const _role = localStorage.getItem("role");
-        if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER")) {
+        if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN" && _role.toUpperCase() !== "ORGANIZER" && _role.toUpperCase() !== "STUDENT")) {
             window.location.href = "index.html";
         }
 
         // Set dashboard links based on role
-        const dashLink = _role && _role.toUpperCase() === "ADMIN" ? "AdminDashboard.html" : "OrganizerDashboard.html";
+        let dashLink = "AdminDashboard.html";
+        if (_role && _role.toUpperCase() === "ORGANIZER") dashLink = "OrganizerDashboard.html";
+        if (_role && _role.toUpperCase() === "STUDENT") dashLink = "StudentProfile.html";
+        
         document.getElementById("dashboardLink").href = dashLink;
         document.getElementById("backLink").href = dashLink;
 
@@ -347,10 +350,11 @@
                         <span class="detail-label">Name</span>
                         <span class="detail-value">${a.facultyName || '-'}</span>
                     </div>
+                    ${_role.toUpperCase() !== 'STUDENT' ? `
                     <div class="detail-row">
                         <span class="detail-label">Faculty ID</span>
                         <span class="detail-value">${a.facultyId || '-'}</span>
-                    </div>
+                    </div>` : ''}
                     <div class="detail-row">
                         <span class="detail-label">Department</span>
                         <span class="detail-value">${a.department || '-'}</span>
