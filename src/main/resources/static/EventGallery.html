@@ -243,10 +243,11 @@
 <body>
 
     <nav class="navbar">
-        <h2>CEMS Gallery</h2>
-        <div class="nav-links">
+        <h2 id="galleryTitle">CEMS Gallery</h2>
+        <div class="nav-links" id="navLinks">
             <a href="categories.html">Events</a>
             <a href="Notifications.html">Inbox</a>
+            <!-- Links injected by JS -->
             <a href="index.html" onclick="localStorage.clear()">Logout</a>
         </div>
     </nav>
@@ -296,12 +297,25 @@
 
     <script>
         const role = (localStorage.getItem('role') || "").toUpperCase();
-        const isAdmin = role === 'ADMIN' || role === 'ORGANIZER';
+        const isAdmin = role.includes('ADMIN') || role.includes('ORGANIZER');
         const token = localStorage.getItem('jwt');
 
         // Initialize UI based on role
         if (isAdmin) {
             document.getElementById('adminArea').style.display = 'block';
+            document.getElementById('galleryTitle').innerText = role.includes('ADMIN') ? "CEMS Admin | Gallery" : "CEMS Organizer | Gallery";
+            
+            // Add dynamic dashboard link
+            const nav = document.getElementById('navLinks');
+            const dashLink = document.createElement('a');
+            if (role.includes('ADMIN')) {
+                dashLink.href = "AdminDashboard.html";
+                dashLink.textContent = "Admin Dashboard";
+            } else {
+                dashLink.href = "OrganizerDashboard.html";
+                dashLink.textContent = "Organizer Dashboard";
+            }
+            nav.insertBefore(dashLink, nav.children[2]);
         }
 
         async function loadCategories() {
