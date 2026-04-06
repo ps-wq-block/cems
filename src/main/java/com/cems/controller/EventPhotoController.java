@@ -23,9 +23,11 @@ public class EventPhotoController {
     // Get all photos, optional filter by category
     @GetMapping("/photos")
     public ResponseEntity<List<EventPhoto>> getAllPhotos(@RequestParam(required = false) String category) {
+        System.out.println("Fetching photos from gallery. Category filter: " + (category != null ? category : "None"));
         List<EventPhoto> photos = (category != null && !category.isEmpty())
                 ? repository.findByCategory(category)
                 : repository.findAll();
+        System.out.println("Returning " + photos.size() + " photos to the client.");
         return ResponseEntity.ok(photos);
     }
 
