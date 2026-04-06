@@ -317,6 +317,14 @@
                 venueSelect.innerHTML = "<option value=''>No venue available</option>";
             }
 
+            // Sync registration deadline max date
+            const regDeadline = document.getElementById("registrationDeadline");
+            if (date) {
+                regDeadline.max = date;
+                if (regDeadline.value > date) {
+                    regDeadline.value = date;
+                }
+            }
         }
 
         function formatTime() {
@@ -347,15 +355,25 @@
         document.getElementById('createEventForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
+            const deadline = document.getElementById('registrationDeadline').value;
+            const eventDate = document.getElementById('date').value;
+
+            if (deadline > eventDate) {
+                statusMessage.style.display = 'block';
+                statusMessage.style.color = 'red';
+                statusMessage.textContent = 'Registration deadline cannot be after the event date!';
+                return;
+            }
+
             const data = {
                 name: document.getElementById('name').value,
                 category: document.getElementById('category').value,
-                eventDate: document.getElementById('date').value,
+                eventDate: eventDate,
                 eventTime: document.getElementById('time').value,
                 venue: document.getElementById('venueSelect').value,
                 description: document.getElementById('description').value,
                 maxParticipants: parseInt(document.getElementById('maxParticipants').value),
-                registrationDeadline: document.getElementById('registrationDeadline').value,
+                registrationDeadline: deadline,
                 rules: document.getElementById('rules').value
             };
 
