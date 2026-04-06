@@ -10,9 +10,12 @@ import java.util.Optional;
 public class FacultyCoordinatorAssignmentService {
 
     private final FacultyCoordinatorAssignmentRepository repository;
+    private final com.cems.repository.NotificationRepository notificationRepository;
 
-    public FacultyCoordinatorAssignmentService(FacultyCoordinatorAssignmentRepository repository) {
+    public FacultyCoordinatorAssignmentService(FacultyCoordinatorAssignmentRepository repository, 
+                                               com.cems.repository.NotificationRepository notificationRepository) {
         this.repository = repository;
+        this.notificationRepository = notificationRepository;
     }
 
     public FacultyCoordinatorAssignment assignCoordinator(FacultyCoordinatorAssignment assignment) {
@@ -25,7 +28,21 @@ public class FacultyCoordinatorAssignmentService {
         if (repository.findByFacultyId(assignment.getFacultyId()).isPresent()) {
             throw new IllegalArgumentException("This Faculty ID is already registered as a coordinator for another event.");
         }
-        return repository.save(assignment);
+        
+        FacultyCoordinatorAssignment saved = repository.save(assignment);
+        
+        // Notify Coordinator
+        com.cems.model.Notification n = new com.cems.model.Notification();
+        n.setReceiver(saved.getEmailAddress());
+        n.setTitle("New Assignment: " + saved.getEvent());
+        n.setMessage("You have been assigned as the Faculty Coordinator for " + saved.getEvent() + 
+                     ". Your responsibilities: " + saved.getResponsibilities());
+        n.setEventDate(saved.getEventDate());
+        n.setEventTime(saved.getEventTime());
+        n.setCreatedAt(java.time.LocalDateTime.now());
+        notificationRepository.save(n);
+        
+        return saved;
     }
 
     public List<FacultyCoordinatorAssignment> getAllAssignments() {
@@ -60,7 +77,20 @@ public class FacultyCoordinatorAssignmentService {
             assignment.setResponsibilities(updatedAssignment.getResponsibilities());
             assignment.setEventDate(updatedAssignment.getEventDate());
             assignment.setEventTime(updatedAssignment.getEventTime());
-            return repository.save(assignment);
+            FacultyCoordinatorAssignment saved = repository.save(assignment);
+
+            // Notify Coordinator of update
+            com.cems.model.Notification n = new com.cems.model.Notification();
+            n.setReceiver(saved.getEmailAddress());
+            n.setTitle("Updated Assignment: " + saved.getEvent());
+            n.setMessage("Your assignment details for " + saved.getEvent() + 
+                         " have been updated. Your new responsibilities: " + saved.getResponsibilities());
+            n.setEventDate(saved.getEventDate());
+            n.setEventTime(saved.getEventTime());
+            n.setCreatedAt(java.time.LocalDateTime.now());
+            notificationRepository.save(n);
+
+            return saved;
         }).orElse(null);
     }
 

@@ -338,44 +338,62 @@
                 return;
             }
 
+            // Grouping logic: multiple coordinators for one event
+            const groups = assignments.reduce((acc, a) => {
+                const evTitle = a.event || 'Unassigned Event';
+                if (!acc[evTitle]) acc[evTitle] = { 
+                    event: evTitle, 
+                    date: a.eventDate, 
+                    time: a.eventTime, 
+                    coordinators: [] 
+                };
+                acc[evTitle].coordinators.push(a);
+                return acc;
+            }, {});
+
             grid.innerHTML = '';
 
-            assignments.forEach(a => {
+            Object.values(groups).forEach(group => {
                 const card = document.createElement('div');
                 card.className = 'coord-card';
 
+                let coordinatorsHtml = '';
+                group.coordinators.forEach((c, idx) => {
+                    coordinatorsHtml += `
+                        <div style="margin-top: ${idx > 0 ? '20px; border-top: 1px solid #f0f0f0; padding-top: 15px;' : '0px'}">
+                            <div class="detail-row">
+                                <span class="detail-label">Name</span>
+                                <span class="detail-value">${c.facultyName || '-'}</span>
+                            </div>
+                            ${_role.toUpperCase() !== 'STUDENT' ? `
+                            <div class="detail-row">
+                                <span class="detail-label">Faculty ID</span>
+                                <span class="detail-value">${c.facultyId || '-'}</span>
+                            </div>` : ''}
+                            <div class="detail-row">
+                                <span class="detail-label">Department</span>
+                                <span class="detail-value">${c.department || '-'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Contact</span>
+                                <span class="detail-value">${c.contactNumber || '-'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-label">Email</span>
+                                <span class="detail-value">${c.emailAddress || '-'}</span>
+                            </div>
+                            ${c.responsibilities ? '<div class="responsibilities-tag"><strong>Responsibilities:</strong> ' + c.responsibilities + '</div>' : ''}
+                        </div>
+                    `;
+                });
+
                 card.innerHTML = `
-                    <div class="event-title">${a.event || 'Unassigned Event'}</div>
-                    <div class="detail-row">
-                        <span class="detail-label">Name</span>
-                        <span class="detail-value">${a.facultyName || '-'}</span>
+                    <div class="event-title">${group.event}</div>
+                    <div class="detail-row" style="margin-bottom: 15px; background: #f8fafc; padding: 6px; border-radius: 4px;">
+                        <span class="detail-label">Schedule</span>
+                        <span class="detail-value" style="color: #667eea; font-weight: bold;">${group.date || 'TBD'} | ${group.time || 'TBD'}</span>
                     </div>
-                    ${_role.toUpperCase() !== 'STUDENT' ? `
-                    <div class="detail-row">
-                        <span class="detail-label">Faculty ID</span>
-                        <span class="detail-value">${a.facultyId || '-'}</span>
-                    </div>` : ''}
-                    <div class="detail-row">
-                        <span class="detail-label">Department</span>
-                        <span class="detail-value">${a.department || '-'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Contact</span>
-                        <span class="detail-value">${a.contactNumber || '-'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Email</span>
-                        <span class="detail-value">${a.emailAddress || '-'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Event Date</span>
-                        <span class="detail-value">${a.eventDate || 'TBD'}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="detail-label">Event Time</span>
-                        <span class="detail-value">${a.eventTime || 'TBD'}</span>
-                    </div>
-                    ${a.responsibilities ? '<div class="responsibilities-tag"><strong>Responsibilities:</strong> ' + a.responsibilities + '</div>' : ''}
+                    ${coordinatorsHtml}
                 `;
 
                 grid.appendChild(card);
