@@ -388,8 +388,20 @@
             }
         }
 
+        function normalizeCategory(cat) {
+            if (!cat) return "Other";
+            const map = {
+                'Seminar': 'Seminars',
+                'Workshop': 'Workshops',
+                'Competition': 'Competitions',
+                'Literary Event': 'Literary Events',
+                'Cultural Event': 'Cultural'
+            };
+            return map[cat] || cat;
+        }
+
         function generateFilters() {
-            const categories = new Set(allEvents.map(e => e.category));
+            const categories = new Set(allEvents.map(e => normalizeCategory(e.category)));
             const filterContainer = document.getElementById('filterContainer');
 
             // Keep the "All" button, add the rest
@@ -426,7 +438,7 @@
 
             // Apply Filters (Category & Search)
             const filteredEvents = allEvents.filter(event => {
-                const matchesCategory = currentFilter === 'All' || event.category === currentFilter;
+                const matchesCategory = currentFilter === 'All' || normalizeCategory(event.category) === currentFilter;
 
                 const searchString = `${event.name || ''} ${event.venue || ''} ${event.description || ''}`.toLowerCase();
                 const matchesSearch = searchString.includes(searchQuery);
@@ -460,7 +472,7 @@
 
                 card.innerHTML = `
                     <div class="card-header">
-                        <span class="tag">${event.category || 'Event'}</span>
+                        <span class="tag">${normalizeCategory(event.category)}</span>
                         <h3 class="card-title">${event.name}</h3>
                         <p class="card-desc">${descText}</p>
                     </div>

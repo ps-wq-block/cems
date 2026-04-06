@@ -318,6 +318,18 @@
             nav.insertBefore(dashLink, nav.children[2]);
         }
 
+        function normalizeCategory(cat) {
+            if (!cat) return "Other";
+            const map = {
+                'Seminar': 'Seminars',
+                'Workshop': 'Workshops',
+                'Competition': 'Competitions',
+                'Literary Event': 'Literary Events',
+                'Cultural Event': 'Cultural'
+            };
+            return map[cat] || cat;
+        }
+
         async function loadCategories() {
             try {
                 const response = await fetch('/api/events/categories', {
@@ -325,8 +337,11 @@
                 });
                 let categories = await response.json();
                 
+                // Normalize and de-duplicate
+                categories = categories.map(normalizeCategory);
+                
                 // Merge with standard categories to ensure "all" are shown
-                const standard = ["Technical", "Sports", "Cultural", "Workshops", "Seminars", "Competitions", "Other"];
+                const standard = ["Technical", "Sports", "Cultural", "Workshops", "Seminars", "Competitions", "Other", "Fine Arts", "Literary Events"];
                 const combined = [...new Set([...standard, ...categories])].sort();
 
                 // Populate upload dropdown
@@ -412,7 +427,7 @@
                         </div>
                     </div>
                     <div class="photo-info">
-                        <span class="photo-category">${photo.category}</span>
+                        <span class="photo-category">${normalizeCategory(photo.category)}</span>
                         <button class="delete-btn" style="display: ${isAdmin ? 'grid' : 'none'}" onclick="deletePhoto('${photo.id}')">✕</button>
                     </div>
                 `;
