@@ -175,6 +175,7 @@
         const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ADMIN")) { window.location.href = "index.html"; }
 
         let allAssignments = [];
+        let allEvents = [];
         let currentAssignmentId = null;
 
         async function loadEvents() {
@@ -187,8 +188,8 @@
                     headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
                 });
                 if (response.ok) {
-                    const events = await response.json();
-                    events.filter(e => e.status === 'Approved').forEach(event => {
+                    allEvents = await response.json();
+                    allEvents.filter(e => e.status === 'Approved').forEach(event => {
                         const option = document.createElement("option");
                         option.value = event.name;
                         option.textContent = event.name;
@@ -203,6 +204,7 @@
         function handleEventSelection() {
             const evName = document.getElementById("eventSelect").value;
             const existingAssn = allAssignments.find(a => a.event === evName);
+            const foundEvent = allEvents.find(e => e.name === evName);
             const submitBtn = document.querySelector(".buttons .assign");
 
             if (existingAssn) {
@@ -221,6 +223,13 @@
                 currentAssignmentId = null;
                 document.getElementById("assignForm").reset();
                 document.getElementById("eventSelect").value = evName; // Restore select
+                
+                // Auto-populate date/time if event is found
+                if (foundEvent) {
+                    document.getElementById("eventDate").value = foundEvent.eventDate || '';
+                    document.getElementById("eventTime").value = foundEvent.eventTime || '';
+                }
+                
                 submitBtn.textContent = "Confirm Assignment";
                 submitBtn.style.background = "#8ec5a4";
             }
