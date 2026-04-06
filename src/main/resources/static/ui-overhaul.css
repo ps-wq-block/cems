@@ -1,0 +1,134 @@
+:root {
+  --lux-bg: linear-gradient(180deg, #f8fafc 0%, #eef2ff 38%, #f8fafc 100%);
+  --lux-surface: rgba(255, 255, 255, 0.92);
+  --lux-border: rgba(148, 163, 184, 0.35);
+  --lux-text: #0f172a;
+  --lux-muted: #475569;
+  --lux-accent: #4f46e5;
+  --lux-accent-2: #0891b2;
+  --lux-success: #059669;
+  --lux-danger: #e11d48;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--lux-bg) !important;
+  color: var(--lux-text) !important;
+  line-height: 1.55;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(79, 70, 229, 0.12), transparent 34%),
+    radial-gradient(circle at 90% 8%, rgba(8, 145, 178, 0.11), transparent 38%),
+    radial-gradient(circle at 20% 90%, rgba(16, 185, 129, 0.07), transparent 36%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+main, .container, .dashboard-container, .page-container, .content-wrapper, .auth-wrapper,
+.login-wrapper, .events-wrapper, .profile-wrapper, .form-container {
+  width: min(1120px, 94vw) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.glass-card, .panel, .card, .event-card, .stats-card, .profile-header, .details-card,
+.table-wrapper, .dashboard-grid > *, .sidebar, .navbar {
+  background: var(--lux-surface) !important;
+  border: 1px solid var(--lux-border) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08), 0 2px 10px rgba(15, 23, 42, 0.05) !important;
+  color: var(--lux-text) !important;
+}
+
+h1, h2, h3 { letter-spacing: -0.02em; text-wrap: balance; color: var(--lux-text) !important; }
+p, label, span, .muted-text, small { color: var(--lux-muted); }
+
+header h1, .logo-area h1, .auth-header h1 {
+  background: linear-gradient(90deg, #4f46e5 0%, #0891b2 50%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+a { color: #1d4ed8 !important; }
+a:hover { color: #0369a1 !important; }
+
+button, .btn-primary, .btn, .edit-btn, input[type="submit"] {
+  border-radius: 12px !important;
+  border: 1px solid rgba(79, 70, 229, 0.35) !important;
+  background: linear-gradient(90deg, var(--lux-accent), var(--lux-accent-2)) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+
+button:hover, .btn-primary:hover, .btn:hover, .edit-btn:hover, input[type="submit"]:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 10px 22px rgba(79, 70, 229, 0.22);
+}
+
+input, select, textarea, .input-field {
+  border-radius: 12px !important;
+  border: 1px solid var(--lux-border) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: var(--lux-text) !important;
+}
+
+input::placeholder, textarea::placeholder { color: #94a3b8 !important; }
+
+input:focus, select:focus, textarea:focus, .input-field:focus {
+  outline: none;
+  border-color: rgba(14, 116, 144, .5) !important;
+  box-shadow: 0 0 0 3px rgba(14, 116, 144, .16);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+}
+
+th, td {
+  padding: 14px 16px !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.24) !important;
+  color: #0f172a !important;
+}
+
+th {
+  background: rgba(241, 245, 249, 0.95) !important;
+  color: #1e3a8a !important;
+  font-weight: 700;
+}
+
+tr:hover td { background: rgba(241, 245, 249, 0.8) !important; }
+
+.badge, .status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: .2rem .7rem;
+  font-size: .78rem;
+  border: 1px solid var(--lux-border);
+  background: rgba(248, 250, 252, 0.95);
+  color: #0f172a;
+}
+
+.status-completed, .success { color: var(--lux-success) !important; }
+.error, .status-rejected { color: var(--lux-danger) !important; }
+
+hr { border-color: rgba(148, 163, 184, 0.3); }
+
+@media (max-width: 760px) {
+  body { font-size: 14px; }
+  .glass-card, .card, .panel, .sidebar, .navbar { border-radius: 14px !important; }
+}

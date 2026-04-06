@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CEMS | Student Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="global.css">
+    <style>
+        .page-wrapper {
+            max-width: 600px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .form-card {
+            padding: 40px;
+        }
+
+        .form-header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(to right, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+    </style>
+    <link rel="stylesheet" href="ui-overhaul.css">
+</head>
+<body>
+
+    <div class="page-wrapper animate-fade-in">
+        <div class="glass-card form-card">
+            <header class="form-header">
+                <h2>Account Settings</h2>
+                <p style="color: var(--text-sub);">Manage your student profile and academic details</p>
+            </header>
+
+            <form id="profileForm">
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label>Full Name</label>
+                        <input type="text" id="name" class="input-field" required>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Institutional Email</label>
+                        <input type="email" id="email" class="input-field" readonly style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="roll" class="input-field" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>University Year</label>
+                        <input type="text" id="year" class="input-field" placeholder="e.g. 3rd Year">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Course / Specialization</label>
+                        <input type="text" id="course" class="input-field" placeholder="e.g. B.Tech Computer Science">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="phone" class="input-field" maxlength="10" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Gender</label>
+                        <select id="gender" class="input-field">
+                            <option value="">Select</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Institution Name</label>
+                        <input type="text" id="college" class="input-field">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Date of Birth</label>
+                        <input type="date" id="dob" class="input-field">
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Mailing Address</label>
+                        <input type="text" id="address" class="input-field">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 16px; margin-top: 20px;">
+                    <button type="submit" class="btn-primary" style="flex: 2;">Update Experience</button>
+                    <button type="button" class="btn-outline" style="flex: 1; border-radius: 12px;" onclick="window.history.back()">Back</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const userId = localStorage.getItem("userId");
+        const jwt = localStorage.getItem("jwt");
+
+        async function init() {
+            try {
+                const response = await fetch(`/api/auth/users/${userId}`, {
+                    headers: { 'Authorization': 'Bearer ' + jwt }
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById("name").value = user.name || "";
+                    document.getElementById("email").value = user.email || "";
+                    document.getElementById("roll").value = user.rollNumber || "";
+                    document.getElementById("phone").value = user.phoneNumber || "";
+                    document.getElementById("course").value = user.course || "";
+                    document.getElementById("year").value = user.universityYear || "";
+                    document.getElementById("dob").value = user.dateOfBirth || "";
+                    document.getElementById("gender").value = user.gender || "";
+                    document.getElementById("address").value = user.address || "";
+                    document.getElementById("college").value = user.college || "";
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        document.getElementById("profileForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "Updating...";
+            btn.disabled = true;
+
+            const updatedData = {
+                name: document.getElementById("name").value,
+                rollNumber: document.getElementById("roll").value,
+                phoneNumber: document.getElementById("phone").value,
+                course: document.getElementById("course").value,
+                universityYear: document.getElementById("year").value,
+                dateOfBirth: document.getElementById("dob").value,
+                gender: document.getElementById("gender").value,
+                college: document.getElementById("college").value,
+                address: document.getElementById("address").value
+            };
+
+            try {
+                const res = await fetch(`/api/auth/users/${userId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + jwt },
+                    body: JSON.stringify(updatedData)
+                });
+
+                if (res.ok) {
+                    localStorage.setItem("userName", updatedData.name);
+                    window.history.back();
+                }
+            } catch (err) { 
+                console.error(err); 
+                btn.innerText = "Error";
+                btn.disabled = false;
+            }
+        });
+
+        window.onload = init;
+    </script>
+    <script src="ui-overhaul.js"></script>
+</body>
+</html>
