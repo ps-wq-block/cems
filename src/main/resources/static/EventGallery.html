@@ -490,6 +490,8 @@
                 showToast(`Successfully uploaded ${successCount} photos! ✅`, "success");
                 loadPhotos();
                 fileInput.value = '';
+                document.getElementById('photoCategory').value = '';
+                document.getElementById('photoEvent').innerHTML = '<option value="">Select Event</option>';
             }
             if (failCount > 0) {
                 showToast(`${failCount} uploads failed ❌`, "error");
