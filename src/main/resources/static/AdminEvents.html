@@ -118,6 +118,10 @@
             <input type="text" id="searchInput" placeholder="Search by name, organizer, category or venue..." 
                    style="flex: 1; padding: 12px 20px; border-radius: 25px; border: 1px solid #ddd; font-size: 15px; outline: none;"
                    onkeyup="filterEvents()">
+            <select id="categoryFilter" onchange="filterEvents()" 
+                    style="padding: 0 20px; border-radius: 25px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
+                <option value="All">All Categories</option>
+            </select>
             <select id="sortSelect" onchange="filterEvents()" 
                     style="padding: 0 20px; border-radius: 25px; border: 1px solid #ddd; background: white; cursor: pointer; outline: none;">
                 <option value="id_desc">Sort: Newest First</option>
@@ -147,6 +151,7 @@
 
                 if (response.ok) {
                     allEvents = await response.json();
+                    populateCategories();
                     filterEvents(); // Initial render
                 } else {
                     container.innerHTML = '<p style="color:red; text-align:center;">Failed to load data.</p>';
@@ -199,14 +204,19 @@
 
         function filterEvents() {
             const query = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('categoryFilter').value;
             const sortBy = document.getElementById('sortSelect').value;
 
-            let filtered = allEvents.filter(event => 
-                (event.name && event.name.toLowerCase().includes(query)) ||
-                (event.organizerEmail && event.organizerEmail.toLowerCase().includes(query)) ||
-                (event.category && event.category.toLowerCase().includes(query)) ||
-                (event.venue && event.venue.toLowerCase().includes(query))
-            );
+            let filtered = allEvents.filter(event => {
+                const matchesQuery = (event.name && event.name.toLowerCase().includes(query)) ||
+                                    (event.organizerEmail && event.organizerEmail.toLowerCase().includes(query)) ||
+                                    (event.category && event.category.toLowerCase().includes(query)) ||
+                                    (event.venue && event.venue.toLowerCase().includes(query));
+                
+                const matchesCategory = categoryFilter === "All" || (event.category && event.category === categoryFilter);
+                
+                return matchesQuery && matchesCategory;
+            });
 
             // Sorting logic
             filtered.sort((a, b) => {
@@ -222,6 +232,18 @@
             });
 
             renderEvents(filtered);
+        }
+
+        function populateCategories() {
+            const filter = document.getElementById('categoryFilter');
+            const categories = [...new Set(allEvents.map(e => e.category).filter(Boolean))].sort();
+            
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                filter.appendChild(opt);
+            });
         }
 
         fetchEvents();
