@@ -246,6 +246,7 @@
         <h2>CEMS Gallery</h2>
         <div class="nav-links">
             <a href="categories.html">Events</a>
+            <a href="Notifications.html">Inbox</a>
             <a href="index.html" onclick="localStorage.clear()">Logout</a>
         </div>
     </nav>
@@ -296,6 +297,7 @@
     <script>
         const role = (localStorage.getItem('role') || "").toUpperCase();
         const isAdmin = role === 'ADMIN' || role === 'ORGANIZER';
+        const token = localStorage.getItem('jwt');
 
         // Initialize UI based on role
         if (isAdmin) {
@@ -304,7 +306,9 @@
 
         async function loadCategories() {
             try {
-                const response = await fetch('/api/events/categories');
+                const response = await fetch('/api/events/categories', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 let categories = await response.json();
                 
                 // Merge with standard categories to ensure "all" are shown
@@ -345,7 +349,9 @@
             if (!category) return;
 
             try {
-                const response = await fetch(`/api/events/approved?category=${category}`);
+                const response = await fetch(`/api/events/approved?category=${category}`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 const events = await response.json();
                 events.forEach(ev => {
                     const opt = document.createElement('option');
@@ -360,7 +366,9 @@
 
         async function loadPhotos() {
             try {
-                const response = await fetch('/api/gallery/photos');
+                const response = await fetch('/api/gallery/photos', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
                 if (!response.ok) {
                     throw new Error("API response error: " + response.status);
                 }
@@ -418,7 +426,6 @@
 
             reader.onloadend = async function() {
                 const base64String = reader.result;
-                const token = localStorage.getItem('jwt');
 
                 try {
                     const response = await fetch('/api/gallery/upload', {
@@ -451,7 +458,6 @@
 
         async function deletePhoto(id) {
             if (!confirm("Are you sure you want to delete this photo?")) return;
-            const token = localStorage.getItem('jwt');
             try {
                 const response = await fetch(`/api/gallery/photos/${id}`, {
                     method: 'DELETE',
@@ -481,7 +487,9 @@
 
             // Fetch filtered
             const url = category === 'All' ? '/api/gallery/photos' : `/api/gallery/photos?category=${category}`;
-            fetch(url).then(r => r.json()).then(renderPhotos);
+            fetch(url, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            }).then(r => r.json()).then(renderPhotos);
         }
 
         function showToast(msg, type = "success") {

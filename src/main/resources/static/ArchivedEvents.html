@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Archived Events - Organizer</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #e6f7f5, #f3e8ff);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #666;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #8ec5a4;
+        }
+
+        .logout {
+            color: #ff6b6b !important;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 32px;
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            filter: grayscale(0.5);
+            border: 1px solid #ddd;
+        }
+
+        .event-info h3 {
+            margin: 0 0 8px 0;
+            color: #666;
+            font-size: 22px;
+        }
+
+        .event-info p {
+            margin: 5px 0;
+            color: #777;
+            font-size: 15px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .loader {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            margin-top: 50px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #666;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #5f6bdc;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="logo">CEMS Organizer</div>
+        <div class="nav-links">
+            <a href="OrganizerDashboard.html">Dashboard</a>
+            <a href="MyEvents.html">My Events</a>
+            <a href="ArchivedEvents.html">Archives</a>
+            <a href="CreateEvent.html">Create Event</a>
+            <a href="#" class="logout" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <a href="MyEvents.html" class="back-btn">← Back to My Events</a>
+        <h1 class="heading">Ended & Archived Events</h1>
+        
+        <div style="margin-bottom: 25px; display: flex; gap: 15px;">
+            <input type="text" id="searchInput" placeholder="Search archives..." 
+                   style="flex: 1; padding: 15px; border-radius: 25px; border: 1px solid #ccc; font-size: 16px; outline: none;"
+                   onkeyup="filterEvents()">
+        </div>
+
+        <div id="eventsList" class="loader">Loading archives...</div>
+    </div>
+
+    <script>
+        const _role = localStorage.getItem("role"); if (!localStorage.getItem("jwt") || (_role && _role.toUpperCase() !== "ORGANIZER")) { window.location.href = "index.html"; }
+
+        function logout() {
+            localStorage.removeItem('jwt'); localStorage.removeItem('role'); localStorage.removeItem('userId');;
+            window.location.href = "index.html";
+        }
+
+        let allEvents = [];
+
+        async function fetchArchivedEvents() {
+            const container = document.getElementById("eventsList");
+            try {
+                const response = await fetch('/api/organizer/events', {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt') }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const now = new Date();
+                    
+                    // Filter for ended events
+                    allEvents = data.filter(event => {
+                        if (!event.eventDate || !event.eventTime) return false;
+                        const eventDT = new Date(event.eventDate + 'T' + event.eventTime);
+                        return eventDT < now;
+                    }).sort((a, b) => (b.eventDate || "").localeCompare(a.eventDate || ""));
+                    
+                    renderEvents(allEvents);
+                } else {
+                    container.innerHTML = "<p style='color:red; text-align:center;'>Authorization Failed.</p>";
+                }
+            } catch (error) {
+                container.innerHTML = "<p style='color:red; text-align:center;'>Cannot connect to server.</p>";
+            }
+        }
+
+        function renderEvents(events) {
+            const container = document.getElementById("eventsList");
+            if (events.length === 0) {
+                container.innerHTML = `<div class="empty"><h2>No Archived Events</h2><p>You don't have any ended events yet.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            events.forEach(event => {
+                container.innerHTML += `
+                    <div class="event-card">
+                        <div class="event-info">
+                            <h3>${event.name} (Ended)</h3>
+                            <p><strong>Category:</strong> ${event.category} &nbsp;|&nbsp; <strong>Date:</strong> ${event.eventDate}</p>
+                            <p><strong>Venue:</strong> ${event.venue} &nbsp;|&nbsp; <strong>Status:</strong> ${event.status}</p>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                            <div class="status-badge">ARCHIVED</div>
+                            <button onclick="window.location.href='EventGallery.html?id=${event.id}'" 
+                                    style="background: #5f6bdc; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                                View Gallery
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterEvents() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            let filtered = allEvents.filter(event => 
+                (event.name && event.name.toLowerCase().includes(query)) ||
+                (event.category && event.category.toLowerCase().includes(query))
+            );
+            renderEvents(filtered);
+        }
+
+        window.onload = fetchArchivedEvents;
+    </script>
+</body>
+</html>
